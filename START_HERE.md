@@ -4,7 +4,9 @@
 **Promise:** one graph on the wire in five minutes.
 **Time:** ~5 minutes. Facade **0.1.0a1**, IR v1.
 
-Hard lock: [OWNERSHIP.md](OWNERSHIP.md). Runnable sample: [examples/day1/](examples/day1/).
+Hard lock + leftover teaching: [OWNERSHIP.md](OWNERSHIP.md).
+Human-readable Soft 1–10: [docs/](docs/).
+Runnable sample: [examples/day1/](examples/day1/).
 Soft-surface leftover tour: [examples/soft_surface/](examples/soft_surface/).
 Soft 2 leftover: locked shapes `box` / `sphere` / `plane` / `cylinder` — not the three.js catalog.
 Soft 3 leftover: optional `.camera` / `.light` nodes (`perspective` / `ambient` / `directional`) — not a materials catalog.
@@ -15,6 +17,19 @@ Soft 7 leftover: optional camera `orbit` / `pan` / `zoom` + Cap-gated `orbit` / 
 Soft 8 leftover: mesh `material.type` thin set `{basic, standard}` — Soft 4 `basic` KEEP; optional `metalness` / `roughness` on `standard`. Not a materials catalog.
 Soft 9 leftover: `.gltf(id, src=)` / `.texture(id, src=)` + `material.map` (texture id) — Cap-gated `apply` only. Not a public GLTFLoader dump.
 Soft 10 leftover: additive shapes `cone` / `torus` — Soft 2 `box` / `sphere` / `plane` / `cylinder` KEEP. Same `.node(..., shape=)`. Not a geometry catalog.
+
+## Reading path
+
+This file is the tutorial. There is no `docs/tutorials/` copy.
+
+| Step | Open | Diátaxis |
+|------|------|----------|
+| 1 | This file (five minutes below) | tutorial |
+| 2 | [docs/how-to/author-and-apply.md](docs/how-to/author-and-apply.md) | how-to |
+| 3 | [docs/how-to/swap-the-peer.md](docs/how-to/swap-the-peer.md) | how-to |
+| 4 | [docs/reference/public-api.md](docs/reference/public-api.md) · [docs/reference/plan-ir.md](docs/reference/plan-ir.md) | reference |
+| 5 | [docs/explanation/soft-leftovers.md](docs/explanation/soft-leftovers.md) · [OWNERSHIP.md](OWNERSHIP.md) | explanation |
+| 6 | [CHANGELOG.md](CHANGELOG.md) | Unreleased, then Soft leftover history |
 
 ---
 
@@ -113,7 +128,10 @@ Soft-surface leftover tour: [examples/soft_surface/](examples/soft_surface/).
 
 | Goal | Doc |
 |------|-----|
+| Author Soft 1–10 surfaces | [docs/how-to/author-and-apply.md](docs/how-to/author-and-apply.md) |
+| Swap the Peer | [docs/how-to/swap-the-peer.md](docs/how-to/swap-the-peer.md) |
+| Public names / Plan IR | [docs/reference/public-api.md](docs/reference/public-api.md) · [docs/reference/plan-ir.md](docs/reference/plan-ir.md) |
+| Why leftovers + HOLD | [docs/explanation/soft-leftovers.md](docs/explanation/soft-leftovers.md) |
 | HARD invariants | [OWNERSHIP.md](OWNERSHIP.md) |
-| Peer swap | [ux_space/peers/README.md](ux_space/peers/README.md) |
 | Isolation door | [ux_space/wire/README.md](ux_space/wire/README.md) |
 | Examples | [examples/](examples/) · [day1](examples/day1/) · [soft_surface](examples/soft_surface/) |

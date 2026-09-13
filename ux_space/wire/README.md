@@ -15,7 +15,7 @@ modules.
 | `mount_channel` | `ux_space.wire.mount_channel` pass-through |
 | Intent verify | Not reimplemented |
 
-`apply()` and `pick()` still require a Cap token so the Soft never becomes ambient.
+`apply()`, `pick()`, `orbit()`, `pan()`, and `zoom()` still require a Cap token so the Soft never becomes ambient.
 The token stays on the server — it is not copied onto Result ops.
 Verification is Channel's job when the Intent arrives.
 

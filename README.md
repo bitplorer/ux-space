@@ -7,8 +7,9 @@ Server-authored space graphs for Python + JSON channels.
 
 Pure Python facade. Thin Peer apply. No React. IR v1 additive.
 
-This layer **owns one graph as data** plus one Cap-gated `apply`. It does not
-own product behavior, Cap mint, or a 3D engine. Three.js is the day-1 Peer
+This layer **owns one graph as data** plus Cap-gated verbs (`apply`,
+and leftover `pick` / `orbit` / `pan` / `zoom`). It does not own
+product behavior, Cap mint, or a 3D engine. Three.js is the day-1 Peer
 adapter, not the identity.
 
 | Layer | Name |
@@ -20,19 +21,19 @@ adapter, not the identity.
 | **Python** | ≥ 3.14 |
 | **License** | [MIT](LICENSE) |
 
-**Not `ux-scene`.** That name is a dual door with ux-motion `scene()`. The
-facade is `space()` / `Graph`.
+**Not `ux-scene`.** That name is a dual door with ux-motion `scene()`.
+The facade is `space()` / `Graph`.
 
-## Table of Contents
+## Start
 
-- [Install](#install)
-- [Usage](#usage)
-- [Ownership](#ownership)
-- [Audience](#audience)
-- [API](#api)
-- [Package contents](#package-contents)
-- [Tests](#tests)
-- [License](#license)
+| You are… | Open |
+|----------|------|
+| **New** | [START_HERE.md](START_HERE.md) — five minutes, then the reading path |
+| **Soft 1–10 how-to / reference** | [docs/](docs/) |
+| **Need the lock** | [OWNERSHIP.md](OWNERSHIP.md) |
+| **What changed** | [CHANGELOG.md](CHANGELOG.md) (`Unreleased`, then Soft leftover history) |
+
+Repo: [bitplorer/ux-space](https://github.com/bitplorer/ux-space)
 
 ## Install
 
@@ -45,8 +46,6 @@ pip install -e .
 python -c "from ux_space import space; print(space('x').node('a').plan()['id'])"
 ```
 
-Repo: [bitplorer/ux-space](https://github.com/bitplorer/ux-space)
-
 ## Usage
 
 ```python
@@ -57,8 +56,8 @@ graph = (
     .host("stage-3d")
     .node("hero", shape="box", color="#6366f1")
 )
-# `cap` is Channel-minted (ch.control / CapService.mint). Server-side gate only —
-# this Soft does not mint, and the token does not ride the Result.
+# `cap` is Channel-minted (ch.control / CapService.mint). Server-side gate
+# only — this Soft does not mint, and the token does not ride the Result.
 ops = apply(graph, host="stage-3d", cap=channel_minted_cap)
 result = to_result(ops)
 # result["ops"][0]["op"] == "bridge.call"
@@ -66,95 +65,21 @@ result = to_result(ops)
 # result["ops"][0]["package"] == "ux-space"
 ```
 
-Same graph as a Result:
+Same graph as a Result: `graph.apply(cap=channel_minted_cap)`.
 
-```python
-result = graph.apply(cap=channel_minted_cap)
-```
-
-The Peer (`peers/threejs`) registers as **`ux-space`** and applies the Plan
-(Soft 2 leftover: locked shapes `box` / `sphere` / `plane` / `cylinder` —
-not the three.js catalog. Soft 3 leftover: optional `.camera` / `.light`
-nodes — `perspective` / `ambient` / `directional`. Soft 4 leftover:
-optional mesh `rotation` / `scale` + `material.type=basic`. Soft 5
-leftover: `peers/canvas` proves the swap under the same `ux-space`
-register; day-1 stays threejs. Soft 6 leftover: optional mesh
-`pickable` + Cap-gated `pick(hit)` — Peer reports `node_id` (and
-`point` if hit). Soft 7 leftover: optional camera `orbit` / `pan` /
-`zoom` + Cap-gated `orbit` / `pan` / `zoom` — thin Peer apply, not
-OrbitControls. Soft 8 leftover: mesh `material.type` thin set
-`{basic, standard}` — Soft 4 `basic` KEEP; optional `metalness` /
-`roughness` on `standard`. Soft 9 leftover: `.gltf(id, src=)` /
-`.texture(id, src=)` + `material.map` (texture id) — Cap-gated
-`apply` only; loader is Peer concern, not a public GLTFLoader dump.
-Soft 10 leftover: additive shapes `cone` / `torus` — Soft 2
-`box` / `sphere` / `plane` / `cylinder` KEEP. Same `.node(..., shape=)`.
-Same ops — no second Graph API.
-
-Five-minute path: [START_HERE.md](START_HERE.md). Hard invariants:
-[OWNERSHIP.md](OWNERSHIP.md). Runnable samples: [examples/day1/](examples/day1/).
-Soft-surface leftover tour: [examples/soft_surface/](examples/soft_surface/).
-
-## Ownership
-
-| Owns | Does **not** own |
-|------|------------------|
-| Plan IR v1, `space()` / `Graph` | Product `@action` (`ux-behavior`) |
-| Cap-gated `apply` / `pick` / `orbit` / `pan` / `zoom` → `bridge.call` | Cap mint / Intent (`ux-channel`) |
-| Peer contract + day-1 Three.js adapter | HTML construction (`ux-dom`) |
-| Isolation door `wire/` | Product CLI (`ux-compose`) |
-
-Full contract: [OWNERSHIP.md](OWNERSHIP.md).
-
-## Audience
-
-| You are… | Start |
-|----------|--------|
-| **New** | [START_HERE.md](START_HERE.md) |
-| **Need the lock** | [OWNERSHIP.md](OWNERSHIP.md) |
-| **Wiring Channel** | [ux_space/wire/README.md](ux_space/wire/README.md) · [examples/day1/](examples/day1/) |
-| **Soft leftovers** | [examples/soft_surface/](examples/soft_surface/) |
-| **Swapping the Peer** | [ux_space/peers/README.md](ux_space/peers/README.md) |
-
-## API
-
-Public names are `ux_space.__all__`. Frozen from `ux_space.core` only.
-
-| Export | Role |
-|--------|------|
-| `space`, `Graph` | One scene graph |
-| `apply` | Cap-gated verb → `bridge.call` method `apply` |
-| `pick` | Cap-gated verb → `bridge.call` method `pick` (hit `{node_id, point?}`) |
-| `orbit`, `pan`, `zoom` | Cap-gated verbs → `bridge.call` methods `orbit` / `pan` / `zoom` |
-| `mount`, `update` | Channel-compatible bridge op builders (not verbs) |
-| `to_result`, `host_html` | Result dict / SSR host attributes |
-| `validate_plan`, `dumps`, `loads` | Plan IR |
-| `PACKAGE`, `PEER`, `CONTRACT` | Wire package name + Peer contract |
-| `CapRequired`, `PlanError` | Fail closed |
-
-IR major is `v: "1"`. Additive fields only. Never reuse keys.
-
-`wire/` is off this `__all__`. Product never imports `ux_channel` except
-through that door (or a compose `wire/`).
-
-## Package contents
-
-| Path | Role |
-|---|---|
-| `ux_space/core/` | Plan IR, Graph, ops, Peer contract — day-1 truth |
-| `ux_space/features/` | Stub for future Softs that import core |
-| `ux_space/peers/threejs/` | Day-1 Three.js adapter (`uxBridge.register("ux-space")`) |
-| `ux_space/peers/canvas/` | Soft 5 leftover swap-proof canvas Peer (same `ux-space` register) |
-| `ux_space/wire/` | Isolation door (optional `ux-channel`) |
-| `tests/` | Unit tests (no browser) |
-| `examples/day1/` | Plan print + Channel.boot / compose path |
-| `examples/soft_surface/` | Soft-surface leftover tour (SHAPES + Soft 10 cone/torus, camera/light, transform + basic/standard material, Peer-swap awareness, pickable, orbit/pan/zoom, glTF/texture loaders) |
+Public names are `ux_space.__all__`, frozen from `ux_space.core` only.
+`wire/` is off that `__all__`. Soft 1–10 surfaces, fences, and the HOLD
+list live under [docs/](docs/). Leftover teaching that tests lock lives
+in [OWNERSHIP.md](OWNERSHIP.md).
 
 ## Tests
 
 ```bash
 PYTHONPATH=. python -m unittest discover -s tests -v
 ```
+
+Runnable samples: [examples/day1/](examples/day1/) ·
+[examples/soft_surface/](examples/soft_surface/).
 
 ## License
 

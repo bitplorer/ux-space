@@ -6,7 +6,29 @@ Versioning follows [Semantic Versioning](https://semver.org/) for the
 **library API** (`API_VERSION` / `__version__`).
 The **plan IR** uses a separate major (`IR_VERSION` / plan field `v`).
 
+New work lands under **Unreleased**. Do not invent a version heading
+until the library API / Peer version changes. Dated Soft leftover
+entries below are historical teaching for Soft 2–10 on `0.1.0a1`
+(IR v1 additive). They stay — leftover-teach tests lock them.
+
 ---
+
+## Unreleased
+
+### Docs
+
+- Soft 1–10 human-readable docs under Diátaxis (`docs/`). README is
+  the front door; [START_HERE.md](START_HERE.md) is the reading path
+  (tutorial). How-to / reference / explanation live under `docs/`.
+  There is no empty `docs/tutorials/` shell — START_HERE's five-minute
+  path is the tutorial.
+- [OWNERSHIP.md](OWNERSHIP.md) leftover teaching stays the lock
+  (Soft 2–10 leftover sections + KEEP / HOLD). Docs Soft cites that
+  list; it does not invent APIs or dump R3F / dual Peers / Cap Host /
+  Cap-on-ops / useFrame / catalogs / OrbitControls / generic pointer
+  stack.
+- Code fences in `docs/` adapt passing tests (`tests/test_graph.py`,
+  `tests/test_ops.py`, `tests/test_soft2_shapes.py` … `tests/test_soft10_primitives.py`).
 
 ## 2026-09-13 — Soft 10: additive primitives (leftover)
 
