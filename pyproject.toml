@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ux-space"
+version = "0.1.0a1"
+description = "Server-authored space graphs for Python + JSON channels. One graph, one Cap-gated apply, thin Peer."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.14"
+authors = [{ name = "bitplorer" }]
+keywords = [
+  "3d",
+  "scene-graph",
+  "ux-channel",
+  "server-driven",
+  "bridge",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.14",
+  "Typing :: Typed",
+  "Topic :: Software Development :: Libraries",
+]
+dependencies = []
+
+[project.optional-dependencies]
+channel = ["ux-channel>=0.1"]
+dev = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://github.com/bitplorer/ux-space"
+Repository = "https://github.com/bitplorer/ux-space"
+Changelog = "https://github.com/bitplorer/ux-space/blob/main/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+include = ["ux_space*"]
+
+[tool.setuptools.package-data]
+ux_space = ["py.typed", "peers/threejs/*.js"]
