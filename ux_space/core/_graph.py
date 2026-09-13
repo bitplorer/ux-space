@@ -5,14 +5,26 @@ from __future__ import annotations
 from typing import Any
 from uuid import uuid4
 
-from ux_space.core._ir import KIND_GRAPH, KIND_NODE, KIND_PLAN, validate_plan
+from ux_space.core._ir import (
+    KIND_CAMERA,
+    KIND_GRAPH,
+    KIND_LIGHT,
+    KIND_NODE,
+    KIND_PLAN,
+    validate_plan,
+)
 from ux_space.core._ops import apply as apply_ops
 from ux_space.core._ops import to_result
 from ux_space.core._version import IR_VERSION
 
 
 class Graph:
-    """One space graph. Method names are frozen. Not a motion Scene."""
+    """One space graph. Method names are frozen. Not a motion Scene.
+
+    Frozen builders: ``host``, ``node``, ``camera``, ``light``, ``plan``,
+    ``apply``. Soft 3 leftover: ``camera(id, camera="perspective")`` and
+    ``light(id, light="ambient"|"directional")`` — not ``node(..., kind=)``.
+    """
 
     def __init__(self, gid: str | None = None) -> None:
         self._id = gid or f"space-{uuid4().hex[:10]}"
@@ -37,6 +49,47 @@ class Graph:
         if not isinstance(nid, str) or not nid.strip():
             raise ValueError("node id must be a non-empty string")
         item: dict[str, Any] = {"kind": KIND_NODE, "id": nid.strip(), "shape": shape}
+        if color is not None:
+            item["color"] = color
+        if position is not None:
+            item["position"] = list(position)
+        item.update(extra)
+        self._nodes.append(item)
+        return self
+
+    def camera(
+        self,
+        nid: str,
+        *,
+        camera: str = "perspective",
+        position: list[float] | tuple[float, float, float] | None = None,
+        **extra: Any,
+    ) -> "Graph":
+        if not isinstance(nid, str) or not nid.strip():
+            raise ValueError("node id must be a non-empty string")
+        item: dict[str, Any] = {
+            "kind": KIND_CAMERA,
+            "id": nid.strip(),
+            "camera": camera,
+        }
+        if position is not None:
+            item["position"] = list(position)
+        item.update(extra)
+        self._nodes.append(item)
+        return self
+
+    def light(
+        self,
+        nid: str,
+        *,
+        light: str = "ambient",
+        color: str | None = None,
+        position: list[float] | tuple[float, float, float] | None = None,
+        **extra: Any,
+    ) -> "Graph":
+        if not isinstance(nid, str) or not nid.strip():
+            raise ValueError("node id must be a non-empty string")
+        item: dict[str, Any] = {"kind": KIND_LIGHT, "id": nid.strip(), "light": light}
         if color is not None:
             item["color"] = color
         if position is not None:

@@ -8,6 +8,22 @@ The **plan IR** uses a separate major (`IR_VERSION` / plan field `v`).
 
 ---
 
+## 2026-09-13 — Soft 3: camera/light nodes (locked set)
+
+- Leftover: optional IR node kinds `camera` / `light` — locked set
+  `perspective` camera + `ambient` / `directional` lights. Additive IR v1
+  fields. Frozen Graph names: `.camera(...)` / `.light(...)`. Peer
+  `peers/threejs` applies camera + lights when present; Soft 2 mesh nodes
+  still work. No second Graph API.
+- KEEP: Isolation `wire/` only. Cap NEVER on ops/Result (`ops[].meta.cap`
+  is disclosure). `require_cap` server-side only. Peer registers as
+  `ux-space` not `three`. Cap Host KEEP on Channel (`Channel.boot` /
+  `mount_channel`). Never `scene()` / `ux-scene`. Soft 2 SHAPES KEEP
+  (`box` / `sphere` / `plane` / `cylinder`). `core/` stays truth.
+- HOLD: R3F, materials catalog, dual Peers, Cap-on-ops, zero-Peer,
+  renaming motion, Soft 4 transform/material (separate Soft).
+- Same-commit leftover teaching + locks. Extend Plan IR + Peer apply only.
+
 ## 2026-09-13 — Soft 2: shapes pack (locked set, not catalog)
 
 - Leftover: IR `SHAPES` is a locked Soft 2 set (`box`, `sphere`, `plane`,

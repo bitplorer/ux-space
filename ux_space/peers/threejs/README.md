@@ -7,6 +7,8 @@ Thin Channel bridge adapter. CDN three.js is OK for day-1.
 - **Loads:** `three@0.160.0` UMD from jsDelivr when `THREE` is absent
 - **Applies:** Plan IR `graph.nodes` via a thin geometry map
   (Soft 2 leftover: `box` / `sphere` / `plane` / `cylinder` — not the catalog)
+  and optional Soft 3 camera/light kinds (`perspective` / `ambient` /
+  `directional`) when present. Mesh nodes still apply.
 
 `mount` reads optional `props.plan`. `call(..., "apply", [plan])` is the
 Cap-gated verb the Python side emits. `update` forwards `props.plan`.
