@@ -4,6 +4,7 @@ Same Plan + apply() ops run on any Peer that implements this contract.
 Swap the adapter under ``peers/`` — do not change Graph / space().
 Soft 5 leftover: ``peers/canvas`` proves the swap; day1 remains threejs.
 Soft 6 leftover: optional mesh ``pickable``; Peer pick reports ``node_id``.
+Soft 7 leftover: camera ``orbit`` / ``pan`` / ``zoom``; Cap-gated verbs.
 """
 
 from __future__ import annotations
@@ -14,7 +15,7 @@ PEER = {
     "package": PACKAGE,
     "identity": "adapter",
     "day1": "threejs",
-    "methods": ("apply", "update", "destroy", "pick"),
+    "methods": ("apply", "update", "destroy", "pick", "orbit", "pan", "zoom"),
     "ops": ("bridge.mount", "bridge.update", "bridge.call", "bridge.destroy"),
     "swap": (
         "Register another adapter with uxBridge.register('ux-space', {mount, update, call}). "
@@ -37,4 +38,5 @@ PEER = {
     "soft4": "optional mesh rotation/scale + material {basic} (color/opacity)",
     "soft5": "swap path locked — canvas peer proves adapter swap; day1 remains threejs",
     "soft6": "optional mesh pickable + Peer pick reports node_id (point optional); Cap-gated pick()",
+    "soft7": "camera orbit/pan/zoom fields + Cap-gated orbit()/pan()/zoom(); thin Peer apply, not OrbitControls",
 }

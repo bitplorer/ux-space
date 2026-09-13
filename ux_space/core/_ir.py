@@ -155,6 +155,65 @@ def _validate_mesh_node(node: Mapping[str, Any], nid: str, ctx: str) -> dict[str
     return _keep_unknown(node, out)
 
 
+def _opt_num(obj: Mapping[str, Any], key: str, ctx: str) -> float | None:
+    if key not in obj:
+        return None
+    val = obj[key]
+    if isinstance(val, bool) or not isinstance(val, (int, float)):
+        raise PlanError(f"{ctx}: {key} must be a number")
+    return float(val)
+
+
+def _opt_orbit(node: Mapping[str, Any], ctx: str) -> dict[str, Any] | None:
+    if "orbit" not in node:
+        return None
+    val = node["orbit"]
+    if not isinstance(val, Mapping):
+        raise PlanError(f"{ctx}: orbit must be an object")
+    out: dict[str, Any] = {}
+    azimuth = _opt_num(val, "azimuth", f"{ctx}.orbit")
+    if azimuth is not None:
+        out["azimuth"] = azimuth
+    polar = _opt_num(val, "polar", f"{ctx}.orbit")
+    if polar is not None:
+        out["polar"] = polar
+    for key, item in val.items():
+        if key not in out:
+            out[key] = item
+    return out
+
+
+def _opt_pan(node: Mapping[str, Any], ctx: str) -> dict[str, Any] | None:
+    if "pan" not in node:
+        return None
+    val = node["pan"]
+    if not isinstance(val, Mapping):
+        raise PlanError(f"{ctx}: pan must be an object")
+    out: dict[str, Any] = {}
+    x = _opt_num(val, "x", f"{ctx}.pan")
+    if x is not None:
+        out["x"] = x
+    y = _opt_num(val, "y", f"{ctx}.pan")
+    if y is not None:
+        out["y"] = y
+    for key, item in val.items():
+        if key not in out:
+            out[key] = item
+    return out
+
+
+def _opt_zoom(node: Mapping[str, Any], ctx: str) -> float | None:
+    if "zoom" not in node:
+        return None
+    val = node["zoom"]
+    if isinstance(val, bool) or not isinstance(val, (int, float)):
+        raise PlanError(f"{ctx}: zoom must be a number")
+    zoom = float(val)
+    if zoom <= 0:
+        raise PlanError(f"{ctx}: zoom must be a positive number")
+    return zoom
+
+
 def _validate_camera_node(node: Mapping[str, Any], nid: str, ctx: str) -> dict[str, Any]:
     camera = node.get("camera", "perspective")
     if not isinstance(camera, str) or camera not in CAMERAS:
@@ -166,6 +225,15 @@ def _validate_camera_node(node: Mapping[str, Any], nid: str, ctx: str) -> dict[s
     rot = _opt_rotation(node, ctx)
     if rot is not None:
         out["rotation"] = rot
+    orbit = _opt_orbit(node, ctx)
+    if orbit is not None:
+        out["orbit"] = orbit
+    pan = _opt_pan(node, ctx)
+    if pan is not None:
+        out["pan"] = pan
+    zoom = _opt_zoom(node, ctx)
+    if zoom is not None:
+        out["zoom"] = zoom
     return _keep_unknown(node, out)
 
 

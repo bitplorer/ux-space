@@ -26,7 +26,9 @@ class Graph:
     ``light(id, light="ambient"|"directional")`` — not ``node(..., kind=)``.
     Soft 4 leftover: ``node(..., rotation=, scale=, material=)``. Camera
     may take ``rotation=``. Lights stay position/color. Soft 6 leftover:
-    ``node(..., pickable=)`` — optional bool on mesh nodes.
+    ``node(..., pickable=)`` — optional bool on mesh nodes. Soft 7 leftover:
+    ``camera(..., orbit=, pan=, zoom=)`` — camera control fields, not a
+    second Graph API.
     """
 
     def __init__(self, gid: str | None = None) -> None:
@@ -79,6 +81,9 @@ class Graph:
         camera: str = "perspective",
         position: list[float] | tuple[float, float, float] | None = None,
         rotation: list[float] | tuple[float, float, float] | None = None,
+        orbit: dict[str, Any] | None = None,
+        pan: dict[str, Any] | None = None,
+        zoom: float | None = None,
         **extra: Any,
     ) -> "Graph":
         if not isinstance(nid, str) or not nid.strip():
@@ -92,6 +97,12 @@ class Graph:
             item["position"] = list(position)
         if rotation is not None:
             item["rotation"] = rotation
+        if orbit is not None:
+            item["orbit"] = orbit
+        if pan is not None:
+            item["pan"] = pan
+        if zoom is not None:
+            item["zoom"] = zoom
         item.update(extra)
         self._nodes.append(item)
         return self

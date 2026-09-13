@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ux_space.core import PACKAGE, apply, host_html, pick, space, to_result
+from ux_space.core import PACKAGE, apply, host_html, orbit, pan, pick, space, to_result, zoom
 
 __all__ = [
     "PACKAGE",
@@ -17,10 +17,13 @@ __all__ = [
     "boot",
     "host_html",
     "mount_channel",
+    "orbit",
+    "pan",
     "pick",
     "register_manifest",
     "space",
     "to_result",
+    "zoom",
 ]
 
 
@@ -41,7 +44,7 @@ def mount_channel(app: Any, registry: Any, **kwargs: Any) -> Any:
 def register_manifest(
     package: str = PACKAGE,
     *,
-    methods: tuple[str, ...] = ("apply", "update", "destroy", "pick"),
+    methods: tuple[str, ...] = ("apply", "update", "destroy", "pick", "orbit", "pan", "zoom"),
     description: str = "ux-space Peer",
     hub: Any = None,
 ) -> Any:

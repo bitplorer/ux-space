@@ -80,7 +80,9 @@ optional mesh `rotation` / `scale` + `material.type=basic`. Soft 5
 leftover: `peers/canvas` proves the swap under the same `ux-space`
 register; day-1 stays threejs. Soft 6 leftover: optional mesh
 `pickable` + Cap-gated `pick(hit)` — Peer reports `node_id` (and
-`point` if hit). Same ops — no second Graph API.
+`point` if hit). Soft 7 leftover: optional camera `orbit` / `pan` /
+`zoom` + Cap-gated `orbit` / `pan` / `zoom` — thin Peer apply, not
+OrbitControls. Same ops — no second Graph API.
 
 Five-minute path: [START_HERE.md](START_HERE.md). Hard invariants:
 [OWNERSHIP.md](OWNERSHIP.md). Runnable samples: [examples/day1/](examples/day1/).
@@ -91,7 +93,7 @@ Soft-surface leftover tour: [examples/soft_surface/](examples/soft_surface/).
 | Owns | Does **not** own |
 |------|------------------|
 | Plan IR v1, `space()` / `Graph` | Product `@action` (`ux-behavior`) |
-| Cap-gated `apply` / `pick` → `bridge.call` | Cap mint / Intent (`ux-channel`) |
+| Cap-gated `apply` / `pick` / `orbit` / `pan` / `zoom` → `bridge.call` | Cap mint / Intent (`ux-channel`) |
 | Peer contract + day-1 Three.js adapter | HTML construction (`ux-dom`) |
 | Isolation door `wire/` | Product CLI (`ux-compose`) |
 
@@ -116,6 +118,7 @@ Public names are `ux_space.__all__`. Frozen from `ux_space.core` only.
 | `space`, `Graph` | One scene graph |
 | `apply` | Cap-gated verb → `bridge.call` method `apply` |
 | `pick` | Cap-gated verb → `bridge.call` method `pick` (hit `{node_id, point?}`) |
+| `orbit`, `pan`, `zoom` | Cap-gated verbs → `bridge.call` methods `orbit` / `pan` / `zoom` |
 | `mount`, `update` | Channel-compatible bridge op builders (not verbs) |
 | `to_result`, `host_html` | Result dict / SSR host attributes |
 | `validate_plan`, `dumps`, `loads` | Plan IR |
@@ -138,7 +141,7 @@ through that door (or a compose `wire/`).
 | `ux_space/wire/` | Isolation door (optional `ux-channel`) |
 | `tests/` | Unit tests (no browser) |
 | `examples/day1/` | Plan print + Channel.boot / compose path |
-| `examples/soft_surface/` | Soft-surface leftover tour (SHAPES, camera/light, transform + basic material, Peer-swap awareness, pickable) |
+| `examples/soft_surface/` | Soft-surface leftover tour (SHAPES, camera/light, transform + basic material, Peer-swap awareness, pickable, orbit/pan/zoom) |
 
 ## Tests
 

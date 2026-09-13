@@ -9,11 +9,12 @@ the server-side gate. Product code passes a Channel-minted Cap
 Soft 5 awareness: day-1 Peer stays threejs. Canvas Peer is swap-proof
 only — same ``ux-space`` register, not a second concurrent Peer.
 Soft 6 leftover: mesh ``pickable`` + Cap-gated ``pick(hit)``.
+Soft 7 leftover: camera ``orbit`` / ``pan`` / ``zoom`` + Cap-gated verbs.
 """
 
 from __future__ import annotations
 
-from ux_space import Graph, apply, dumps, host_html, pick, space, to_result
+from ux_space import Graph, apply, dumps, host_html, orbit, pan, pick, space, to_result, zoom
 
 # Stand-in only. Product mints on Channel. Never copy onto ops/Result.
 STAND_IN_CAP = "channel-minted-cap-token"
@@ -29,6 +30,9 @@ def soft_surface() -> Graph:
             camera="perspective",
             position=(0, 1.4, 7.2),
             rotation=(-0.15, 0, 0),
+            orbit={"azimuth": 0.0, "polar": 1.35},
+            pan={"x": 0.0, "y": 0.2},
+            zoom=7.2,
         )
         .light("fill", light="ambient", color="#f8fafc")
         .light("key", light="directional", color="#fff7ed", position=(4, 6, 3))
@@ -82,4 +86,10 @@ if __name__ == "__main__":
     hit_op = to_result(hit_ops)["ops"][0]
     print(hit_op["op"], hit_op["method"], hit_op["package"])
     print("cap" in hit_op, "meta" in hit_op)
+    cam_ops = orbit({"azimuth": 0.2, "polar": 1.2}, host="stage-3d", cap=STAND_IN_CAP)
+    cam_op = to_result(cam_ops)["ops"][0]
+    print(cam_op["op"], cam_op["method"], cam_op["package"])
+    print("cap" in cam_op, "meta" in cam_op)
+    print(to_result(pan({"x": 0.1, "y": 0.0}, host="stage-3d", cap=STAND_IN_CAP))["ops"][0]["method"])
+    print(to_result(zoom({"distance": 6.0}, host="stage-3d", cap=STAND_IN_CAP))["ops"][0]["method"])
     print(host_html("stage-3d", plan=plan)[:80], "...")

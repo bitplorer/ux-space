@@ -10,6 +10,8 @@
  * Soft 6 leftover: optional mesh pickable. Pointer over the canvas
  *   hit-tests pickable 2D shapes and reports {node_id, point}.
  *   Channel owns click=Intent (uxChannel.runAction when present).
+ * Soft 7 leftover: orbit / pan / zoom call methods are accepted
+ *   (2D proof — camera control no-ops; Soft 3 camera/light stay ignored).
  * Day-1 default stays peers/threejs. This file proves the swap path.
  */
 (function (global) {
@@ -129,6 +131,7 @@
       paint(plan);
 
       var lastHit = null;
+      var lastControl = { orbit: null, pan: null, zoom: null };
 
       function isPickable(node) {
         return !!(node && node.pickable === true);
@@ -215,6 +218,18 @@
         pick: function (hit) {
           if (hit && hit.node_id) lastHit = hit;
           return lastHit;
+        },
+        orbit: function (payload) {
+          if (payload) lastControl.orbit = payload;
+          return lastControl.orbit;
+        },
+        pan: function (payload) {
+          if (payload) lastControl.pan = payload;
+          return lastControl.pan;
+        },
+        zoom: function (payload) {
+          if (payload) lastControl.zoom = payload;
+          return lastControl.zoom;
         },
         destroy: function () {
           canvas.removeEventListener("pointerdown", onPointerDown);
