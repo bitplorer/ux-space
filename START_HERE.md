@@ -5,6 +5,7 @@
 **Time:** ~5 minutes. Facade **0.1.0a1**, IR v1.
 
 Hard lock: [OWNERSHIP.md](OWNERSHIP.md). Runnable sample: [examples/day1/](examples/day1/).
+Soft-surface leftover tour: [examples/soft_surface/](examples/soft_surface/).
 Soft 2 leftover: locked shapes `box` / `sphere` / `plane` / `cylinder` — not the three.js catalog.
 Soft 3 leftover: optional `.camera` / `.light` nodes (`perspective` / `ambient` / `directional`) — not a materials catalog.
 Soft 4 leftover: optional mesh `rotation` / `scale` + `material.type=basic` (`color` / `opacity`) — not a materials catalog.
@@ -99,6 +100,7 @@ ch = boot(app, secret="dev-secret-key-32chars-minimum!!!!")
 ```
 
 Walkthrough: [examples/day1/README.md](examples/day1/README.md).
+Soft-surface leftover tour: [examples/soft_surface/](examples/soft_surface/).
 
 ---
 
@@ -109,4 +111,4 @@ Walkthrough: [examples/day1/README.md](examples/day1/README.md).
 | HARD invariants | [OWNERSHIP.md](OWNERSHIP.md) |
 | Peer swap | [ux_space/peers/README.md](ux_space/peers/README.md) |
 | Isolation door | [ux_space/wire/README.md](ux_space/wire/README.md) |
-| Examples | [examples/day1/](examples/day1/) |
+| Examples | [examples/](examples/) · [day1](examples/day1/) · [soft_surface](examples/soft_surface/) |

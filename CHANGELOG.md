@@ -8,6 +8,27 @@ The **plan IR** uses a separate major (`IR_VERSION` / plan field `v`).
 
 ---
 
+## 2026-09-13 — Soft-surface example (leftover tour)
+
+- Leftover tour: `examples/soft_surface/` composes the public Soft
+  surface (`space()` / `Graph` + Cap-gated `apply` + day-1 Peer).
+  Soft 2 SHAPES (`box` / `sphere` / `plane` / `cylinder`), Soft 3
+  `.camera` / `.light` (`perspective` / `ambient` / `directional`),
+  Soft 4 rotation/scale + `material.type=basic` (top-level color KEEP;
+  `material.color` wins), Soft 5 awareness (day-1 stays threejs; canvas
+  is swap-proof only — not dual concurrent Peers). No second Graph API.
+  `features/` stays empty — Soft-surface demo is examples-only.
+- KEEP: Isolation `wire/` only. Cap NEVER on ops/Result (`ops[].meta.cap`
+  is disclosure). `require_cap` server-side only. Peer registers as
+  `ux-space` not `three`. Cap Host KEEP on Channel (`Channel.boot` /
+  `mount_channel`). Never `scene()` / `ux-scene`. Soft 2–5 leftovers
+  KEEP. `core/` stays truth.
+- HOLD: R3F, materials catalog, dual concurrent Peers as taught product,
+  Cap-on-ops, zero-Peer, renaming motion, sixth Cap Host. compose #30 +
+  Valio stay parked. Soft DO empty.
+- Same-commit leftover teaching + locks. Examples only — Graph / apply /
+  Peer spine unchanged.
+
 ## 2026-09-13 — Soft 5: Peer-swap (canvas adapter leftover)
 
 - Leftover: `peers/canvas` proves the Peer can swap. Same
