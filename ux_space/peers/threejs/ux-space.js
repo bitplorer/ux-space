@@ -9,7 +9,7 @@
  * Soft 4 leftover: mesh rotation / scale + material {basic}
  *   (color + opacity → MeshBasicMaterial). Default mesh stays
  *   MeshStandardMaterial when material is absent. Camera may take rotation.
- * HOLD materials catalog, look-at / orbit controls, Soft 5 Peer-swap.
+ * HOLD materials catalog, look-at / orbit controls.
  */
 (function (global) {
   "use strict";

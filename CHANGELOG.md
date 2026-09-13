@@ -8,6 +8,28 @@ The **plan IR** uses a separate major (`IR_VERSION` / plan field `v`).
 
 ---
 
+## 2026-09-13 — Soft 5: Peer-swap (canvas adapter leftover)
+
+- Leftover: `peers/canvas` proves the Peer can swap. Same
+  `uxBridge.register("ux-space", { mount, update, call })` — not a
+  second product name (`canvas` / `three`). 2D canvas applies Soft 2
+  mesh nodes (`box` / `sphere` / `plane` / `cylinder`) and Soft 4
+  `position` / `rotation` / `scale` / `color` / `material.type=basic`.
+  Soft 3 camera/light nodes no-op. Day-1 default stays `peers/threejs`.
+  Graph / `space()` / Cap-gated `apply()` unchanged. No second Graph
+  API. `features/` stays empty.
+- KEEP: Isolation `wire/` only. Cap NEVER on ops/Result (`ops[].meta.cap`
+  is disclosure). `require_cap` server-side only. Peer registers as
+  `ux-space` not `three`. Cap Host KEEP on Channel (`Channel.boot` /
+  `mount_channel`). Never `scene()` / `ux-scene`. Soft 2 SHAPES KEEP
+  (`box` / `sphere` / `plane` / `cylinder`). Soft 3 camera/light KEEP
+  (`perspective` / `ambient` / `directional`). Soft 4 rotation/scale +
+  `material` `{basic}` KEEP. `core/` stays truth.
+- HOLD: R3F, materials catalog, dual concurrent Peers as taught product,
+  Cap-on-ops, zero-Peer, renaming motion, sixth Cap Host.
+- Same-commit leftover teaching + locks. Swap path only — Graph/apply
+  unchanged.
+
 ## 2026-09-13 — Soft 4: transform + material (locked thin leftover)
 
 - Leftover: optional mesh `rotation` `[x,y,z]` radians and `scale`

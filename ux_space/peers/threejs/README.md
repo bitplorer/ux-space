@@ -15,4 +15,7 @@ Thin Channel bridge adapter. CDN three.js is OK for day-1.
 `mount` reads optional `props.plan`. `call(..., "apply", [plan])` is the
 Cap-gated verb the Python side emits. `update` forwards `props.plan`.
 
-Swap: see [`../README.md`](../README.md). Core Graph API does not change.
+Day-1 default. Soft 5 leftover: [`../canvas/`](../canvas/) proves the
+swap under the same `ux-space` register. Core Graph API does not change.
+
+Swap: see [`../README.md`](../README.md).
