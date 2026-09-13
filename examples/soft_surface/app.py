@@ -17,7 +17,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from examples.soft_surface.plan import soft_surface
-from ux_space import PACKAGE, apply, host_html
+from ux_space import PACKAGE, apply, host_html, pick
 from ux_space.peers.threejs import adapter_path
 from ux_space.wire import as_channel_result, boot, register_manifest
 
@@ -51,6 +51,19 @@ def apply_space(ctx=None, **kw):
         # apply() still requires a token so the Soft never goes ambient.
         cap = getattr(getattr(ctx, "intent", None), "cap", None) or "channel-verified"
     return as_channel_result(apply(soft_surface(), host="stage-3d", cap=cap))
+
+
+@ch.on(name="Space.pick")
+def pick_space(ctx=None, **kw):
+    cap = kw.get("cap")
+    if cap is None and ctx is not None:
+        cap = getattr(ctx, "cap", None)
+    if not cap:
+        cap = getattr(getattr(ctx, "intent", None), "cap", None) or "channel-verified"
+    hit = {"node_id": kw.get("node_id") or "box"}
+    if kw.get("point") is not None:
+        hit["point"] = kw["point"]
+    return as_channel_result(pick(hit, host="stage-3d", cap=cap))
 
 
 @app.get("/", response_class=HTMLResponse)

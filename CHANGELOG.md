@@ -8,6 +8,30 @@ The **plan IR** uses a separate major (`IR_VERSION` / plan field `v`).
 
 ---
 
+## 2026-09-13 — Soft 6: pick/hit (leftover)
+
+- Leftover: optional mesh `pickable` (bool). Frozen Graph name:
+  `.node(..., pickable=)`. Additive IR v1 — keys never reused; unknown
+  fields ignored. Peer `peers/threejs` raycasts on pointer over the
+  canvas and reports `{node_id, point?}`. `peers/canvas` swap-proof
+  hit-tests pickable 2D shapes (no three.js). Hit becomes Cap-gated
+  Intent args via `pick(hit, host=, cap=)` → `bridge.call` method
+  `pick` → Result. Channel owns click=Intent. No second Graph API.
+  `features/` stays empty.
+- KEEP: Isolation `wire/` only. Cap NEVER on ops/Result (`ops[].meta.cap`
+  is disclosure). `require_cap` server-side only. Peer registers as
+  `ux-space` not `three`. Cap Host KEEP on Channel (`Channel.boot` /
+  `mount_channel`). Never `scene()` / `ux-scene`. Soft 2 SHAPES KEEP
+  (`box` / `sphere` / `plane` / `cylinder`). Soft 3 camera/light KEEP
+  (`perspective` / `ambient` / `directional`). Soft 4 rotation/scale +
+  `material` `{basic}` KEEP. Soft 5 canvas swap-proof KEEP; day-1 stays
+  threejs. `core/` stays truth.
+- HOLD: Soft 7 orbit/pan/zoom, R3F, materials catalog, dual concurrent
+  Peers as taught product, Cap-on-ops, zero-Peer, renaming motion,
+  sixth Cap Host.
+- Same-commit leftover teaching + locks. Extend Plan IR + Peer pick +
+  Cap-gated `pick()` only.
+
 ## 2026-09-13 — Soft-surface example (leftover tour)
 
 - Leftover tour: `examples/soft_surface/` composes the public Soft

@@ -10,6 +10,7 @@ Soft 2 leftover: locked shapes `box` / `sphere` / `plane` / `cylinder` — not t
 Soft 3 leftover: optional `.camera` / `.light` nodes (`perspective` / `ambient` / `directional`) — not a materials catalog.
 Soft 4 leftover: optional mesh `rotation` / `scale` + `material.type=basic` (`color` / `opacity`) — not a materials catalog.
 Soft 5 leftover: canvas Peer proves swap — same `ux-space` register; day-1 stays threejs. Not dual concurrent Peers.
+Soft 6 leftover: optional mesh `pickable` + Cap-gated `pick(hit)` — Peer reports `node_id` (and `point` if hit). Not orbit/pan/zoom.
 
 ---
 

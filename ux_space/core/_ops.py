@@ -1,6 +1,7 @@
 """What a graph becomes on the wire.
 
 apply(graph, host=..., cap=...) → one Cap-gated ``bridge.call`` (method ``apply``).
+pick(hit, host=..., cap=...) → one Cap-gated ``bridge.call`` (method ``pick``).
 
 Ops speak the Channel bridge plane only:
 ``bridge.mount`` / ``bridge.update`` / ``bridge.call``.
@@ -22,6 +23,7 @@ OP_UPDATE = "bridge.update"
 OP_CALL = "bridge.call"
 OP_APPLY = OP_CALL
 APPLY_METHOD = "apply"
+PICK_METHOD = "pick"
 
 
 def _op(op_type: str, **fields: Any) -> dict[str, Any]:
@@ -61,6 +63,57 @@ def update(host: str, props: Any, *, replace: bool = False) -> list[dict[str, An
     if not isinstance(host, str) or not host.strip():
         raise ValueError("host must be a non-empty string")
     return [_op(OP_UPDATE, id=host, props=props, replace=True if replace else None)]
+
+
+def _as_hit(hit: Any) -> dict[str, Any]:
+    if not isinstance(hit, Mapping):
+        raise ValueError("pick() expects a hit mapping with node_id")
+    nid = hit.get("node_id")
+    if not isinstance(nid, str) or not nid.strip():
+        raise ValueError("hit.node_id must be a non-empty string")
+    out: dict[str, Any] = {"node_id": nid.strip()}
+    if "point" in hit:
+        val = hit["point"]
+        if (
+            not isinstance(val, (list, tuple))
+            or len(val) != 3
+            or any(isinstance(n, bool) or not isinstance(n, (int, float)) for n in val)
+        ):
+            raise ValueError("hit.point must be [x, y, z] numbers")
+        out["point"] = [float(val[0]), float(val[1]), float(val[2])]
+    for key, val in hit.items():
+        if key in out or key == "cap":
+            continue
+        out[key] = val
+    return out
+
+
+def pick(
+    hit: Any,
+    *,
+    host: str | None = None,
+    cap: Any,
+    package: str = PACKAGE,
+) -> list[dict[str, Any]]:
+    """Cap-gated Soft 6 verb. Hit becomes Intent args → ``bridge.call`` method ``pick``.
+
+    ``cap`` must be a Channel-minted token. This Soft does not mint or verify.
+    The token stays server-side — it is not copied onto the Result ops.
+    """
+    require_cap(cap)
+    payload = _as_hit(hit)
+    hid = host
+    if not isinstance(hid, str) or not hid.strip():
+        raise ValueError("pick requires host=")
+    return [
+        _op(
+            OP_CALL,
+            id=hid,
+            method=PICK_METHOD,
+            args=[payload],
+            package=package,
+        )
+    ]
 
 
 def apply(

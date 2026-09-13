@@ -9,7 +9,10 @@
  * Soft 4 leftover: mesh rotation / scale + material {basic}
  *   (color + opacity → MeshBasicMaterial). Default mesh stays
  *   MeshStandardMaterial when material is absent. Camera may take rotation.
- * HOLD materials catalog, look-at / orbit controls.
+ * Soft 6 leftover: optional mesh pickable. Pointer over the canvas
+ *   raycasts pickable meshes and reports {node_id, point}. Hit becomes
+ *   Channel Intent args via uxChannel.runAction when present — not a
+ *   new pointer stack. HOLD orbit / pan / zoom, look-at.
  */
 (function (global) {
   "use strict";
@@ -248,9 +251,56 @@
         if (node.position) {
           mesh.position.set(node.position[0], node.position[1], node.position[2]);
         }
+        mesh.userData.node_id = node.id;
+        mesh.userData.pickable = node.pickable === true;
         scene.add(mesh);
         var currentShape = node.shape || "box";
+        var currentNode = node;
         var authoredRotation = !!node.rotation;
+        var lastHit = null;
+        var raycaster = new THREE.Raycaster();
+        var pointer = new THREE.Vector2();
+
+        function isPickable(n) {
+          return !!(n && n.pickable === true);
+        }
+
+        function hitFromEvent(ev) {
+          if (!isPickable(currentNode)) return null;
+          var rect = renderer.domElement.getBoundingClientRect();
+          var w = rect.width || 1;
+          var h = rect.height || 1;
+          pointer.x = ((ev.clientX - rect.left) / w) * 2 - 1;
+          pointer.y = -((ev.clientY - rect.top) / h) * 2 + 1;
+          raycaster.setFromCamera(pointer, camera);
+          var hits = raycaster.intersectObjects([mesh], false);
+          if (!hits.length) return null;
+          var p = hits[0].point;
+          return {
+            node_id: currentNode.id || mesh.userData.node_id,
+            point: [p.x, p.y, p.z],
+          };
+        }
+
+        function reportHit(hit) {
+          if (!hit) return;
+          lastHit = hit;
+          var action = el.getAttribute && el.getAttribute("data-channel-action");
+          if (
+            action &&
+            global.uxChannel &&
+            typeof global.uxChannel.runAction === "function"
+          ) {
+            var cap = el.getAttribute("data-channel-cap") || undefined;
+            var target = el.getAttribute("data-channel-target") || undefined;
+            global.uxChannel.runAction(action, hit, cap, target);
+          }
+        }
+
+        function onPointerDown(ev) {
+          reportHit(hitFromEvent(ev));
+        }
+        renderer.domElement.addEventListener("pointerdown", onPointerDown);
 
         var running = true;
         function frame() {
@@ -299,13 +349,21 @@
           if (n.position) {
             mesh.position.set(n.position[0], n.position[1], n.position[2]);
           }
+          currentNode = n;
+          mesh.userData.node_id = n.id;
+          mesh.userData.pickable = n.pickable === true;
         }
 
         return {
           apply: applyPlan,
           update: applyPlan,
+          pick: function (hit) {
+            if (hit && hit.node_id) lastHit = hit;
+            return lastHit;
+          },
           destroy: function () {
             running = false;
+            renderer.domElement.removeEventListener("pointerdown", onPointerDown);
             if (ro) ro.disconnect();
             try {
               mesh.geometry.dispose();

@@ -25,7 +25,8 @@ class Graph:
     ``apply``. Soft 3 leftover: ``camera(id, camera="perspective")`` and
     ``light(id, light="ambient"|"directional")`` — not ``node(..., kind=)``.
     Soft 4 leftover: ``node(..., rotation=, scale=, material=)``. Camera
-    may take ``rotation=``. Lights stay position/color.
+    may take ``rotation=``. Lights stay position/color. Soft 6 leftover:
+    ``node(..., pickable=)`` — optional bool on mesh nodes.
     """
 
     def __init__(self, gid: str | None = None) -> None:
@@ -49,6 +50,7 @@ class Graph:
         rotation: list[float] | tuple[float, float, float] | None = None,
         scale: float | list[float] | tuple[float, float, float] | None = None,
         material: dict[str, Any] | None = None,
+        pickable: bool | None = None,
         **extra: Any,
     ) -> "Graph":
         if not isinstance(nid, str) or not nid.strip():
@@ -64,6 +66,8 @@ class Graph:
             item["scale"] = scale
         if material is not None:
             item["material"] = material
+        if pickable is not None:
+            item["pickable"] = pickable
         item.update(extra)
         self._nodes.append(item)
         return self
