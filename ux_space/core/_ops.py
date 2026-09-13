@@ -2,6 +2,8 @@
 
 apply(graph, host=..., cap=...) → one Cap-gated ``bridge.call`` (method ``apply``).
 pick(hit, host=..., cap=...) → one Cap-gated ``bridge.call`` (method ``pick``).
+orbit/pan/zoom(..., host=..., cap=...) → Cap-gated ``bridge.call`` methods
+``orbit`` / ``pan`` / ``zoom``.
 
 Ops speak the Channel bridge plane only:
 ``bridge.mount`` / ``bridge.update`` / ``bridge.call``.
@@ -24,6 +26,9 @@ OP_CALL = "bridge.call"
 OP_APPLY = OP_CALL
 APPLY_METHOD = "apply"
 PICK_METHOD = "pick"
+ORBIT_METHOD = "orbit"
+PAN_METHOD = "pan"
+ZOOM_METHOD = "zoom"
 
 
 def _op(op_type: str, **fields: Any) -> dict[str, Any]:
@@ -86,6 +91,133 @@ def _as_hit(hit: Any) -> dict[str, Any]:
             continue
         out[key] = val
     return out
+
+
+def _keep_unknown_payload(src: Mapping[str, Any], out: dict[str, Any]) -> dict[str, Any]:
+    for key, val in src.items():
+        if key in out or key == "cap":
+            continue
+        out[key] = val
+    return out
+
+
+def _as_orbit(orbit: Any) -> dict[str, Any]:
+    if not isinstance(orbit, Mapping):
+        raise ValueError("orbit() expects an orbit mapping with azimuth and/or polar")
+    out: dict[str, Any] = {}
+    if "azimuth" in orbit:
+        val = orbit["azimuth"]
+        if isinstance(val, bool) or not isinstance(val, (int, float)):
+            raise ValueError("orbit.azimuth must be a number")
+        out["azimuth"] = float(val)
+    if "polar" in orbit:
+        val = orbit["polar"]
+        if isinstance(val, bool) or not isinstance(val, (int, float)):
+            raise ValueError("orbit.polar must be a number")
+        out["polar"] = float(val)
+    if "azimuth" not in out and "polar" not in out:
+        raise ValueError("orbit requires azimuth and/or polar")
+    return _keep_unknown_payload(orbit, out)
+
+
+def _as_pan(pan: Any) -> dict[str, Any]:
+    if not isinstance(pan, Mapping):
+        raise ValueError("pan() expects a pan mapping with x and/or y")
+    out: dict[str, Any] = {}
+    if "x" in pan:
+        val = pan["x"]
+        if isinstance(val, bool) or not isinstance(val, (int, float)):
+            raise ValueError("pan.x must be a number")
+        out["x"] = float(val)
+    if "y" in pan:
+        val = pan["y"]
+        if isinstance(val, bool) or not isinstance(val, (int, float)):
+            raise ValueError("pan.y must be a number")
+        out["y"] = float(val)
+    if "x" not in out and "y" not in out:
+        raise ValueError("pan requires x and/or y")
+    return _keep_unknown_payload(pan, out)
+
+
+def _as_zoom(zoom: Any) -> dict[str, Any]:
+    if not isinstance(zoom, Mapping):
+        raise ValueError("zoom() expects a zoom mapping with distance")
+    val = zoom.get("distance")
+    if isinstance(val, bool) or not isinstance(val, (int, float)):
+        raise ValueError("zoom.distance must be a positive number")
+    distance = float(val)
+    if distance <= 0:
+        raise ValueError("zoom.distance must be a positive number")
+    out: dict[str, Any] = {"distance": distance}
+    return _keep_unknown_payload(zoom, out)
+
+
+def _call_payload(
+    method: str,
+    payload: Mapping[str, Any],
+    *,
+    host: str | None,
+    cap: Any,
+    package: str,
+) -> list[dict[str, Any]]:
+    require_cap(cap)
+    hid = host
+    if not isinstance(hid, str) or not hid.strip():
+        raise ValueError(f"{method} requires host=")
+    return [
+        _op(
+            OP_CALL,
+            id=hid,
+            method=method,
+            args=[dict(payload)],
+            package=package,
+        )
+    ]
+
+
+def orbit(
+    orbit: Any,
+    *,
+    host: str | None = None,
+    cap: Any,
+    package: str = PACKAGE,
+) -> list[dict[str, Any]]:
+    """Cap-gated Soft 7 verb. Orbit becomes Intent args → ``bridge.call`` method ``orbit``.
+
+    ``cap`` must be a Channel-minted token. This Soft does not mint or verify.
+    The token stays server-side — it is not copied onto the Result ops.
+    """
+    return _call_payload(ORBIT_METHOD, _as_orbit(orbit), host=host, cap=cap, package=package)
+
+
+def pan(
+    pan: Any,
+    *,
+    host: str | None = None,
+    cap: Any,
+    package: str = PACKAGE,
+) -> list[dict[str, Any]]:
+    """Cap-gated Soft 7 verb. Pan becomes Intent args → ``bridge.call`` method ``pan``.
+
+    ``cap`` must be a Channel-minted token. This Soft does not mint or verify.
+    The token stays server-side — it is not copied onto the Result ops.
+    """
+    return _call_payload(PAN_METHOD, _as_pan(pan), host=host, cap=cap, package=package)
+
+
+def zoom(
+    zoom: Any,
+    *,
+    host: str | None = None,
+    cap: Any,
+    package: str = PACKAGE,
+) -> list[dict[str, Any]]:
+    """Cap-gated Soft 7 verb. Zoom becomes Intent args → ``bridge.call`` method ``zoom``.
+
+    ``cap`` must be a Channel-minted token. This Soft does not mint or verify.
+    The token stays server-side — it is not copied onto the Result ops.
+    """
+    return _call_payload(ZOOM_METHOD, _as_zoom(zoom), host=host, cap=cap, package=package)
 
 
 def pick(

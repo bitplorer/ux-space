@@ -33,4 +33,6 @@ Soft 3 leftover: optional camera/light node kinds (`perspective` /
 Soft 4 leftover: mesh `rotation` / `scale` + `material` `{basic}`.
 Soft 5 leftover: canvas Peer proves swap; day-1 stays threejs.
 Soft 6 leftover: optional mesh `pickable`; Peer pick reports `node_id`
-(+ `point`). Channel owns click=Intent. HOLD Soft 7 orbit/pan/zoom.
+(+ `point`). Channel owns click=Intent.
+Soft 7 leftover: camera `orbit` / `pan` / `zoom`; Cap-gated verbs.
+Thin Peer apply — not OrbitControls. HOLD Soft 8 materials.

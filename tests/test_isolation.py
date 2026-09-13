@@ -75,6 +75,9 @@ class IsolationTests(unittest.TestCase):
         text = (PKG / "core" / "_ops.py").read_text(encoding="utf-8")
         self.assertIn("require_cap(cap)", text)
         self.assertIn("def pick(", text)
+        self.assertIn("def orbit(", text)
+        self.assertIn("def pan(", text)
+        self.assertIn("def zoom(", text)
         self.assertNotIn('meta={"cap"', text)
         self.assertNotIn('"cap": token', text)
 

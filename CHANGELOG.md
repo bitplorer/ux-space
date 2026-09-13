@@ -8,6 +8,34 @@ The **plan IR** uses a separate major (`IR_VERSION` / plan field `v`).
 
 ---
 
+## 2026-09-13 — Soft 7: orbit/pan/zoom (leftover)
+
+- Leftover: optional camera `orbit` `{azimuth?, polar?}` radians,
+  `pan` `{x?, y?}`, and `zoom` (positive distance). Frozen Graph
+  names: `.camera(..., orbit=, pan=, zoom=)`. Additive IR v1 — keys
+  never reused; unknown fields ignored. Peer `peers/threejs` applies
+  those fields as a thin spherical camera pose. `peers/canvas`
+  swap-proof accepts the same Cap-gated call methods (2D camera
+  control no-ops). Verbs: `orbit` / `pan` / `zoom`
+  `(payload, host=, cap=)` → `bridge.call` methods `orbit` / `pan` /
+  `zoom` → Result. Soft 7 is camera Plan ops, not a generic pointer
+  stack. No OrbitControls product dump. No second Graph API.
+  `features/` stays empty.
+- KEEP: Isolation `wire/` only. Cap NEVER on ops/Result (`ops[].meta.cap`
+  is disclosure). `require_cap` server-side only. Peer registers as
+  `ux-space` not `three`. Cap Host KEEP on Channel (`Channel.boot` /
+  `mount_channel`). Never `scene()` / `ux-scene`. Soft 2 SHAPES KEEP
+  (`box` / `sphere` / `plane` / `cylinder`). Soft 3 camera/light KEEP
+  (`perspective` / `ambient` / `directional`). Soft 4 rotation/scale +
+  `material` `{basic}` KEEP. Soft 5 canvas swap-proof KEEP; day-1 stays
+  threejs. Soft 6 pick/hit KEEP. `core/` stays truth.
+- HOLD: Soft 8 materials, Soft 9 loaders, Soft 10 primitives, R3F,
+  materials catalog, dual concurrent Peers as taught product,
+  Cap-on-ops, zero-Peer, renaming motion, sixth Cap Host, generic
+  pointer stack.
+- Same-commit leftover teaching + locks. Extend Plan IR + Peer apply +
+  Cap-gated `orbit()` / `pan()` / `zoom()` only.
+
 ## 2026-09-13 — Soft 6: pick/hit (leftover)
 
 - Leftover: optional mesh `pickable` (bool). Frozen Graph name:

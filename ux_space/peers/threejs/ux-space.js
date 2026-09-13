@@ -12,7 +12,9 @@
  * Soft 6 leftover: optional mesh pickable. Pointer over the canvas
  *   raycasts pickable meshes and reports {node_id, point}. Hit becomes
  *   Channel Intent args via uxChannel.runAction when present — not a
- *   new pointer stack. HOLD orbit / pan / zoom, look-at.
+ *   new pointer stack.
+ * Soft 7 leftover: camera orbit / pan / zoom fields + Cap-gated
+ *   call methods. Thin spherical pose — not a controls catalog.
  */
 (function (global) {
   "use strict";
@@ -186,9 +188,34 @@
           }
         }
 
+        var control = { orbit: null, pan: null, zoom: null };
+
+        function applyCameraControl(cam) {
+          if (!cam) return;
+          if (cam.orbit) control.orbit = cam.orbit;
+          if (cam.pan) control.pan = cam.pan;
+          if (cam.zoom != null) control.zoom = cam.zoom;
+          var orbit = control.orbit || {};
+          var pan = control.pan || {};
+          var distance = typeof control.zoom === "number" ? control.zoom : 4.2;
+          var azimuth = orbit.azimuth != null ? orbit.azimuth : 0;
+          var polar = orbit.polar != null ? orbit.polar : Math.PI / 2;
+          var tx = pan.x != null ? pan.x : 0;
+          var ty = pan.y != null ? pan.y : 0;
+          var x = tx + distance * Math.sin(polar) * Math.sin(azimuth);
+          var y = ty + distance * Math.cos(polar);
+          var z = distance * Math.sin(polar) * Math.cos(azimuth);
+          camera.position.set(x, y, z);
+          camera.rotation.set(polar - Math.PI / 2, azimuth, 0);
+        }
+
         function applyCameraNode(next) {
           var cam = firstCamera(next);
           if (!cam) return;
+          if (cam.orbit || cam.pan || cam.zoom != null) {
+            applyCameraControl(cam);
+            return;
+          }
           if (cam.position) {
             camera.position.set(cam.position[0], cam.position[1], cam.position[2]);
           }
@@ -360,6 +387,21 @@
           pick: function (hit) {
             if (hit && hit.node_id) lastHit = hit;
             return lastHit;
+          },
+          orbit: function (payload) {
+            if (payload) applyCameraControl({ orbit: payload, pan: control.pan, zoom: control.zoom });
+            return control.orbit;
+          },
+          pan: function (payload) {
+            if (payload) applyCameraControl({ orbit: control.orbit, pan: payload, zoom: control.zoom });
+            return control.pan;
+          },
+          zoom: function (payload) {
+            var distance = payload && payload.distance != null ? payload.distance : payload;
+            if (distance != null) {
+              applyCameraControl({ orbit: control.orbit, pan: control.pan, zoom: distance });
+            }
+            return control.zoom;
           },
           destroy: function () {
             running = false;
