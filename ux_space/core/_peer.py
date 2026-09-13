@@ -2,6 +2,7 @@
 
 Same Plan + apply() ops run on any Peer that implements this contract.
 Swap the adapter under ``peers/`` — do not change Graph / space().
+Soft 5 leftover: ``peers/canvas`` proves the swap; day1 remains threejs.
 """
 
 from __future__ import annotations
@@ -16,11 +17,12 @@ PEER = {
     "ops": ("bridge.mount", "bridge.update", "bridge.call", "bridge.destroy"),
     "swap": (
         "Register another adapter with uxBridge.register('ux-space', {mount, update, call}). "
-        "Graph, Plan IR, and apply() stay unchanged. Do not name the product surface 'three'."
+        "Graph, Plan IR, and apply() stay unchanged. Do not name the product surface 'three'. "
+        "Soft 5 leftover: peers/canvas proves the swap; day1 remains threejs."
     ),
     "holds": (
         "zero-Peer 3D",
-        "dual Peers",
+        "dual concurrent Peers as taught product",
         "React/R3F",
         "materials catalog",
         "full three.js catalog",
@@ -31,4 +33,6 @@ PEER = {
     ),
     "soft2": "locked SHAPES box/sphere/plane/cylinder — not the full three.js catalog",
     "soft3": "optional camera/light node kinds — perspective / ambient / directional",
+    "soft4": "optional mesh rotation/scale + material {basic} (color/opacity)",
+    "soft5": "swap path locked — canvas peer proves adapter swap; day1 remains threejs",
 }

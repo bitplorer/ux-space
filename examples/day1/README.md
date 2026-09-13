@@ -41,6 +41,7 @@ up a second Cap Host.
 
 ## Peer swap
 
-The JS under `ux_space/peers/threejs/` is one adapter. Same `ops` apply
-to a future non-Three Peer. Graph API does not change. See
+The JS under `ux_space/peers/threejs/` is the day-1 adapter. Soft 5
+leftover: `ux_space/peers/canvas/` proves the same `ops` apply after a
+swap. Graph API does not change. See
 [`ux_space/peers/README.md`](../../ux_space/peers/README.md).

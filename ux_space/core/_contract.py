@@ -32,6 +32,7 @@ CONTRACT = {
         "Soft 2 leftover: SHAPES is a locked set (box, sphere, plane, cylinder) — not the full three.js catalog.",
         "Soft 3 leftover: optional camera/light node kinds (perspective / ambient / directional). Frozen Graph.camera / Graph.light. Additive IR v1.",
         "Soft 4 leftover: optional mesh rotation/scale + material {basic} (color/opacity). Top-level color KEEP; material.color wins. Frozen Graph.node rotation/scale/material. Camera may take rotation.",
-        "HOLD: React/R3F, materials catalog, full three.js catalog, dual Peers, Cap-on-ops, zero-Peer, renaming motion, sixth Cap Host, ambient Client authority, Soft 5 Peer-swap.",
+        "Soft 5 leftover: canvas Peer proves swap. Same uxBridge.register('ux-space'). Day-1 remains threejs. Graph / Plan IR / apply() unchanged. Not dual concurrent Peers as product.",
+        "HOLD: React/R3F, materials catalog, full three.js catalog, dual Peers, Cap-on-ops, zero-Peer, renaming motion, sixth Cap Host, ambient Client authority.",
     ),
 }

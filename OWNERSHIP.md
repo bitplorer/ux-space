@@ -1,6 +1,6 @@
 # Ownership + HARD invariants
 
-> **Diátaxis:** explanation · **Layer:** ux-space · **Soft:** 4 (transform/material)
+> **Diátaxis:** explanation · **Layer:** ux-space · **Soft:** 5 (peer-swap)
 > Council: CLEAR. Do not violate this lock. Soft day-1 KEEP.
 
 ## 0. One screen
@@ -10,6 +10,7 @@ ux-space    GRAPH      space() / Graph → Plan IR v1 (additive JSON)
             VERB       apply(graph, host=, cap=) → bridge.call method=apply
             PEER       thin adapter applies Result ops
                        day-1: peers/threejs registers as "ux-space"
+                       swap-proof: peers/canvas registers as "ux-space"
 
 ux-channel  CAP HOST   Cap mint · Channel.boot · mount_channel · Intent verify
             BRIDGE     bridge.mount / bridge.update / bridge.call
@@ -36,8 +37,9 @@ ux-compose  PRODUCT    wire/ Isolation door for Channel
    Peer apply. Soft 2 unlocks a locked SHAPES set only — not a second Graph.
    Soft 3 extends Plan IR + Peer apply with camera/light node kinds only.
    Soft 4 adds optional mesh transform (`rotation` / `scale`) and thin
-   `material` `{basic}` only. HOLD zero-Peer 3D, dual Peers, and Soft 5
-   Peer-swap.
+   `material` `{basic}` only. Soft 5 leftover: a canvas Peer proves the
+   swap under the same `ux-space` register; day-1 stays threejs. HOLD
+   zero-Peer 3D and dual concurrent Peers as taught product.
 5. **Isolation.** Product never imports `ux_channel` outside a compose-style
    `wire/` door (`ux_space.wire` here). `core/` and `features/` never import
    Channel.
@@ -54,9 +56,9 @@ ux-compose  PRODUCT    wire/ Isolation door for Channel
 9. **Layout.** `core/` is day-1 truth. `features/` import core only.
    `peers/` implement the Peer contract. Top `__all__` is frozen from core.
 10. **HOLD.** React / R3F, materials catalog, full three.js catalog, dual
-    Peers, Cap-on-ops, zero-Peer, renaming motion, sixth Cap Host,
-    ambient Client authority, teaching Channel specialty ops,
-    Soft 5 Peer-swap.
+    concurrent Peers as taught product, Cap-on-ops, zero-Peer, renaming
+    motion, sixth Cap Host, ambient Client authority, teaching Channel
+    specialty ops.
 
 ## 2. Cap
 
@@ -78,6 +80,8 @@ Result is disclosure.
 Plan + apply() ops  ──►  uxBridge.register("ux-space", { mount, update, call })
                          day-1 engine: three.js CDN
                          later engine: canvas / WebGL / other lib
+                         Soft 5 leftover: peers/canvas proves the swap
+                         day-1 remains peers/threejs
 ```
 
 Product surface is **`ux-space`**, not `"three"`. The Channel three.js
@@ -162,5 +166,27 @@ disclosure); Peer-as-adapter `ux-space` not `three`; never `scene()` /
 `cylinder`). Soft 3 camera/light KEEP (`perspective` / `ambient` /
 `directional`).
 
-HOLD: Soft 5 Peer-swap, R3F, materials catalog, dual Peers, Cap-on-ops,
-zero-Peer, renaming motion, sixth Cap Host.
+HOLD: R3F, materials catalog, dual Peers, Cap-on-ops, zero-Peer,
+renaming motion, sixth Cap Host.
+
+## 10. Soft 5 leftover
+
+Leftover: Peer-swap is proven. `peers/canvas` implements the same
+contract — `uxBridge.register("ux-space", { mount, update, call })` —
+with no three.js. Soft 2 mesh nodes draw as filled 2D shapes; Soft 4
+`position` / `rotation` / `scale` / `color` / `material.type=basic`
+(color + opacity) are honored. Soft 3 camera/light nodes no-op (2D
+proof). Day-1 default stays `peers/threejs`. Swap **replaces** the
+engine; it does not register a second product name (`canvas` / `three`)
+and is not dual concurrent Peers as taught product. Graph / Plan IR /
+`apply()` unchanged. `features/` stays empty.
+
+KEEP: Isolation `wire/` only; Cap NEVER on ops/Result (`ops[].meta.cap` is
+disclosure); Peer-as-adapter `ux-space` not `three`; never `scene()` /
+`ux-scene`; Cap Host KEEP on Channel (`Channel.boot` / `mount_channel`);
+`core/` stays truth. Soft 2 SHAPES KEEP (`box` / `sphere` / `plane` /
+`cylinder`). Soft 3 camera/light KEEP (`perspective` / `ambient` /
+`directional`). Soft 4 rotation/scale + `material` `{basic}` KEEP.
+
+HOLD: R3F, materials catalog, Cap-on-ops, zero-Peer, renaming motion,
+dual concurrent Peers as taught product, sixth Cap Host.

@@ -76,8 +76,9 @@ The Peer (`peers/threejs`) registers as **`ux-space`** and applies the Plan
 (Soft 2 leftover: locked shapes `box` / `sphere` / `plane` / `cylinder` —
 not the three.js catalog. Soft 3 leftover: optional `.camera` / `.light`
 nodes — `perspective` / `ambient` / `directional`. Soft 4 leftover:
-optional mesh `rotation` / `scale` + `material.type=basic`). A future
-canvas / WebGL Peer consumes the same ops — no second Graph API.
+optional mesh `rotation` / `scale` + `material.type=basic`. Soft 5
+leftover: `peers/canvas` proves the swap under the same `ux-space`
+register; day-1 stays threejs. Same ops — no second Graph API.
 
 Five-minute path: [START_HERE.md](START_HERE.md). Hard invariants:
 [OWNERSHIP.md](OWNERSHIP.md). Runnable samples: [examples/day1/](examples/day1/).
@@ -128,6 +129,7 @@ through that door (or a compose `wire/`).
 | `ux_space/core/` | Plan IR, Graph, ops, Peer contract — day-1 truth |
 | `ux_space/features/` | Stub for future Softs that import core |
 | `ux_space/peers/threejs/` | Day-1 Three.js adapter (`uxBridge.register("ux-space")`) |
+| `ux_space/peers/canvas/` | Soft 5 leftover swap-proof canvas Peer (same `ux-space` register) |
 | `ux_space/wire/` | Isolation door (optional `ux-channel`) |
 | `tests/` | Unit tests (no browser) |
 | `examples/day1/` | Plan print + Channel.boot / compose path |

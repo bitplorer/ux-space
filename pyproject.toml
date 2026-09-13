@@ -41,4 +41,4 @@ Changelog = "https://github.com/bitplorer/ux-space/blob/main/CHANGELOG.md"
 include = ["ux_space*"]
 
 [tool.setuptools.package-data]
-ux_space = ["py.typed", "peers/threejs/*.js"]
+ux_space = ["py.typed", "peers/threejs/*.js", "peers/canvas/*.js"]

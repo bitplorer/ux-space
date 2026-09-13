@@ -8,6 +8,7 @@ Hard lock: [OWNERSHIP.md](OWNERSHIP.md). Runnable sample: [examples/day1/](examp
 Soft 2 leftover: locked shapes `box` / `sphere` / `plane` / `cylinder` — not the three.js catalog.
 Soft 3 leftover: optional `.camera` / `.light` nodes (`perspective` / `ambient` / `directional`) — not a materials catalog.
 Soft 4 leftover: optional mesh `rotation` / `scale` + `material.type=basic` (`color` / `opacity`) — not a materials catalog.
+Soft 5 leftover: canvas Peer proves swap — same `ux-space` register; day-1 stays threejs. Not dual concurrent Peers.
 
 ---
 
@@ -72,7 +73,8 @@ The day-1 Peer is `ux_space/peers/threejs/ux-space.js`. It registers as
 **`ux-space`** (wrapping three.js from CDN) so the product surface is not
 the Channel demo name `"three"`.
 
-Same ops apply to a future canvas / WebGL Peer. Do not change `space()`.
+Same ops apply to the Soft 5 leftover canvas Peer (`peers/canvas`) or
+another swap. Day-1 stays threejs. Do not change `space()`.
 
 SSR host (Channel-compatible attributes, no `ux_channel` import):
 
