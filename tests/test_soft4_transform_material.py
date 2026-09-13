@@ -31,6 +31,7 @@ SOFT2_SHAPES = frozenset({"box", "sphere", "plane", "cylinder"})
 SOFT3_CAMERAS = frozenset({"perspective"})
 SOFT3_LIGHTS = frozenset({"ambient", "directional"})
 SOFT4_MATERIALS = frozenset({"basic"})
+SOFT8_MATERIALS = frozenset({"basic", "standard"})
 TEACHING = (
     ROOT / "OWNERSHIP.md",
     ROOT / "CHANGELOG.md",
@@ -61,9 +62,12 @@ class Soft4TransformMaterialTests(unittest.TestCase):
         self.assertEqual(SHAPES, SOFT2_SHAPES)
         self.assertEqual(CAMERAS, SOFT3_CAMERAS)
         self.assertEqual(LIGHTS, SOFT3_LIGHTS)
-        self.assertEqual(MATERIALS, SOFT4_MATERIALS)
-        self.assertNotIn("standard", MATERIALS)
+        self.assertEqual(MATERIALS, SOFT8_MATERIALS)
+        self.assertTrue(SOFT4_MATERIALS <= MATERIALS)
+        self.assertIn("basic", MATERIALS)
+        self.assertIn("standard", MATERIALS)
         self.assertNotIn("physical", MATERIALS)
+        self.assertNotIn("phong", MATERIALS)
         self.assertNotIn("torus", SHAPES)
         self.assertNotIn("orthographic", CAMERAS)
         self.assertNotIn("point", LIGHTS)
@@ -145,7 +149,7 @@ class Soft4TransformMaterialTests(unittest.TestCase):
 
     def test_validate_rejects_catalog_material(self) -> None:
         with self.assertRaises(PlanError):
-            space("s").node("a", material={"type": "standard"}).plan()
+            space("s").node("a", material={"type": "phong"}).plan()
         with self.assertRaises(PlanError):
             space("s").node("a", material={"type": "physical"}).plan()
         with self.assertRaises(PlanError):

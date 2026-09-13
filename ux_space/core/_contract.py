@@ -35,6 +35,7 @@ CONTRACT = {
         "Soft 5 leftover: canvas Peer proves swap. Same uxBridge.register('ux-space'). Day-1 remains threejs. Graph / Plan IR / apply() unchanged. Not dual concurrent Peers as product.",
         "Soft 6 leftover: optional mesh pickable. Peer raycast/pick reports node_id (+ point). Cap-gated pick(hit) → Result. Cap never on ops. Frozen Graph.node pickable=.",
         "Soft 7 leftover: optional camera orbit/pan/zoom. Frozen Graph.camera orbit=/pan=/zoom=. Cap-gated orbit/pan/zoom → Result. Cap never on ops. Thin Peer apply, not OrbitControls.",
+        "Soft 8 leftover: mesh material.type thin set {basic, standard}. Soft 4 basic color/opacity KEEP. Optional metalness/roughness on standard. Frozen Graph.node material=. Cap-gated apply KEEP. Cap never on ops. Not a materials catalog.",
         "HOLD: React/R3F, materials catalog, full three.js catalog, dual Peers, Cap-on-ops, zero-Peer, renaming motion, sixth Cap Host, ambient Client authority.",
     ),
 }

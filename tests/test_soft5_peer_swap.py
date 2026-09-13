@@ -35,6 +35,7 @@ SOFT2_SHAPES = frozenset({"box", "sphere", "plane", "cylinder"})
 SOFT3_CAMERAS = frozenset({"perspective"})
 SOFT3_LIGHTS = frozenset({"ambient", "directional"})
 SOFT4_MATERIALS = frozenset({"basic"})
+SOFT8_MATERIALS = frozenset({"basic", "standard"})
 TEACHING = (
     ROOT / "OWNERSHIP.md",
     ROOT / "CHANGELOG.md",
@@ -159,7 +160,8 @@ class Soft5PeerSwapTests(unittest.TestCase):
         self.assertEqual(SHAPES, SOFT2_SHAPES)
         self.assertEqual(CAMERAS, SOFT3_CAMERAS)
         self.assertEqual(LIGHTS, SOFT3_LIGHTS)
-        self.assertEqual(MATERIALS, SOFT4_MATERIALS)
+        self.assertEqual(MATERIALS, SOFT8_MATERIALS)
+        self.assertTrue(SOFT4_MATERIALS <= MATERIALS)
         params = inspect.signature(Graph.node).parameters
         self.assertIn("shape", params)
         self.assertIn("rotation", params)

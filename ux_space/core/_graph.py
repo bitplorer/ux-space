@@ -28,7 +28,8 @@ class Graph:
     may take ``rotation=``. Lights stay position/color. Soft 6 leftover:
     ``node(..., pickable=)`` — optional bool on mesh nodes. Soft 7 leftover:
     ``camera(..., orbit=, pan=, zoom=)`` — camera control fields, not a
-    second Graph API.
+    second Graph API. Soft 8 leftover: ``material.type`` thin set
+    ``{basic, standard}`` — same ``material=`` kwarg, not a second Graph.
     """
 
     def __init__(self, gid: str | None = None) -> None:

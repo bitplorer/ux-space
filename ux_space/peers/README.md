@@ -35,4 +35,7 @@ Soft 5 leftover: canvas Peer proves swap; day-1 stays threejs.
 Soft 6 leftover: optional mesh `pickable`; Peer pick reports `node_id`
 (+ `point`). Channel owns click=Intent.
 Soft 7 leftover: camera `orbit` / `pan` / `zoom`; Cap-gated verbs.
-Thin Peer apply — not OrbitControls. HOLD Soft 8 materials.
+Thin Peer apply — not OrbitControls.
+Soft 8 leftover: thin `material.type` `{basic, standard}`. Canvas
+honors color/opacity; `standard` degrades as basic. HOLD Soft 9
+loaders, Soft 10 primitives, materials catalog.

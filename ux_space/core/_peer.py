@@ -5,6 +5,7 @@ Swap the adapter under ``peers/`` — do not change Graph / space().
 Soft 5 leftover: ``peers/canvas`` proves the swap; day1 remains threejs.
 Soft 6 leftover: optional mesh ``pickable``; Peer pick reports ``node_id``.
 Soft 7 leftover: camera ``orbit`` / ``pan`` / ``zoom``; Cap-gated verbs.
+Soft 8 leftover: thin ``material.type`` set ``{basic, standard}``.
 """
 
 from __future__ import annotations
@@ -39,4 +40,5 @@ PEER = {
     "soft5": "swap path locked — canvas peer proves adapter swap; day1 remains threejs",
     "soft6": "optional mesh pickable + Peer pick reports node_id (point optional); Cap-gated pick()",
     "soft7": "camera orbit/pan/zoom fields + Cap-gated orbit()/pan()/zoom(); thin Peer apply, not OrbitControls",
+    "soft8": "thin material.type {basic, standard}; Soft 4 basic KEEP; standard maps MeshStandardMaterial (metalness/roughness)",
 }

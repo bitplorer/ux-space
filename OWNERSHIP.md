@@ -1,6 +1,6 @@
 # Ownership + HARD invariants
 
-> **Diátaxis:** explanation · **Layer:** ux-space · **Soft:** 7 (orbit/pan/zoom)
+> **Diátaxis:** explanation · **Layer:** ux-space · **Soft:** 8 (materials)
 > Council: CLEAR. Do not violate this lock. Soft day-1 KEEP.
 
 ## 0. One screen
@@ -45,8 +45,9 @@ ux-compose  PRODUCT    wire/ Isolation door for Channel
    Peer raycast/pick reports `node_id` (+ `point`). Soft 7 leftover:
    optional camera `orbit` / `pan` / `zoom` plus Cap-gated
    `orbit` / `pan` / `zoom` — Peer applies thin camera pose, not
-   OrbitControls. HOLD zero-Peer 3D and dual concurrent Peers as
-   taught product.
+   OrbitControls. Soft 8 leftover: mesh `material.type` expands to a
+   locked thin set `{basic, standard}` — not a materials catalog.
+   HOLD zero-Peer 3D and dual concurrent Peers as taught product.
 5. **Isolation.** Product never imports `ux_channel` outside a compose-style
    `wire/` door (`ux_space.wire` here). `core/` and `features/` never import
    Channel.
@@ -252,3 +253,34 @@ HOLD: Soft 8 materials, Soft 9 loaders, Soft 10 primitives, R3F,
 materials catalog, Cap-on-ops, zero-Peer, renaming motion, dual
 concurrent Peers as taught product, sixth Cap Host, generic pointer
 stack.
+
+## 13. Soft 8 leftover
+
+Leftover: mesh `material.type` expands to a locked thin set
+`{basic, standard}` — **not the materials catalog**. Soft 4 `{basic}`
+(`color` / `opacity`) KEEP. Soft 8 adds `standard` plus optional
+`metalness` / `roughness` (0..1). Top-level mesh `color` KEEP; if
+both present, `material.color` wins. Frozen Graph names:
+`.node(..., material={type: ...})` — Soft 4 fluency, no second Graph
+API. Additive IR v1 — keys never reused; unknown fields ignored.
+Peer `peers/threejs` maps `basic` → `MeshBasicMaterial` and
+`standard` → `MeshStandardMaterial`. Default mesh path stays
+`MeshStandardMaterial` when `material` is absent. `peers/canvas`
+swap-proof honors color/opacity; `standard` degrades as `basic`
+(2D fill) without breaking. Cap-gated `apply` KEEP. Cap NEVER on
+ops/Result. No loaders, primitives, or R3F. `features/` stays empty.
+
+KEEP: Isolation `wire/` only; Cap NEVER on ops/Result (`ops[].meta.cap`
+is disclosure); Peer-as-adapter `ux-space` not `three`; never `scene()` /
+`ux-scene`; Cap Host KEEP on Channel (`Channel.boot` / `mount_channel`);
+`core/` stays truth. Soft 2 SHAPES KEEP (`box` / `sphere` / `plane` /
+`cylinder`). Soft 3 camera/light KEEP (`perspective` / `ambient` /
+`directional`). Soft 4 rotation/scale + `material` `{basic}` KEEP.
+Soft 5 canvas swap-proof KEEP; day-1 stays `peers/threejs`. Soft 6
+pick/hit KEEP (`pickable` + Cap-gated `pick(hit)`). Soft 7 orbit/pan/zoom
+KEEP. Server-side `require_cap` KEEP.
+
+HOLD: Soft 9 loaders, Soft 10 primitives, R3F, materials catalog
+(`phong` / `physical` / `lambert` / …), Cap-on-ops, zero-Peer,
+renaming motion, dual concurrent Peers as taught product, sixth Cap Host,
+generic pointer stack.

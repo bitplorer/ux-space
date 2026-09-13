@@ -9,6 +9,8 @@
  * Soft 4 leftover: mesh rotation / scale + material {basic}
  *   (color + opacity → MeshBasicMaterial). Default mesh stays
  *   MeshStandardMaterial when material is absent. Camera may take rotation.
+ * Soft 8 leftover: material.type {basic, standard}. standard →
+ *   MeshStandardMaterial (color / opacity / metalness / roughness).
  * Soft 6 leftover: optional mesh pickable. Pointer over the canvas
  *   raycasts pickable meshes and reports {node_id, point}. Hit becomes
  *   Channel Intent args via uxChannel.runAction when present — not a
@@ -236,10 +238,26 @@
           return !!(n.material && (n.material.type === "basic" || !n.material.type));
         }
 
+        function isStandardMaterial(n) {
+          return !!(n.material && n.material.type === "standard");
+        }
+
+        function materialOpacity(n) {
+          return n.material && n.material.opacity != null ? n.material.opacity : 1;
+        }
+
+        function materialMetalness(n) {
+          return n.material && n.material.metalness != null ? n.material.metalness : 0.35;
+        }
+
+        function materialRoughness(n) {
+          return n.material && n.material.roughness != null ? n.material.roughness : 0.35;
+        }
+
         function applyMeshMaterial(n) {
           var color = meshColor(n);
           if (isBasicMaterial(n)) {
-            var opacity = n.material.opacity != null ? n.material.opacity : 1;
+            var opacity = materialOpacity(n);
             if (!mat.isMeshBasicMaterial) {
               try {
                 mat.dispose();
@@ -257,18 +275,27 @@
             }
             return;
           }
+          var metalness = materialMetalness(n);
+          var roughness = materialRoughness(n);
+          var stdOpacity = isStandardMaterial(n) ? materialOpacity(n) : 1;
           if (!mat.isMeshStandardMaterial) {
             try {
               mat.dispose();
             } catch (e) {}
             mat = new THREE.MeshStandardMaterial({
               color: color,
-              metalness: 0.35,
-              roughness: 0.35,
+              metalness: metalness,
+              roughness: roughness,
+              opacity: stdOpacity,
+              transparent: stdOpacity < 1,
             });
             mesh.material = mat;
           } else {
             mat.color.set(color);
+            mat.metalness = metalness;
+            mat.roughness = roughness;
+            mat.opacity = stdOpacity;
+            mat.transparent = stdOpacity < 1;
           }
         }
 

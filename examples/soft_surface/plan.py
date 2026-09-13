@@ -10,6 +10,8 @@ Soft 5 awareness: day-1 Peer stays threejs. Canvas Peer is swap-proof
 only — same ``ux-space`` register, not a second concurrent Peer.
 Soft 6 leftover: mesh ``pickable`` + Cap-gated ``pick(hit)``.
 Soft 7 leftover: camera ``orbit`` / ``pan`` / ``zoom`` + Cap-gated verbs.
+Soft 8 leftover: cylinder uses ``material.type=standard`` (metalness /
+roughness). Sphere stays Soft 4 ``basic``.
 """
 
 from __future__ import annotations
@@ -67,7 +69,13 @@ def soft_surface() -> Graph:
             position=(2.2, 0.55, 0),
             rotation=(0.15, 0.4, 0),
             scale=[0.65, 1.15, 0.65],
-            material={"type": "basic", "color": "#38bdf8", "opacity": 0.9},
+            material={
+                "type": "standard",
+                "color": "#38bdf8",
+                "opacity": 0.9,
+                "metalness": 0.25,
+                "roughness": 0.45,
+            },
         )
     )
 
