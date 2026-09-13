@@ -16,7 +16,7 @@ Thin Channel bridge adapter. CDN three.js is OK for day-1.
   (not OrbitControls). Soft 8 leftover: `material.type` `{basic,
   standard}` — `standard` → MeshStandardMaterial (`metalness` /
   `roughness`). Soft 9 leftover: texture / gltf nodes. TextureLoader
-  + GLTFLoader stay inside this adapter (not a public API dump).
+  + r160 JSM GLTFLoader stay inside this adapter (not a public API dump).
   `material.map` is a texture node id. Load rides Cap-gated `apply`.
   Mesh nodes still apply without those fields.
 
