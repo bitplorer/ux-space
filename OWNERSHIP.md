@@ -294,7 +294,8 @@ loader catalog and **not** a public `GLTFLoader` dump. Frozen Graph
 names: `.gltf(id, src=, position=, rotation=, scale=)` and
 `.texture(id, src=)` — Soft 3 fluency, not `.node(..., kind=)` and not
 a `load()` verb. Additive IR v1 keys: node `kind` `gltf` / `texture`,
-node `src`, `material.map` (texture node id). Keys never reused;
+node `src` (relative path or http(s) URL), `material.map` (texture
+node id). Keys never reused;
 unknown fields ignored. Load happens through Cap-gated `apply` only —
 the Plan carries loader nodes; Cap NEVER on ops/Result. Server-side
 `require_cap` only.

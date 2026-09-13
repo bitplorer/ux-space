@@ -15,7 +15,7 @@ parked. `features/` stays empty.
 | 6 | Optional mesh `pickable` on `box`. Cap-gated `pick(hit)` reports `node_id` (+ `point`). |
 | 7 | Camera `orbit` / `pan` / `zoom` + Cap-gated `orbit` / `pan` / `zoom`. Thin Peer apply, not OrbitControls. |
 | 8 | Cylinder `material.type=standard` (`metalness` / `roughness`). Sphere stays Soft 4 `basic`. Not a materials catalog. |
-| 9 | `.texture("stripe", src=)` + cylinder `material.map="stripe"`. `.gltf("prop", src=)` with Soft 4 transform. Cap-gated `apply` only — not a public GLTFLoader dump. |
+| 9 | `.texture("stripe", src=)` + box `material.map="stripe"` (first mesh — day-1 Peer apply). `.gltf("prop", src=)` with Soft 4 transform. Cap-gated `apply` only — not a public GLTFLoader dump. `src` is author-supplied (relative or http(s)). |
 
 ## 1. No Channel (always works)
 

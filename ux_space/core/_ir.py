@@ -43,6 +43,26 @@ def _req_str(obj: Mapping[str, Any], key: str, ctx: str) -> str:
     return val
 
 
+def _is_allowed_src(src: str) -> bool:
+    """http(s), root-relative, or schemeless relative. Reject other schemes."""
+    s = src.strip()
+    if s.startswith(("http://", "https://", "/")):
+        return True
+    if "://" in s:
+        return False
+    head, sep, _rest = s.partition(":")
+    if sep and head.isalpha():
+        return False
+    return True
+
+
+def _req_src(obj: Mapping[str, Any], ctx: str) -> str:
+    src = _req_str(obj, "src", ctx)
+    if not _is_allowed_src(src):
+        raise PlanError(f"{ctx}: src must be a relative path or http(s) URL")
+    return src
+
+
 def _opt_bool(obj: Mapping[str, Any], key: str, ctx: str) -> bool | None:
     if key not in obj:
         return None
@@ -255,7 +275,7 @@ def _validate_camera_node(node: Mapping[str, Any], nid: str, ctx: str) -> dict[s
 
 
 def _validate_gltf_node(node: Mapping[str, Any], nid: str, ctx: str) -> dict[str, Any]:
-    src = _req_str(node, "src", ctx)
+    src = _req_src(node, ctx)
     out: dict[str, Any] = {"kind": KIND_GLTF, "id": nid, "src": src}
     pos = _opt_position(node, ctx)
     if pos is not None:
@@ -270,7 +290,7 @@ def _validate_gltf_node(node: Mapping[str, Any], nid: str, ctx: str) -> dict[str
 
 
 def _validate_texture_node(node: Mapping[str, Any], nid: str, ctx: str) -> dict[str, Any]:
-    src = _req_str(node, "src", ctx)
+    src = _req_src(node, ctx)
     out: dict[str, Any] = {"kind": KIND_TEXTURE, "id": nid, "src": src}
     return _keep_unknown(node, out)
 

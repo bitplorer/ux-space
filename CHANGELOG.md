@@ -15,7 +15,8 @@ The **plan IR** uses a separate major (`IR_VERSION` / plan field `v`).
   names: `.gltf(id, src=, position=, rotation=, scale=)` and
   `.texture(id, src=)` — Soft 3 fluency, not `.node(..., kind=)` and
   not a `load()` verb. Additive IR v1 keys: node `kind` `gltf` /
-  `texture`, node `src`, `material.map` (texture node id). Keys never
+  `texture`, node `src` (relative path or http(s) URL), `material.map`
+  (texture node id). Keys never
   reused; unknown fields ignored. Load happens through Cap-gated
   `apply` only. Cap NEVER on ops/Result. `require_cap` server-side
   only. Peer `peers/threejs` applies texture / glTF as a Peer concern.

@@ -74,7 +74,8 @@ class SoftSurfaceExampleTests(unittest.TestCase):
         by_id = _nodes_by_id(plan)
         box = by_id["box"]
         self.assertEqual(box["color"], "#6366f1")
-        self.assertNotIn("material", box)
+        self.assertEqual(box["material"]["type"], "standard")
+        self.assertEqual(box["material"]["map"], "stripe")
         self.assertEqual(box["rotation"], [0.25, 0.6, 0.05])
         self.assertEqual(box["scale"], 1.0)
         self.assertIs(box["pickable"], True)
@@ -87,7 +88,7 @@ class SoftSurfaceExampleTests(unittest.TestCase):
         self.assertEqual(cylinder["material"]["type"], "standard")
         self.assertEqual(cylinder["material"]["metalness"], 0.25)
         self.assertEqual(cylinder["material"]["roughness"], 0.45)
-        self.assertEqual(cylinder["material"]["map"], "stripe")
+        self.assertNotIn("map", cylinder["material"])
         self.assertEqual(cylinder["scale"], [0.65, 1.15, 0.65])
 
     def test_example_composes_soft9_loaders(self) -> None:
@@ -98,7 +99,7 @@ class SoftSurfaceExampleTests(unittest.TestCase):
         self.assertEqual(by_id["prop"]["kind"], "gltf")
         self.assertEqual(by_id["prop"]["src"], "prop.gltf")
         self.assertEqual(by_id["prop"]["position"], [0.6, 0.2, 0.8])
-        self.assertEqual(by_id["cylinder"]["material"]["map"], "stripe")
+        self.assertEqual(by_id["box"]["material"]["map"], "stripe")
 
     def test_apply_bridge_call_cap_absent_from_ops_and_result(self) -> None:
         token = STAND_IN_CAP
@@ -162,6 +163,7 @@ class SoftSurfaceExampleTests(unittest.TestCase):
         self.assertIn(".gltf(", plan_src)
         self.assertIn(".texture(", plan_src)
         self.assertIn('"map": "stripe"', plan_src)
+        self.assertIn("stripe", plan_src)
         self.assertNotIn("def load(", plan_src)
         self.assertNotIn("scene(", plan_src)
         self.assertNotIn("ux-scene", plan_src)

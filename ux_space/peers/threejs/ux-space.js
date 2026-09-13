@@ -32,7 +32,9 @@
   var THREE_CDN =
     "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js";
   var GLTF_CDN =
-    "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js";
+    "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
+  var BGU_CDN =
+    "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/utils/BufferGeometryUtils.js";
   var loading = null;
   var gltfLoading = null;
 
@@ -56,23 +58,70 @@
     return loading;
   }
 
+  function isAllowedSrc(src) {
+    if (typeof src !== "string" || !src.trim()) return false;
+    var s = src.trim();
+    if (s.indexOf("http://") === 0 || s.indexOf("https://") === 0 || s.charAt(0) === "/") {
+      return true;
+    }
+    if (s.indexOf("://") !== -1) return false;
+    var colon = s.indexOf(":");
+    if (colon > 0 && /^[A-Za-z]+$/.test(s.slice(0, colon))) return false;
+    return true;
+  }
+
   function loadGltfLoader(THREE) {
     if (THREE.GLTFLoader) return Promise.resolve(THREE.GLTFLoader);
     if (gltfLoading) return gltfLoading;
-    gltfLoading = new Promise(function (resolve, reject) {
-      var s = document.createElement("script");
-      s.src = GLTF_CDN;
-      s.async = true;
-      s.onload = function () {
-        if (!THREE.GLTFLoader) reject(new Error("GLTFLoader missing after load"));
-        else resolve(THREE.GLTFLoader);
-      };
-      s.onerror = function () {
+    // JSM addon onto the day-1 UMD THREE global — not a second Three instance
+    // and not a public GLTFLoader dump.
+    function threeShimUrl() {
+      var keys = [];
+      for (var k in THREE) {
+        if (/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(k)) keys.push(k);
+      }
+      var shim =
+        "const T = globalThis.THREE;\n" +
+        keys
+          .map(function (k) {
+            return "export const " + k + " = T." + k + ";";
+          })
+          .join("\n") +
+        "\nexport default T;\n";
+      return URL.createObjectURL(new Blob([shim], { type: "text/javascript" }));
+    }
+    function asThreeModule(src, shimUrl) {
+      return src.replace(/from\s+['"]three['"]/g, "from '" + shimUrl + "'");
+    }
+    gltfLoading = Promise.all([
+      fetch(GLTF_CDN).then(function (res) {
+        if (!res.ok) throw new Error("Failed to load GLTFLoader");
+        return res.text();
+      }),
+      fetch(BGU_CDN).then(function (res) {
+        if (!res.ok) throw new Error("Failed to load BufferGeometryUtils");
+        return res.text();
+      }),
+    ]).then(function (texts) {
+      var shimUrl = threeShimUrl();
+      var bguUrl = URL.createObjectURL(
+        new Blob([asThreeModule(texts[1], shimUrl)], { type: "text/javascript" })
+      );
+      var gltfSrc = asThreeModule(texts[0], shimUrl).replace(
+        /from\s+['"]\.\.\/utils\/BufferGeometryUtils\.js['"]/g,
+        "from '" + bguUrl + "'"
+      );
+      return import(URL.createObjectURL(new Blob([gltfSrc], { type: "text/javascript" })));
+    })
+      .then(function (mod) {
+        if (!mod || !mod.GLTFLoader) throw new Error("GLTFLoader missing after load");
+        THREE.GLTFLoader = mod.GLTFLoader;
+        return THREE.GLTFLoader;
+      })
+      .catch(function (err) {
         gltfLoading = null;
-        reject(new Error("Failed to load GLTFLoader"));
-      };
-      document.head.appendChild(s);
-    });
+        throw err;
+      });
     return gltfLoading;
   }
 
@@ -378,6 +427,7 @@
             }
             textures[tn.id] = { src: tn.src, texture: null };
             (function (id, src) {
+              if (!isAllowedSrc(src)) return;
               texLoader.load(
                 src,
                 function (tex) {
@@ -417,8 +467,8 @@
             var gn = authored[i];
             keep[gn.id] = true;
             var prev = gltfObjs[gn.id];
-            if (prev && prev.src === gn.src && prev.object) {
-              placeGltfObject(prev.object, gn);
+            if (prev && prev.src === gn.src) {
+              if (prev.object) placeGltfObject(prev.object, gn);
               continue;
             }
             if (prev && prev.object) {
@@ -426,6 +476,7 @@
             }
             gltfObjs[gn.id] = { src: gn.src, object: null };
             (function (id, src, node) {
+              if (!isAllowedSrc(src)) return;
               loadGltfLoader(THREE)
                 .then(function (GLTFLoader) {
                   var loader = new GLTFLoader();

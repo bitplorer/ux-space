@@ -199,6 +199,16 @@ class Soft9LoadersTests(unittest.TestCase):
                     },
                 }
             )
+        with self.assertRaises(PlanError):
+            space("s").gltf("prop", src="javascript:alert(1)").plan()
+        with self.assertRaises(PlanError):
+            space("s").texture("albedo", src="file:///etc/passwd").plan()
+        with self.assertRaises(PlanError):
+            space("s").gltf("prop", src="blob:https://example.com/x").plan()
+        ok = space("s").gltf("prop", src="https://example.com/prop.gltf").plan()
+        self.assertEqual(ok["graph"]["nodes"][0]["src"], "https://example.com/prop.gltf")
+        ok = space("s").texture("albedo", src="/tex/albedo.png").plan()
+        self.assertEqual(ok["graph"]["nodes"][0]["src"], "/tex/albedo.png")
 
     def test_validate_rejects_catalog_loaders(self) -> None:
         for catalog in ("fbx", "obj", "usdz", "hdr", "loader"):
@@ -372,6 +382,10 @@ class Soft9LoadersTests(unittest.TestCase):
         self.assertNotIn('uxBridge.register("three"', js)
         self.assertIn("TextureLoader", js)
         self.assertIn("GLTFLoader", js)
+        self.assertIn("examples/jsm/loaders/GLTFLoader.js", js)
+        self.assertNotIn("examples/js/loaders/GLTFLoader.js", js)
+        self.assertIn("isAllowedSrc", js)
+        self.assertIn("prev.src === gn.src", js)
         self.assertIn('"gltf"', js)
         self.assertIn('"texture"', js)
         self.assertIn("material.map", js)

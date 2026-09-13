@@ -56,6 +56,7 @@ def soft_surface() -> Graph:
             rotation=(0.25, 0.6, 0.05),
             scale=1.0,
             pickable=True,
+            material={"type": "standard", "map": "stripe"},
         )
         .node(
             "sphere",
@@ -85,7 +86,6 @@ def soft_surface() -> Graph:
                 "opacity": 0.9,
                 "metalness": 0.25,
                 "roughness": 0.45,
-                "map": "stripe",
             },
         )
     )
