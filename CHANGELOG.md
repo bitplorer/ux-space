@@ -8,6 +8,27 @@ The **plan IR** uses a separate major (`IR_VERSION` / plan field `v`).
 
 ---
 
+## 2026-09-13 — Soft 4: transform + material (locked thin leftover)
+
+- Leftover: optional mesh `rotation` `[x,y,z]` radians and `scale`
+  (number or `[x,y,z]`). Optional mesh `material` with locked type
+  `{basic}` only and optional `color` / `opacity` (0..1). Top-level mesh
+  `color` KEEP as shorthand; if both present, `material.color` wins.
+  Frozen Graph names: `.node(..., rotation=, scale=, material=)`. Camera
+  may take `rotation=`. Lights stay position/color. Peer `peers/threejs`
+  applies rotation/scale and basic material; default mesh path stays
+  sane when `material` is absent. Soft 2 shapes + Soft 3 camera/light
+  unchanged. No second Graph API.
+- KEEP: Isolation `wire/` only. Cap NEVER on ops/Result (`ops[].meta.cap`
+  is disclosure). `require_cap` server-side only. Peer registers as
+  `ux-space` not `three`. Cap Host KEEP on Channel (`Channel.boot` /
+  `mount_channel`). Never `scene()` / `ux-scene`. Soft 2 SHAPES KEEP
+  (`box` / `sphere` / `plane` / `cylinder`). Soft 3 camera/light KEEP
+  (`perspective` / `ambient` / `directional`). `core/` stays truth.
+- HOLD: Soft 5 Peer-swap, R3F, materials catalog, dual Peers, Cap-on-ops,
+  zero-Peer, renaming motion, sixth Cap Host.
+- Same-commit leftover teaching + locks. Extend Plan IR + Peer apply only.
+
 ## 2026-09-13 — Soft 3: camera/light nodes (locked set)
 
 - Leftover: optional IR node kinds `camera` / `light` — locked set

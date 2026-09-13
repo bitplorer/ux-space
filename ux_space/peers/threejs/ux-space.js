@@ -6,7 +6,10 @@
  * Soft 2 leftover: locked geometry map (box/sphere/plane/cylinder).
  * Soft 3 leftover: optional camera/light node kinds
  *   (perspective / ambient / directional). Mesh nodes still apply.
- * HOLD the full three.js catalog + materials + Soft 4 transform.
+ * Soft 4 leftover: mesh rotation / scale + material {basic}
+ *   (color + opacity → MeshBasicMaterial). Default mesh stays
+ *   MeshStandardMaterial when material is absent. Camera may take rotation.
+ * HOLD materials catalog, look-at / orbit controls, Soft 5 Peer-swap.
  */
 (function (global) {
   "use strict";
@@ -94,6 +97,25 @@
     return make(THREE);
   }
 
+  // Soft 4 leftover: material.color wins over top-level color shorthand.
+  function meshColor(node) {
+    return (node.material && node.material.color) || node.color || "#6366f1";
+  }
+
+  function applyRotation(obj, rotation) {
+    if (!rotation) return;
+    obj.rotation.set(rotation[0], rotation[1], rotation[2]);
+  }
+
+  function applyScale(obj, scale) {
+    if (scale == null) return;
+    if (typeof scale === "number") {
+      obj.scale.set(scale, scale, scale);
+    } else {
+      obj.scale.set(scale[0], scale[1], scale[2]);
+    }
+  }
+
   global.uxBridge.register("ux-space", {
     mount: function (el, props) {
       return loadThree().then(function (THREE) {
@@ -163,31 +185,81 @@
 
         function applyCameraNode(next) {
           var cam = firstCamera(next);
-          if (!cam || !cam.position) return;
-          camera.position.set(cam.position[0], cam.position[1], cam.position[2]);
+          if (!cam) return;
+          if (cam.position) {
+            camera.position.set(cam.position[0], cam.position[1], cam.position[2]);
+          }
+          applyRotation(camera, cam.rotation);
         }
 
         applyCameraNode(plan);
         applyLights(plan);
 
         var mat = new THREE.MeshStandardMaterial({
-          color: node.color || "#6366f1",
+          color: meshColor(node),
           metalness: 0.35,
           roughness: 0.35,
         });
         var mesh = new THREE.Mesh(geometryFor(THREE, node.shape), mat);
+
+        function isBasicMaterial(n) {
+          return !!(n.material && (n.material.type === "basic" || !n.material.type));
+        }
+
+        function applyMeshMaterial(n) {
+          var color = meshColor(n);
+          if (isBasicMaterial(n)) {
+            var opacity = n.material.opacity != null ? n.material.opacity : 1;
+            if (!mat.isMeshBasicMaterial) {
+              try {
+                mat.dispose();
+              } catch (e) {}
+              mat = new THREE.MeshBasicMaterial({
+                color: color,
+                opacity: opacity,
+                transparent: opacity < 1,
+              });
+              mesh.material = mat;
+            } else {
+              mat.color.set(color);
+              mat.opacity = opacity;
+              mat.transparent = opacity < 1;
+            }
+            return;
+          }
+          if (!mat.isMeshStandardMaterial) {
+            try {
+              mat.dispose();
+            } catch (e) {}
+            mat = new THREE.MeshStandardMaterial({
+              color: color,
+              metalness: 0.35,
+              roughness: 0.35,
+            });
+            mesh.material = mat;
+          } else {
+            mat.color.set(color);
+          }
+        }
+
+        applyMeshMaterial(node);
+        applyRotation(mesh, node.rotation);
+        applyScale(mesh, node.scale);
         if (node.position) {
           mesh.position.set(node.position[0], node.position[1], node.position[2]);
         }
         scene.add(mesh);
         var currentShape = node.shape || "box";
+        var authoredRotation = !!node.rotation;
 
         var running = true;
         function frame() {
           if (!running) return;
           requestAnimationFrame(frame);
-          mesh.rotation.y += 0.008;
-          mesh.rotation.x += 0.003;
+          if (!authoredRotation) {
+            mesh.rotation.y += 0.008;
+            mesh.rotation.x += 0.003;
+          }
           renderer.render(scene, camera);
         }
         frame();
@@ -216,7 +288,14 @@
             mesh.geometry = geometryFor(THREE, nextShape);
             currentShape = nextShape;
           }
-          if (n.color) mat.color.set(n.color);
+          applyMeshMaterial(n);
+          if (n.rotation) {
+            applyRotation(mesh, n.rotation);
+            authoredRotation = true;
+          } else {
+            authoredRotation = false;
+          }
+          applyScale(mesh, n.scale);
           if (n.position) {
             mesh.position.set(n.position[0], n.position[1], n.position[2]);
           }
