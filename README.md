@@ -78,7 +78,7 @@ not the three.js catalog. Soft 3 leftover: optional `.camera` / `.light`
 nodes — `perspective` / `ambient` / `directional`. Soft 4 leftover:
 optional mesh `rotation` / `scale` + `material.type=basic`. Soft 5
 leftover: `peers/canvas` proves the swap under the same `ux-space`
-register; day-1 stays threejs). Same ops — no second Graph API.
+register; day-1 stays threejs. Same ops — no second Graph API.
 
 Five-minute path: [START_HERE.md](START_HERE.md). Hard invariants:
 [OWNERSHIP.md](OWNERSHIP.md). Runnable samples: [examples/day1/](examples/day1/).
