@@ -6,6 +6,7 @@ Soft 5 leftover: ``peers/canvas`` proves the swap; day1 remains threejs.
 Soft 6 leftover: optional mesh ``pickable``; Peer pick reports ``node_id``.
 Soft 7 leftover: camera ``orbit`` / ``pan`` / ``zoom``; Cap-gated verbs.
 Soft 8 leftover: thin ``material.type`` set ``{basic, standard}``.
+Soft 9 leftover: thin glTF / texture loader nodes via Cap-gated apply.
 """
 
 from __future__ import annotations
@@ -41,4 +42,5 @@ PEER = {
     "soft6": "optional mesh pickable + Peer pick reports node_id (point optional); Cap-gated pick()",
     "soft7": "camera orbit/pan/zoom fields + Cap-gated orbit()/pan()/zoom(); thin Peer apply, not OrbitControls",
     "soft8": "thin material.type {basic, standard}; Soft 4 basic KEEP; standard maps MeshStandardMaterial (metalness/roughness)",
+    "soft9": "thin gltf/texture loader nodes (src) + material.map texture-id; Cap-gated apply only — loader is Peer concern, not a public GLTFLoader dump",
 }

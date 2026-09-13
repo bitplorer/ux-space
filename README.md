@@ -84,7 +84,10 @@ register; day-1 stays threejs. Soft 6 leftover: optional mesh
 `zoom` + Cap-gated `orbit` / `pan` / `zoom` — thin Peer apply, not
 OrbitControls. Soft 8 leftover: mesh `material.type` thin set
 `{basic, standard}` — Soft 4 `basic` KEEP; optional `metalness` /
-`roughness` on `standard`. Same ops — no second Graph API.
+`roughness` on `standard`. Soft 9 leftover: `.gltf(id, src=)` /
+`.texture(id, src=)` + `material.map` (texture id) — Cap-gated
+`apply` only; loader is Peer concern, not a public GLTFLoader dump.
+Same ops — no second Graph API.
 
 Five-minute path: [START_HERE.md](START_HERE.md). Hard invariants:
 [OWNERSHIP.md](OWNERSHIP.md). Runnable samples: [examples/day1/](examples/day1/).
@@ -143,7 +146,7 @@ through that door (or a compose `wire/`).
 | `ux_space/wire/` | Isolation door (optional `ux-channel`) |
 | `tests/` | Unit tests (no browser) |
 | `examples/day1/` | Plan print + Channel.boot / compose path |
-| `examples/soft_surface/` | Soft-surface leftover tour (SHAPES, camera/light, transform + basic/standard material, Peer-swap awareness, pickable, orbit/pan/zoom) |
+| `examples/soft_surface/` | Soft-surface leftover tour (SHAPES, camera/light, transform + basic/standard material, Peer-swap awareness, pickable, orbit/pan/zoom, glTF/texture loaders) |
 
 ## Tests
 

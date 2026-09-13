@@ -12,8 +12,10 @@ Thin 2D-canvas Peer. Soft 5 leftover: proves the adapter can swap.
   proof — no second camera API). Soft 6 leftover: pickable meshes
   report `{node_id, point?}` via 2D hit-test (no Raycaster / three.js).
   Soft 7 leftover: `orbit` / `pan` / `zoom` call methods are accepted
-  (2D proof — camera control no-ops). Soft 8 leftover: honors
+  (2D proof — camera control no-ops).   Soft 8 leftover: honors
   `material` color/opacity; `standard` degrades as `basic` (2D fill).
+  Soft 9 leftover: gltf/texture degrade — skip load, placeholder for
+  gltf, ignore `material.map`. Soft 1–8 meshes still paint.
 
 `adapter_path()` returns the packaged `ux-space.js` (same helper as
 `peers/threejs`). Day-1 default stays threejs — this Peer is the swap

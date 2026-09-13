@@ -13,6 +13,7 @@ Soft 5 leftover: canvas Peer proves swap — same `ux-space` register; day-1 sta
 Soft 6 leftover: optional mesh `pickable` + Cap-gated `pick(hit)` — Peer reports `node_id` (and `point` if hit).
 Soft 7 leftover: optional camera `orbit` / `pan` / `zoom` + Cap-gated `orbit` / `pan` / `zoom` — thin Peer apply, not OrbitControls.
 Soft 8 leftover: mesh `material.type` thin set `{basic, standard}` — Soft 4 `basic` KEEP; optional `metalness` / `roughness` on `standard`. Not a materials catalog.
+Soft 9 leftover: `.gltf(id, src=)` / `.texture(id, src=)` + `material.map` (texture id) — Cap-gated `apply` only. Not a public GLTFLoader dump.
 
 ---
 

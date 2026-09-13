@@ -37,5 +37,7 @@ Soft 6 leftover: optional mesh `pickable`; Peer pick reports `node_id`
 Soft 7 leftover: camera `orbit` / `pan` / `zoom`; Cap-gated verbs.
 Thin Peer apply — not OrbitControls.
 Soft 8 leftover: thin `material.type` `{basic, standard}`. Canvas
-honors color/opacity; `standard` degrades as basic. HOLD Soft 9
-loaders, Soft 10 primitives, materials catalog.
+honors color/opacity; `standard` degrades as basic.
+Soft 9 leftover: thin glTF / texture loader nodes via Cap-gated
+`apply`. Canvas degrades (skip / placeholder). HOLD Soft 10
+primitives, materials catalog.

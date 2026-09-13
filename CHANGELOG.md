@@ -8,6 +8,37 @@ The **plan IR** uses a separate major (`IR_VERSION` / plan field `v`).
 
 ---
 
+## 2026-09-13 — Soft 9: glTF / texture loaders (leftover)
+
+- Leftover: thin locked loader surface for glTF and texture — not a
+  loader catalog and not a public `GLTFLoader` dump. Frozen Graph
+  names: `.gltf(id, src=, position=, rotation=, scale=)` and
+  `.texture(id, src=)` — Soft 3 fluency, not `.node(..., kind=)` and
+  not a `load()` verb. Additive IR v1 keys: node `kind` `gltf` /
+  `texture`, node `src` (relative path or http(s) URL), `material.map`
+  (texture node id). Keys never
+  reused; unknown fields ignored. Load happens through Cap-gated
+  `apply` only. Cap NEVER on ops/Result. `require_cap` server-side
+  only. Peer `peers/threejs` applies texture / glTF as a Peer concern.
+  `peers/canvas` swap-proof degrades (skip / placeholder). No second
+  Graph API. `features/` stays empty.
+- KEEP: Isolation `wire/` only. Cap NEVER on ops/Result (`ops[].meta.cap`
+  is disclosure). `require_cap` server-side only. Peer registers as
+  `ux-space` not `three`. Cap Host KEEP on Channel (`Channel.boot` /
+  `mount_channel`). Never `scene()` / `ux-scene`. Soft 2 SHAPES KEEP
+  (`box` / `sphere` / `plane` / `cylinder`). Soft 3 camera/light KEEP
+  (`perspective` / `ambient` / `directional`). Soft 4 rotation/scale +
+  `material` `{basic}` KEEP. Soft 5 canvas swap-proof KEEP; day-1 stays
+  threejs. Soft 6 pick/hit KEEP. Soft 7 orbit/pan/zoom KEEP. Soft 8
+  `material.type` `{basic, standard}` KEEP. `core/` stays truth.
+- HOLD: Soft 10 primitives, R3F, materials catalog
+  (`phong` / `physical` / `lambert` / …), dual concurrent Peers as
+  taught product, Cap-on-ops, zero-Peer, renaming motion, sixth Cap
+  Host, generic pointer stack, useFrame, OrbitControls dump,
+  GLTFLoader dump as public API.
+- Same-commit leftover teaching + locks. Extend Plan IR + Peer apply
+  only — Cap-gated `apply` KEEP.
+
 ## 2026-09-13 — Soft 8: thin materials beyond basic (leftover)
 
 - Leftover: mesh `material.type` expands to a locked thin set

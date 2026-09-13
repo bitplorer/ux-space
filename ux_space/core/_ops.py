@@ -259,6 +259,8 @@ def apply(
 
     ``cap`` must be a Channel-minted token. This Soft does not mint or verify.
     The token stays server-side — it is not copied onto the Result ops.
+    Soft 9 leftover: glTF / texture nodes travel on this same Plan — no
+    ``load()`` verb.
     """
     require_cap(cap)
     plan = _as_plan(graph)

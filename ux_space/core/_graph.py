@@ -7,10 +7,12 @@ from uuid import uuid4
 
 from ux_space.core._ir import (
     KIND_CAMERA,
+    KIND_GLTF,
     KIND_GRAPH,
     KIND_LIGHT,
     KIND_NODE,
     KIND_PLAN,
+    KIND_TEXTURE,
     validate_plan,
 )
 from ux_space.core._ops import apply as apply_ops
@@ -30,6 +32,9 @@ class Graph:
     ``camera(..., orbit=, pan=, zoom=)`` — camera control fields, not a
     second Graph API. Soft 8 leftover: ``material.type`` thin set
     ``{basic, standard}`` — same ``material=`` kwarg, not a second Graph.
+    Soft 9 leftover: ``gltf(id, src=)`` and ``texture(id, src=)`` —
+    loader nodes, not ``node(..., kind=)`` and not a ``load()`` verb.
+    Texture composes with Soft 8 via ``material.map`` (texture node id).
     """
 
     def __init__(self, gid: str | None = None) -> None:
@@ -124,6 +129,41 @@ class Graph:
             item["color"] = color
         if position is not None:
             item["position"] = list(position)
+        item.update(extra)
+        self._nodes.append(item)
+        return self
+
+    def gltf(
+        self,
+        nid: str,
+        *,
+        src: str | None = None,
+        position: list[float] | tuple[float, float, float] | None = None,
+        rotation: list[float] | tuple[float, float, float] | None = None,
+        scale: float | list[float] | tuple[float, float, float] | None = None,
+        **extra: Any,
+    ) -> "Graph":
+        if not isinstance(nid, str) or not nid.strip():
+            raise ValueError("node id must be a non-empty string")
+        item: dict[str, Any] = {"kind": KIND_GLTF, "id": nid.strip()}
+        if src is not None:
+            item["src"] = src
+        if position is not None:
+            item["position"] = list(position)
+        if rotation is not None:
+            item["rotation"] = rotation
+        if scale is not None:
+            item["scale"] = scale
+        item.update(extra)
+        self._nodes.append(item)
+        return self
+
+    def texture(self, nid: str, *, src: str | None = None, **extra: Any) -> "Graph":
+        if not isinstance(nid, str) or not nid.strip():
+            raise ValueError("node id must be a non-empty string")
+        item: dict[str, Any] = {"kind": KIND_TEXTURE, "id": nid.strip()}
+        if src is not None:
+            item["src"] = src
         item.update(extra)
         self._nodes.append(item)
         return self
