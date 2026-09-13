@@ -32,6 +32,8 @@ from examples.soft_surface.plan import STAND_IN_CAP, soft_surface  # noqa: E402
 PKG = ROOT / "ux_space"
 EXAMPLE = ROOT / "examples" / "soft_surface"
 SOFT2_SHAPES = frozenset({"box", "sphere", "plane", "cylinder"})
+SOFT10_ADDITIVE = frozenset({"cone", "torus"})
+SOFT10_SHAPES = SOFT2_SHAPES | SOFT10_ADDITIVE
 
 
 def _nodes_by_id(plan: dict) -> dict:
@@ -53,8 +55,9 @@ class SoftSurfaceExampleTests(unittest.TestCase):
         plan = validate_plan(soft_surface().plan())
         meshes = [n for n in plan["graph"]["nodes"] if n["kind"] == "node"]
         shapes = {n["shape"] for n in meshes}
-        self.assertEqual(shapes, SOFT2_SHAPES)
-        self.assertEqual({n["id"] for n in meshes}, SOFT2_SHAPES)
+        self.assertTrue(SOFT2_SHAPES <= shapes)
+        self.assertEqual(shapes, SOFT10_SHAPES)
+        self.assertEqual({n["id"] for n in meshes}, SOFT10_SHAPES)
 
     def test_example_composes_soft3_camera_light(self) -> None:
         plan = validate_plan(soft_surface().plan())
@@ -90,6 +93,15 @@ class SoftSurfaceExampleTests(unittest.TestCase):
         self.assertEqual(cylinder["material"]["roughness"], 0.45)
         self.assertNotIn("map", cylinder["material"])
         self.assertEqual(cylinder["scale"], [0.65, 1.15, 0.65])
+
+    def test_example_composes_soft10_primitives(self) -> None:
+        plan = validate_plan(soft_surface().plan())
+        by_id = _nodes_by_id(plan)
+        self.assertEqual(by_id["cone"]["kind"], "node")
+        self.assertEqual(by_id["cone"]["shape"], "cone")
+        self.assertEqual(by_id["torus"]["kind"], "node")
+        self.assertEqual(by_id["torus"]["shape"], "torus")
+        self.assertEqual(by_id["torus"]["material"]["type"], "basic")
 
     def test_example_composes_soft9_loaders(self) -> None:
         plan = validate_plan(soft_surface().plan())
@@ -151,6 +163,8 @@ class SoftSurfaceExampleTests(unittest.TestCase):
         self.assertIn(".camera(", plan_src)
         self.assertIn(".light(", plan_src)
         self.assertIn(".node(", plan_src)
+        self.assertIn('shape="cone"', plan_src)
+        self.assertIn('shape="torus"', plan_src)
         self.assertIn("apply(", plan_src)
         self.assertIn("pick(", plan_src)
         self.assertIn("pickable", plan_src)

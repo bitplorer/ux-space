@@ -32,6 +32,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PKG = ROOT / "ux_space"
 
 SOFT2_SHAPES = frozenset({"box", "sphere", "plane", "cylinder"})
+SOFT10_SHAPES = frozenset({"box", "sphere", "plane", "cylinder", "cone", "torus"})
 SOFT3_CAMERAS = frozenset({"perspective"})
 SOFT3_LIGHTS = frozenset({"ambient", "directional"})
 SOFT4_MATERIALS = frozenset({"basic"})
@@ -157,7 +158,8 @@ class Soft5PeerSwapTests(unittest.TestCase):
         """Soft 5 does not change Graph, Plan IR, or apply()."""
         self.assertTrue(callable(space))
         self.assertIsInstance(space("stage"), Graph)
-        self.assertEqual(SHAPES, SOFT2_SHAPES)
+        self.assertEqual(SHAPES, SOFT10_SHAPES)
+        self.assertTrue(SOFT2_SHAPES <= SHAPES)
         self.assertEqual(CAMERAS, SOFT3_CAMERAS)
         self.assertEqual(LIGHTS, SOFT3_LIGHTS)
         self.assertEqual(MATERIALS, SOFT8_MATERIALS)

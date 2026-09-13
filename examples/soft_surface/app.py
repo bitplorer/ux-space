@@ -130,7 +130,8 @@ def index():
   <h1>ux-space soft-surface</h1>
   <p>Public <code>space()</code> / <code>Graph</code> → Cap-gated <code>apply</code> →
      <code>bridge.call</code> → day-1 Peer <code>ux-space</code> (threejs).</p>
-  <p>Soft 2 SHAPES · Soft 3 camera/light · Soft 4 rotation/scale +
+  <p>Soft 2 SHAPES · Soft 10 <code>cone</code> / <code>torus</code> ·
+     Soft 3 camera/light · Soft 4 rotation/scale +
      <code>material.type=basic</code> · Soft 8 <code>standard</code> ·
      Soft 9 <code>.gltf</code> / <code>.texture</code>.
      Soft 5: canvas is swap-proof only — this host does not load a second Peer.</p>

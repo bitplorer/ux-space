@@ -48,6 +48,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PKG = ROOT / "ux_space"
 
 SOFT2_SHAPES = frozenset({"box", "sphere", "plane", "cylinder"})
+SOFT10_SHAPES = frozenset({"box", "sphere", "plane", "cylinder", "cone", "torus"})
 SOFT3_CAMERAS = frozenset({"perspective"})
 SOFT3_LIGHTS = frozenset({"ambient", "directional"})
 SOFT8_MATERIALS = frozenset({"basic", "standard"})
@@ -93,7 +94,8 @@ def _mixed() -> Graph:
 
 class Soft8MaterialsTests(unittest.TestCase):
     def test_locked_thin_set(self) -> None:
-        self.assertEqual(SHAPES, SOFT2_SHAPES)
+        self.assertEqual(SHAPES, SOFT10_SHAPES)
+        self.assertTrue(SOFT2_SHAPES <= SHAPES)
         self.assertEqual(CAMERAS, SOFT3_CAMERAS)
         self.assertEqual(LIGHTS, SOFT3_LIGHTS)
         self.assertEqual(MATERIALS, SOFT8_MATERIALS)
@@ -103,7 +105,8 @@ class Soft8MaterialsTests(unittest.TestCase):
         self.assertNotIn("physical", MATERIALS)
         self.assertNotIn("lambert", MATERIALS)
         self.assertNotIn("toon", MATERIALS)
-        self.assertNotIn("torus", SHAPES)
+        self.assertNotIn("icosahedron", SHAPES)
+        self.assertNotIn("torusKnot", SHAPES)
         self.assertNotIn("orthographic", CAMERAS)
         self.assertNotIn("point", LIGHTS)
 

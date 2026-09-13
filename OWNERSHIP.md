@@ -1,6 +1,6 @@
 # Ownership + HARD invariants
 
-> **Diátaxis:** explanation · **Layer:** ux-space · **Soft:** 9 (loaders)
+> **Diátaxis:** explanation · **Layer:** ux-space · **Soft:** 10 (primitives)
 > Council: CLEAR. Do not violate this lock. Soft day-1 KEEP.
 
 ## 0. One screen
@@ -49,6 +49,8 @@ ux-compose  PRODUCT    wire/ Isolation door for Channel
    locked thin set `{basic, standard}` — not a materials catalog.
    Soft 9 leftover: thin glTF / texture loader nodes via Cap-gated
    `apply` — Peer concern, not a public GLTFLoader dump.
+   Soft 10 leftover: SHAPES expands additively with `cone` / `torus`
+   — Soft 2 names KEEP; not a geometry catalog.
    HOLD zero-Peer 3D and dual concurrent Peers as taught product.
 5. **Isolation.** Product never imports `ux_channel` outside a compose-style
    `wire/` door (`ux_space.wire` here). `core/` and `features/` never import
@@ -321,3 +323,34 @@ HOLD: Soft 10 primitives, R3F, materials catalog
 renaming motion, dual concurrent Peers as taught product, sixth Cap Host,
 generic pointer stack, useFrame, OrbitControls dump, GLTFLoader dump
 as public API.
+
+## 15. Soft 10 leftover
+
+Leftover: IR `SHAPES` expands additively with a locked thin set
+`cone` / `torus` — **not the geometry catalog**. Soft 2 names KEEP
+(`box` / `sphere` / `plane` / `cylinder`). Frozen Graph fluency:
+`.node(..., shape=...)` — Soft 2 fluency, no second Graph API
+(no `.cone()` / `.torus()`). Additive IR v1 — keys never reused;
+unknown fields ignored. Peer `peers/threejs` maps `cone` →
+`ConeGeometry` and `torus` → `TorusGeometry`. `peers/canvas`
+swap-proof degrades Soft 10 as 2D fill without breaking Soft 1–9.
+Cap-gated `apply` KEEP. Cap NEVER on ops/Result. No R3F. `features/`
+stays empty.
+
+KEEP: Isolation `wire/` only; Cap NEVER on ops/Result (`ops[].meta.cap`
+is disclosure); Peer-as-adapter `ux-space` not `three`; never `scene()` /
+`ux-scene`; Cap Host KEEP on Channel (`Channel.boot` / `mount_channel`);
+`core/` stays truth. Soft 2 SHAPES KEEP (`box` / `sphere` / `plane` /
+`cylinder`). Soft 3 camera/light KEEP (`perspective` / `ambient` /
+`directional`). Soft 4 rotation/scale + `material` `{basic}` KEEP.
+Soft 5 canvas swap-proof KEEP; day-1 stays `peers/threejs`. Soft 6
+pick/hit KEEP (`pickable` + Cap-gated `pick(hit)`). Soft 7 orbit/pan/zoom
+KEEP. Soft 8 `material.type` `{basic, standard}` KEEP. Soft 9 `{gltf,
+texture}` KEEP. Server-side `require_cap` KEEP.
+
+HOLD: full geometry catalog (`icosahedron` / `dodecahedron` /
+`torusKnot` / `capsule` / …), materials catalog
+(`phong` / `physical` / `lambert` / …), R3F dump, dual concurrent
+Peers as taught product, Cap-on-ops, zero-Peer, renaming motion,
+sixth Cap Host, generic pointer stack, useFrame, OrbitControls dump,
+GLTFLoader dump as public API.

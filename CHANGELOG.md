@@ -8,6 +8,36 @@ The **plan IR** uses a separate major (`IR_VERSION` / plan field `v`).
 
 ---
 
+## 2026-09-13 — Soft 10: additive primitives (leftover)
+
+- Leftover: IR `SHAPES` expands additively with a locked thin set
+  `cone` / `torus` — not the geometry catalog. Soft 2 names KEEP
+  (`box` / `sphere` / `plane` / `cylinder`). Frozen Graph fluency:
+  `.node(..., shape=...)` — no second Graph API. Additive IR v1 —
+  keys never reused; unknown fields ignored. Peer `peers/threejs`
+  maps `cone` → ConeGeometry and `torus` → TorusGeometry.
+  `peers/canvas` swap-proof degrades Soft 10 as 2D fill without
+  breaking Soft 1–9. Cap-gated `apply` KEEP. Cap NEVER on
+  ops/Result. No second Graph API. `features/` stays empty.
+- KEEP: Isolation `wire/` only. Cap NEVER on ops/Result (`ops[].meta.cap`
+  is disclosure). `require_cap` server-side only. Peer registers as
+  `ux-space` not `three`. Cap Host KEEP on Channel (`Channel.boot` /
+  `mount_channel`). Never `scene()` / `ux-scene`. Soft 2 SHAPES KEEP
+  (`box` / `sphere` / `plane` / `cylinder`). Soft 3 camera/light KEEP
+  (`perspective` / `ambient` / `directional`). Soft 4 rotation/scale +
+  `material` `{basic}` KEEP. Soft 5 canvas swap-proof KEEP; day-1 stays
+  threejs. Soft 6 pick/hit KEEP. Soft 7 orbit/pan/zoom KEEP. Soft 8
+  `material.type` `{basic, standard}` KEEP. Soft 9 `{gltf, texture}`
+  KEEP. `core/` stays truth.
+- HOLD: full geometry catalog (`icosahedron` / `dodecahedron` /
+  `torusKnot` / `capsule` / …), R3F, materials catalog
+  (`phong` / `physical` / `lambert` / …), dual concurrent Peers as
+  taught product, Cap-on-ops, zero-Peer, renaming motion, sixth Cap
+  Host, generic pointer stack, useFrame, OrbitControls dump,
+  GLTFLoader dump as public API.
+- Same-commit leftover teaching + locks. Extend Plan IR + Peer apply
+  only — Cap-gated `apply` KEEP.
+
 ## 2026-09-13 — Soft 9: glTF / texture loaders (leftover)
 
 - Leftover: thin locked loader surface for glTF and texture — not a

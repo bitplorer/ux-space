@@ -87,6 +87,8 @@ OrbitControls. Soft 8 leftover: mesh `material.type` thin set
 `roughness` on `standard`. Soft 9 leftover: `.gltf(id, src=)` /
 `.texture(id, src=)` + `material.map` (texture id) — Cap-gated
 `apply` only; loader is Peer concern, not a public GLTFLoader dump.
+Soft 10 leftover: additive shapes `cone` / `torus` — Soft 2
+`box` / `sphere` / `plane` / `cylinder` KEEP. Same `.node(..., shape=)`.
 Same ops — no second Graph API.
 
 Five-minute path: [START_HERE.md](START_HERE.md). Hard invariants:
@@ -146,7 +148,7 @@ through that door (or a compose `wire/`).
 | `ux_space/wire/` | Isolation door (optional `ux-channel`) |
 | `tests/` | Unit tests (no browser) |
 | `examples/day1/` | Plan print + Channel.boot / compose path |
-| `examples/soft_surface/` | Soft-surface leftover tour (SHAPES, camera/light, transform + basic/standard material, Peer-swap awareness, pickable, orbit/pan/zoom, glTF/texture loaders) |
+| `examples/soft_surface/` | Soft-surface leftover tour (SHAPES + Soft 10 cone/torus, camera/light, transform + basic/standard material, Peer-swap awareness, pickable, orbit/pan/zoom, glTF/texture loaders) |
 
 ## Tests
 

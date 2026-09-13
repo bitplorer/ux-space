@@ -30,11 +30,13 @@ class Graph:
     may take ``rotation=``. Lights stay position/color. Soft 6 leftover:
     ``node(..., pickable=)`` — optional bool on mesh nodes. Soft 7 leftover:
     ``camera(..., orbit=, pan=, zoom=)`` — camera control fields, not a
-    second Graph API. Soft 8 leftover: ``material.type`` thin set
+    second Graph API.     Soft 8 leftover: ``material.type`` thin set
     ``{basic, standard}`` — same ``material=`` kwarg, not a second Graph.
     Soft 9 leftover: ``gltf(id, src=)`` and ``texture(id, src=)`` —
     loader nodes, not ``node(..., kind=)`` and not a ``load()`` verb.
     Texture composes with Soft 8 via ``material.map`` (texture node id).
+    Soft 10 leftover: ``node(..., shape=)`` accepts thin additive
+    ``cone`` / ``torus`` — Soft 2 fluency, not a second Graph.
     """
 
     def __init__(self, gid: str | None = None) -> None:

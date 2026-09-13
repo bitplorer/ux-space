@@ -29,7 +29,7 @@ CONTRACT = {
         "JSON is the shared language. Unknown fields are ignored. Keys are never reused.",
         "A new v is the only legal break. Additive fields only inside v1.",
         "Features import ux_space.core only. Peers implement the Peer contract.",
-        "Soft 2 leftover: SHAPES is a locked set (box, sphere, plane, cylinder) — not the full three.js catalog.",
+        "Soft 2 leftover: SHAPES is a locked set (box, sphere, plane, cylinder) — Soft 2 names KEEP; not the full three.js catalog.",
         "Soft 3 leftover: optional camera/light node kinds (perspective / ambient / directional). Frozen Graph.camera / Graph.light. Additive IR v1.",
         "Soft 4 leftover: optional mesh rotation/scale + material {basic} (color/opacity). Top-level color KEEP; material.color wins. Frozen Graph.node rotation/scale/material. Camera may take rotation.",
         "Soft 5 leftover: canvas Peer proves swap. Same uxBridge.register('ux-space'). Day-1 remains threejs. Graph / Plan IR / apply() unchanged. Not dual concurrent Peers as product.",
@@ -37,6 +37,7 @@ CONTRACT = {
         "Soft 7 leftover: optional camera orbit/pan/zoom. Frozen Graph.camera orbit=/pan=/zoom=. Cap-gated orbit/pan/zoom → Result. Cap never on ops. Thin Peer apply, not OrbitControls.",
         "Soft 8 leftover: mesh material.type thin set {basic, standard}. Soft 4 basic color/opacity KEEP. Optional metalness/roughness on standard. Frozen Graph.node material=. Cap-gated apply KEEP. Cap never on ops. Not a materials catalog.",
         "Soft 9 leftover: thin gltf/texture loader nodes. Frozen Graph.gltf / Graph.texture (src). material.map is a texture node id. Load through Cap-gated apply only. Cap never on ops. Loader is Peer concern — not a public GLTFLoader dump.",
+        "Soft 10 leftover: SHAPES expands additively with cone/torus. Soft 2 box/sphere/plane/cylinder KEEP. Frozen Graph.node shape=. Cap-gated apply KEEP. Cap never on ops. Not a geometry catalog.",
         "HOLD: React/R3F, materials catalog, full three.js catalog, dual Peers, Cap-on-ops, zero-Peer, renaming motion, sixth Cap Host, ambient Client authority.",
     ),
 }

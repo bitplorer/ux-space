@@ -25,6 +25,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PKG = ROOT / "ux_space"
 
 SOFT2_SHAPES = frozenset({"box", "sphere", "plane", "cylinder"})
+SOFT10_SHAPES = frozenset({"box", "sphere", "plane", "cylinder", "cone", "torus"})
 TEACHING = (
     ROOT / "OWNERSHIP.md",
     ROOT / "CHANGELOG.md",
@@ -40,9 +41,10 @@ GEOMETRY = {
 
 class Soft2ShapesTests(unittest.TestCase):
     def test_shapes_locked_set(self) -> None:
-        self.assertEqual(SHAPES, SOFT2_SHAPES)
-        self.assertNotIn("torus", SHAPES)
+        self.assertTrue(SOFT2_SHAPES <= SHAPES)
+        self.assertEqual(SHAPES, SOFT10_SHAPES)
         self.assertNotIn("icosahedron", SHAPES)
+        self.assertNotIn("torusKnot", SHAPES)
 
     def test_validate_plan_accepts_soft2_shapes(self) -> None:
         for shape in sorted(SOFT2_SHAPES):
@@ -113,8 +115,10 @@ class Soft2ShapesTests(unittest.TestCase):
             with self.subTest(shape=shape):
                 self.assertIn(f'"{shape}"', js)
                 self.assertIn(ctor, js)
-        self.assertNotIn("TorusGeometry", js)
+        self.assertIn("ConeGeometry", js)
+        self.assertIn("TorusGeometry", js)
         self.assertNotIn("IcosahedronGeometry", js)
+        self.assertNotIn("TorusKnotGeometry", js)
 
     def test_features_stays_empty(self) -> None:
         """Soft 2 lives in core SHAPES + Peer apply — not a second Graph."""

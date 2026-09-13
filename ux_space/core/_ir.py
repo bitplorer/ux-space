@@ -20,8 +20,9 @@ KIND_GLTF = "gltf"
 KIND_TEXTURE = "texture"
 
 KINDS = frozenset({KIND_PLAN, KIND_GRAPH, KIND_NODE})
-# Soft 2 leftover: locked set. HOLD the full three.js catalog.
-SHAPES = frozenset({"box", "sphere", "plane", "cylinder"})
+# Soft 2 leftover: locked set. Soft 10 leftover: thin additive cone/torus.
+# HOLD the full three.js catalog.
+SHAPES = frozenset({"box", "sphere", "plane", "cylinder", "cone", "torus"})
 # Soft 3 leftover: locked node kinds. Soft 9 leftover: gltf / texture.
 NODE_KINDS = frozenset({KIND_NODE, KIND_CAMERA, KIND_LIGHT, KIND_GLTF, KIND_TEXTURE})
 CAMERAS = frozenset({"perspective"})

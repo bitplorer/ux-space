@@ -4,6 +4,7 @@
  *
  * Plan IR (v: "1"): { graph: { nodes: [{ id, kind, ... }] } }
  * Soft 2 leftover: locked shapes as filled 2D (box/sphere/plane/cylinder).
+ * Soft 10 leftover: cone / torus degrade as thin 2D fill. Soft 2 names KEEP.
  * Soft 3 leftover: camera/light nodes ignored (2D proof — no camera API).
  * Soft 4 leftover: mesh rotation / scale + material {basic}
  *   (color + opacity). Top-level color KEEP; material.color wins.
@@ -106,6 +107,18 @@
       ctx.beginPath();
       ctx.ellipse(0, 22, 18, 8, 0, 0, Math.PI * 2);
       ctx.fill();
+    } else if (shape === "cone") {
+      ctx.beginPath();
+      ctx.moveTo(0, -28);
+      ctx.lineTo(22, 22);
+      ctx.lineTo(-22, 22);
+      ctx.closePath();
+      ctx.fill();
+    } else if (shape === "torus") {
+      ctx.beginPath();
+      ctx.arc(0, 0, 26, 0, Math.PI * 2);
+      ctx.arc(0, 0, 12, 0, Math.PI * 2, true);
+      ctx.fill();
     } else {
       ctx.fillRect(-24, -24, 48, 48);
     }
@@ -195,6 +208,15 @@
         if (shape === "sphere") return rx * rx + ry * ry <= 28 * 28;
         if (shape === "plane") return Math.abs(rx) <= 40 && Math.abs(ry) <= 6;
         if (shape === "cylinder") return Math.abs(rx) <= 18 && Math.abs(ry) <= 30;
+        if (shape === "cone") {
+          if (ry < -28 || ry > 22) return false;
+          var half = 22 * ((ry + 28) / 50);
+          return Math.abs(rx) <= half;
+        }
+        if (shape === "torus") {
+          var r2 = rx * rx + ry * ry;
+          return r2 <= 26 * 26 && r2 >= 12 * 12;
+        }
         return Math.abs(rx) <= 24 && Math.abs(ry) <= 24;
       }
 

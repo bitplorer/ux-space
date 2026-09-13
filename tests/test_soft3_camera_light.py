@@ -26,6 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PKG = ROOT / "ux_space"
 
 SOFT2_SHAPES = frozenset({"box", "sphere", "plane", "cylinder"})
+SOFT10_SHAPES = frozenset({"box", "sphere", "plane", "cylinder", "cone", "torus"})
 SOFT3_CAMERAS = frozenset({"perspective"})
 SOFT3_LIGHTS = frozenset({"ambient", "directional"})
 TEACHING = (
@@ -48,7 +49,8 @@ def _mixed() -> Graph:
 
 class Soft3CameraLightTests(unittest.TestCase):
     def test_locked_sets(self) -> None:
-        self.assertEqual(SHAPES, SOFT2_SHAPES)
+        self.assertEqual(SHAPES, SOFT10_SHAPES)
+        self.assertTrue(SOFT2_SHAPES <= SHAPES)
         self.assertEqual(CAMERAS, SOFT3_CAMERAS)
         self.assertEqual(LIGHTS, SOFT3_LIGHTS)
         self.assertNotIn("orthographic", CAMERAS)
