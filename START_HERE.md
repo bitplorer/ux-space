@@ -5,6 +5,7 @@
 **Time:** ~5 minutes. Facade **0.1.0a1**, IR v1.
 
 Hard lock: [OWNERSHIP.md](OWNERSHIP.md). Runnable sample: [examples/day1/](examples/day1/).
+Soft 2 leftover: locked shapes `box` / `sphere` / `plane` / `cylinder` — not the three.js catalog.
 
 ---
 

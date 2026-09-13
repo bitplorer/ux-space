@@ -41,6 +41,14 @@ class PlanTests(unittest.TestCase):
                 {"v": "1", "kind": "plan", "id": "x", "graph": {"kind": "graph", "nodes": []}}
             )
 
+    def test_soft2_locked_shapes_accepted(self) -> None:
+        """Soft 2 SHAPES: box, sphere, plane, cylinder. Graph API unchanged."""
+        for shape in ("box", "sphere", "plane", "cylinder"):
+            with self.subTest(shape=shape):
+                plan = space("stage").node("hero", shape=shape).plan()
+                out = validate_plan(plan)
+                self.assertEqual(out["graph"]["nodes"][0]["shape"], shape)
+
     def test_unknown_shape_fails(self) -> None:
         with self.assertRaises(PlanError):
             validate_plan(
@@ -54,6 +62,8 @@ class PlanTests(unittest.TestCase):
                     },
                 }
             )
+        with self.assertRaises(PlanError):
+            space("stage").node("ghost", shape="icosahedron").plan()
 
     def test_wrong_version(self) -> None:
         plan = _minimal()

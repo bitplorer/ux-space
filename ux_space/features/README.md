@@ -6,4 +6,5 @@ Future Softs that extend ux-space live here.
 `ux_channel` (that stays behind `ux_space.wire/` or a compose `wire/` door).
 They do not own a Peer — adapters live under `peers/`.
 
-Day-1 is empty on purpose. Do not add product code until a later Soft.
+Soft 2 lives in `core/` SHAPES + Peer apply. This directory stays empty —
+do not invent a second Graph API here.

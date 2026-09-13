@@ -20,8 +20,14 @@ PEER = {
     ),
     "holds": (
         "zero-Peer 3D",
-        "day-1 dual Peers",
+        "dual Peers",
         "React/R3F",
+        "materials catalog",
         "full three.js catalog",
+        "Cap-on-ops",
+        "renaming motion",
+        "sixth Cap Host",
+        "ambient Client authority",
     ),
+    "soft2": "locked SHAPES box/sphere/plane/cylinder — not the full three.js catalog",
 }

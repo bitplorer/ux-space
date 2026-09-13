@@ -72,8 +72,10 @@ Same graph as a Result:
 result = graph.apply(cap=channel_minted_cap)
 ```
 
-The Peer (`peers/threejs`) registers as **`ux-space`** and applies the Plan.
-A future canvas / WebGL Peer consumes the same ops — Graph API unchanged.
+The Peer (`peers/threejs`) registers as **`ux-space`** and applies the Plan
+(Soft 2 leftover: locked shapes `box` / `sphere` / `plane` / `cylinder` —
+not the three.js catalog). A future canvas / WebGL Peer consumes the same
+ops — Graph API unchanged.
 
 Five-minute path: [START_HERE.md](START_HERE.md). Hard invariants:
 [OWNERSHIP.md](OWNERSHIP.md). Runnable samples: [examples/day1/](examples/day1/).

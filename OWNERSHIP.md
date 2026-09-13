@@ -1,7 +1,7 @@
 # Ownership + HARD invariants
 
-> **Diátaxis:** explanation · **Layer:** ux-space · **Soft:** day-1
-> Council: CLEAR. Do not violate this lock.
+> **Diátaxis:** explanation · **Layer:** ux-space · **Soft:** 2 (shapes pack)
+> Council: CLEAR. Do not violate this lock. Soft day-1 KEEP.
 
 ## 0. One screen
 
@@ -32,8 +32,9 @@ ux-compose  PRODUCT    wire/ Isolation door for Channel
 3. **Peer-as-adapter.** Three.js is the **day-1 Peer only**, not identity.
    Freeze Python graph + Cap-gated verb + Channel Result. Peer may swap
    later (canvas / WebGL / independent peer lib) without changing Graph.
-4. **Day-1 Soft ONLY.** One graph + one Cap-gated verb (`apply`) + one thin
-   Peer apply. HOLD zero-Peer 3D and day-1 dual Peers.
+4. **Day-1 Soft KEEP.** One graph + one Cap-gated verb (`apply`) + one thin
+   Peer apply. Soft 2 unlocks a locked SHAPES set only — not a second Graph.
+   HOLD zero-Peer 3D and dual Peers.
 5. **Isolation.** Product never imports `ux_channel` outside a compose-style
    `wire/` door (`ux_space.wire` here). `core/` and `features/` never import
    Channel.
@@ -49,8 +50,9 @@ ux-compose  PRODUCT    wire/ Isolation door for Channel
    A new `v` is the only legal break.
 9. **Layout.** `core/` is day-1 truth. `features/` import core only.
    `peers/` implement the Peer contract. Top `__all__` is frozen from core.
-10. **HOLD.** React / R3F, full three.js catalog, teaching Channel specialty
-    ops, renaming motion.
+10. **HOLD.** React / R3F, materials catalog, full three.js catalog, dual
+    Peers, Cap-on-ops, renaming motion, sixth Cap Host, ambient Client
+    authority, teaching Channel specialty ops.
 
 ## 2. Cap
 
@@ -104,3 +106,18 @@ app / compose  →  ux_space.wire  →  ux_channel  (Channel.boot, mount_channel
 ## 6. Day-1 DONE
 
 See the checklist in [CHANGELOG.md](CHANGELOG.md) `0.1.0a1`.
+
+## 7. Soft 2 leftover
+
+Leftover: IR `SHAPES` is a **locked Soft 2 set** (`box`, `sphere`, `plane`,
+`cylinder`) — **not the full three.js catalog**. Peer `peers/threejs` is a
+thin geometry map. Graph / `space()` / Cap-gated `apply()` unchanged.
+`features/` stays empty — Soft 2 lives in `core/` SHAPES + Peer apply.
+
+KEEP: Isolation `wire/` only; Cap NEVER on ops/Result (`ops[].meta.cap` is
+disclosure); Peer-as-adapter `ux-space` not `three`; never `scene()` /
+`ux-scene`; Cap Host KEEP on Channel (`Channel.boot` / `mount_channel`);
+`core/` stays truth.
+
+HOLD: R3F, materials catalog, dual Peers, Cap-on-ops, renaming motion,
+sixth Cap Host, ambient Client authority.
