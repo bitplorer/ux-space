@@ -8,6 +8,9 @@ Runnable paths for this Soft. Both compose the public surface —
 | [day1/](day1/) | Day-1 spine: one graph → Cap-gated apply → Channel Result → Peer apply |
 | [soft_surface/](soft_surface/) | Soft-surface leftover tour: Soft 2 SHAPES, Soft 3 camera/light, Soft 4 transform + `material.type=basic`, Soft 5 awareness (day-1 stays threejs; canvas is swap-proof only), Soft 6 `pickable` + Cap-gated `pick`, Soft 7 camera `orbit` / `pan` / `zoom`, Soft 8 `material.type=standard`, Soft 9 `.gltf` / `.texture` + `material.map`, Soft 10 `cone` / `torus` |
 
+Human-readable Soft 1–10: [docs/](../docs/). Leftover teaching lock:
+[OWNERSHIP.md](../OWNERSHIP.md).
+
 Always-works (no Channel):
 
 ```bash

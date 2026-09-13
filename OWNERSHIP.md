@@ -2,6 +2,9 @@
 
 > **Diátaxis:** explanation · **Layer:** ux-space · **Soft:** 10 (primitives)
 > Council: CLEAR. Do not violate this lock. Soft day-1 KEEP.
+>
+> Human-readable Soft 1–10: [docs/](docs/). Leftover sections below
+> stay the lock for Docs Soft. Do not replace them with a catalog dump.
 
 ## 0. One screen
 
