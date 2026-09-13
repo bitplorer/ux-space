@@ -20,5 +20,8 @@ Same Plan + same `bridge.call` `{method: "apply", args: [plan]}` ops.
 4. Do not register the product as `"three"` — that name is the Channel demo,
    not this Soft.
 
-HOLD: zero-Peer 3D, dual Peers, materials catalog, full three.js catalog.
+HOLD: zero-Peer 3D, dual Peers, materials catalog, full three.js catalog,
+Soft 4 transform/material.
 Soft 2 leftover: locked SHAPES (`box` / `sphere` / `plane` / `cylinder`).
+Soft 3 leftover: optional camera/light node kinds (`perspective` /
+`ambient` / `directional`).

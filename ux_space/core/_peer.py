@@ -30,4 +30,5 @@ PEER = {
         "ambient Client authority",
     ),
     "soft2": "locked SHAPES box/sphere/plane/cylinder — not the full three.js catalog",
+    "soft3": "optional camera/light node kinds — perspective / ambient / directional",
 }

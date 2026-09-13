@@ -1,6 +1,6 @@
 # Ownership + HARD invariants
 
-> **Diátaxis:** explanation · **Layer:** ux-space · **Soft:** 2 (shapes pack)
+> **Diátaxis:** explanation · **Layer:** ux-space · **Soft:** 3 (camera/light)
 > Council: CLEAR. Do not violate this lock. Soft day-1 KEEP.
 
 ## 0. One screen
@@ -34,7 +34,8 @@ ux-compose  PRODUCT    wire/ Isolation door for Channel
    later (canvas / WebGL / independent peer lib) without changing Graph.
 4. **Day-1 Soft KEEP.** One graph + one Cap-gated verb (`apply`) + one thin
    Peer apply. Soft 2 unlocks a locked SHAPES set only — not a second Graph.
-   HOLD zero-Peer 3D and dual Peers.
+   Soft 3 extends Plan IR + Peer apply with camera/light node kinds only.
+   HOLD zero-Peer 3D, dual Peers, and Soft 4 transform/material.
 5. **Isolation.** Product never imports `ux_channel` outside a compose-style
    `wire/` door (`ux_space.wire` here). `core/` and `features/` never import
    Channel.
@@ -51,8 +52,9 @@ ux-compose  PRODUCT    wire/ Isolation door for Channel
 9. **Layout.** `core/` is day-1 truth. `features/` import core only.
    `peers/` implement the Peer contract. Top `__all__` is frozen from core.
 10. **HOLD.** React / R3F, materials catalog, full three.js catalog, dual
-    Peers, Cap-on-ops, renaming motion, sixth Cap Host, ambient Client
-    authority, teaching Channel specialty ops.
+    Peers, Cap-on-ops, zero-Peer, renaming motion, sixth Cap Host,
+    ambient Client authority, teaching Channel specialty ops,
+    Soft 4 transform/material (separate Soft).
 
 ## 2. Cap
 
@@ -119,5 +121,23 @@ disclosure); Peer-as-adapter `ux-space` not `three`; never `scene()` /
 `ux-scene`; Cap Host KEEP on Channel (`Channel.boot` / `mount_channel`);
 `core/` stays truth.
 
-HOLD: R3F, materials catalog, dual Peers, Cap-on-ops, renaming motion,
-sixth Cap Host, ambient Client authority.
+HOLD: R3F, materials catalog, dual Peers, Cap-on-ops, zero-Peer,
+renaming motion, sixth Cap Host, ambient Client authority,
+Soft 4 transform/material (separate Soft).
+
+## 8. Soft 3 leftover
+
+Leftover: optional IR node kinds `camera` / `light` — locked set
+`perspective` camera + `ambient` / `directional` lights. Additive IR v1
+fields. Frozen Graph names: `.camera(...)` / `.light(...)` (Soft day-1
+fluency; not `.node(..., kind=)`). Peer `peers/threejs` applies camera +
+lights when present; Soft 2 mesh nodes still work. No second Graph API.
+
+KEEP: Isolation `wire/` only; Cap NEVER on ops/Result (`ops[].meta.cap` is
+disclosure); Peer-as-adapter `ux-space` not `three`; never `scene()` /
+`ux-scene`; Cap Host KEEP on Channel (`Channel.boot` / `mount_channel`);
+`core/` stays truth. Soft 2 SHAPES KEEP (`box` / `sphere` / `plane` /
+`cylinder`).
+
+HOLD: R3F, materials catalog, dual Peers, Cap-on-ops, zero-Peer,
+renaming motion, Soft 4 transform/material (separate Soft).

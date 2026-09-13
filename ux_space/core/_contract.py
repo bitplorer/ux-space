@@ -30,6 +30,7 @@ CONTRACT = {
         "A new v is the only legal break. Additive fields only inside v1.",
         "Features import ux_space.core only. Peers implement the Peer contract.",
         "Soft 2 leftover: SHAPES is a locked set (box, sphere, plane, cylinder) — not the full three.js catalog.",
-        "HOLD: React/R3F, materials catalog, full three.js catalog, dual Peers, Cap-on-ops, renaming motion, sixth Cap Host, ambient Client authority.",
+        "Soft 3 leftover: optional camera/light node kinds (perspective / ambient / directional). Frozen Graph.camera / Graph.light. Additive IR v1.",
+        "HOLD: React/R3F, materials catalog, full three.js catalog, dual Peers, Cap-on-ops, zero-Peer, renaming motion, sixth Cap Host, ambient Client authority, Soft 4 transform/material.",
     ),
 }

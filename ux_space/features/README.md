@@ -6,5 +6,6 @@ Future Softs that extend ux-space live here.
 `ux_channel` (that stays behind `ux_space.wire/` or a compose `wire/` door).
 They do not own a Peer — adapters live under `peers/`.
 
-Soft 2 lives in `core/` SHAPES + Peer apply. This directory stays empty —
-do not invent a second Graph API here.
+Soft 2 lives in `core/` SHAPES + Peer apply. Soft 3 lives in `core/`
+camera/light node kinds + Graph `.camera` / `.light` + Peer apply.
+This directory stays empty — do not invent a second Graph API here.

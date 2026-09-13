@@ -6,6 +6,7 @@
 
 Hard lock: [OWNERSHIP.md](OWNERSHIP.md). Runnable sample: [examples/day1/](examples/day1/).
 Soft 2 leftover: locked shapes `box` / `sphere` / `plane` / `cylinder` — not the three.js catalog.
+Soft 3 leftover: optional `.camera` / `.light` nodes (`perspective` / `ambient` / `directional`) — not a materials catalog.
 
 ---
 
