@@ -8,6 +8,19 @@ The **plan IR** uses a separate major (`IR_VERSION` / plan field `v`).
 
 ---
 
+## 2026-09-13 — Soft 2: shapes pack (locked set, not catalog)
+
+- Leftover: IR `SHAPES` is a locked Soft 2 set (`box`, `sphere`, `plane`,
+  `cylinder`) — **not the full three.js catalog**. Peer `peers/threejs` is
+  a thin geometry map. Graph / `space()` / Cap-gated `apply()` unchanged.
+- KEEP: Isolation `wire/` only. Cap NEVER on ops/Result (`ops[].meta.cap`
+  is disclosure). `require_cap` server-side only. Peer registers as
+  `ux-space` not `three`. Cap Host KEEP on Channel (`Channel.boot` /
+  `mount_channel`). Never `scene()` / `ux-scene`. `core/` stays truth.
+- HOLD: R3F, materials catalog, dual Peers, Cap-on-ops, renaming motion,
+  sixth Cap Host, ambient Client authority. Soft 3+ not in this change.
+- Same-commit leftover teaching + locks. No second Graph API.
+
 ## 0.1.0a1 — 2026-09-13
 
 Soft day-1. Council CLEAR.

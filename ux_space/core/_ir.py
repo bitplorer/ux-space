@@ -16,8 +16,8 @@ KIND_GRAPH = "graph"
 KIND_NODE = "node"
 
 KINDS = frozenset({KIND_PLAN, KIND_GRAPH, KIND_NODE})
-# Day-1: one primitive. HOLD the full three.js catalog.
-SHAPES = frozenset({"box"})
+# Soft 2 leftover: locked set. HOLD the full three.js catalog.
+SHAPES = frozenset({"box", "sphere", "plane", "cylinder"})
 
 
 class PlanError(ValueError):

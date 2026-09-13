@@ -29,6 +29,7 @@ CONTRACT = {
         "JSON is the shared language. Unknown fields are ignored. Keys are never reused.",
         "A new v is the only legal break. Additive fields only inside v1.",
         "Features import ux_space.core only. Peers implement the Peer contract.",
-        "HOLD: React/R3F, full three.js catalog, zero-Peer 3D, day-1 dual Peers, renaming motion.",
+        "Soft 2 leftover: SHAPES is a locked set (box, sphere, plane, cylinder) — not the full three.js catalog.",
+        "HOLD: React/R3F, materials catalog, full three.js catalog, dual Peers, Cap-on-ops, renaming motion, sixth Cap Host, ambient Client authority.",
     ),
 }

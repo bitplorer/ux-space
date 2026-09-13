@@ -1,9 +1,10 @@
 /**
- * ux-space day-1 Peer — thin three.js adapter.
+ * ux-space Peer — thin three.js adapter.
  * Package name: "ux-space" (wraps three; product surface ≠ Channel demo "three").
  *
  * Plan IR (v: "1"): { graph: { nodes: [{ id, shape, color?, position? }] } }
- * Day-1 shape: box. HOLD the full three.js catalog.
+ * Soft 2 leftover: locked geometry map (box/sphere/plane/cylinder).
+ * HOLD the full three.js catalog.
  */
 (function (global) {
   "use strict";
@@ -40,6 +41,27 @@
     var graph = (plan && plan.graph) || plan || {};
     var nodes = graph.nodes || [];
     return nodes[0] || {};
+  }
+
+  // Soft 2 leftover: thin geometry map. Not the full three.js catalog.
+  var GEOMETRY = {
+    "box": function (THREE) {
+      return new THREE.BoxGeometry(1.4, 1.4, 1.4);
+    },
+    "sphere": function (THREE) {
+      return new THREE.SphereGeometry(0.85, 32, 24);
+    },
+    "plane": function (THREE) {
+      return new THREE.PlaneGeometry(1.8, 1.8);
+    },
+    "cylinder": function (THREE) {
+      return new THREE.CylinderGeometry(0.7, 0.7, 1.4, 32);
+    },
+  };
+
+  function geometryFor(THREE, shape) {
+    var make = GEOMETRY[shape] || GEOMETRY.box;
+    return make(THREE);
   }
 
   global.uxBridge.register("ux-space", {
@@ -79,11 +101,12 @@
           metalness: 0.35,
           roughness: 0.35,
         });
-        var mesh = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.4, 1.4), mat);
+        var mesh = new THREE.Mesh(geometryFor(THREE, node.shape), mat);
         if (node.position) {
           mesh.position.set(node.position[0], node.position[1], node.position[2]);
         }
         scene.add(mesh);
+        var currentShape = node.shape || "box";
 
         var running = true;
         function frame() {
@@ -109,6 +132,14 @@
 
         function applyPlan(next) {
           var n = firstNode(next);
+          var nextShape = n.shape || "box";
+          if (nextShape !== currentShape) {
+            try {
+              mesh.geometry.dispose();
+            } catch (e) {}
+            mesh.geometry = geometryFor(THREE, nextShape);
+            currentShape = nextShape;
+          }
           if (n.color) mat.color.set(n.color);
           if (n.position) {
             mesh.position.set(n.position[0], n.position[1], n.position[2]);
