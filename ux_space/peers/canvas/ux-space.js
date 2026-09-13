@@ -9,6 +9,8 @@
  *   (color + opacity). Top-level color KEEP; material.color wins.
  * Soft 8 leftover: material.type {basic, standard}. Honor color/opacity;
  *   non-basic types degrade as basic (2D fill).
+ * Soft 9 leftover: gltf/texture degrade — skip load, placeholder for
+ *   gltf, ignore material.map (texture skip). Soft 1–8 meshes still paint.
  * Soft 6 leftover: optional mesh pickable. Pointer over the canvas
  *   hit-tests pickable 2D shapes and reports {node_id, point}.
  *   Channel owns click=Intent (uxChannel.runAction when present).
@@ -37,6 +39,15 @@
     var out = [];
     for (var i = 0; i < nodes.length; i++) {
       if (isMesh(nodes[i])) out.push(nodes[i]);
+    }
+    return out;
+  }
+
+  function gltfNodes(plan) {
+    var nodes = allNodes(plan);
+    var out = [];
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i].kind === "gltf") out.push(nodes[i]);
     }
     return out;
   }
@@ -101,6 +112,21 @@
     ctx.restore();
   }
 
+  // Soft 9 leftover: skip texture load. gltf degrades to a placeholder
+  // so Soft 1–8 mesh paint still runs. material.map is ignored.
+  function drawGltfPlaceholder(ctx, node) {
+    var pos = node.position || [0, 0, 0];
+    var xy = scaleXY(node.scale);
+    ctx.save();
+    ctx.translate(pos[0] * 48, -pos[1] * 48);
+    ctx.rotate(rotation2d(node.rotation));
+    ctx.scale(xy[0], xy[1]);
+    ctx.strokeStyle = "#64748b";
+    ctx.setLineDash([4, 4]);
+    ctx.strokeRect(-20, -20, 40, 40);
+    ctx.restore();
+  }
+
   global.uxBridge.register("ux-space", {
     mount: function (el, props) {
       props = props || {};
@@ -132,6 +158,10 @@
         var meshes = meshNodes(next);
         for (var i = 0; i < meshes.length; i++) {
           drawShape(ctx, meshes[i]);
+        }
+        var gltfs = gltfNodes(next);
+        for (var j = 0; j < gltfs.length; j++) {
+          drawGltfPlaceholder(ctx, gltfs[j]);
         }
       }
 

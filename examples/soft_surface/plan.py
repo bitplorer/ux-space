@@ -12,6 +12,8 @@ Soft 6 leftover: mesh ``pickable`` + Cap-gated ``pick(hit)``.
 Soft 7 leftover: camera ``orbit`` / ``pan`` / ``zoom`` + Cap-gated verbs.
 Soft 8 leftover: cylinder uses ``material.type=standard`` (metalness /
 roughness). Sphere stays Soft 4 ``basic``.
+Soft 9 leftover: ``.texture`` + ``material.map`` on the cylinder;
+``.gltf`` prop. Load rides Cap-gated ``apply`` — no ``load()`` verb.
 """
 
 from __future__ import annotations
@@ -38,6 +40,14 @@ def soft_surface() -> Graph:
         )
         .light("fill", light="ambient", color="#f8fafc")
         .light("key", light="directional", color="#fff7ed", position=(4, 6, 3))
+        .texture("stripe", src="stripe.png")
+        .gltf(
+            "prop",
+            src="prop.gltf",
+            position=(0.6, 0.2, 0.8),
+            rotation=(0.0, 0.4, 0.0),
+            scale=0.45,
+        )
         .node(
             "box",
             shape="box",
@@ -75,6 +85,7 @@ def soft_surface() -> Graph:
                 "opacity": 0.9,
                 "metalness": 0.25,
                 "roughness": 0.45,
+                "map": "stripe",
             },
         )
     )

@@ -16,16 +16,20 @@ KIND_GRAPH = "graph"
 KIND_NODE = "node"
 KIND_CAMERA = "camera"
 KIND_LIGHT = "light"
+KIND_GLTF = "gltf"
+KIND_TEXTURE = "texture"
 
 KINDS = frozenset({KIND_PLAN, KIND_GRAPH, KIND_NODE})
 # Soft 2 leftover: locked set. HOLD the full three.js catalog.
 SHAPES = frozenset({"box", "sphere", "plane", "cylinder"})
-# Soft 3 leftover: locked node kinds.
-NODE_KINDS = frozenset({KIND_NODE, KIND_CAMERA, KIND_LIGHT})
+# Soft 3 leftover: locked node kinds. Soft 9 leftover: gltf / texture.
+NODE_KINDS = frozenset({KIND_NODE, KIND_CAMERA, KIND_LIGHT, KIND_GLTF, KIND_TEXTURE})
 CAMERAS = frozenset({"perspective"})
 LIGHTS = frozenset({"ambient", "directional"})
 # Soft 8 leftover: locked thin set beyond Soft 4 basic. HOLD phong/physical catalog.
 MATERIALS = frozenset({"basic", "standard"})
+# Soft 9 leftover: locked thin loader set. HOLD fbx/obj/usdz catalog.
+LOADERS = frozenset({KIND_GLTF, KIND_TEXTURE})
 
 
 class PlanError(ValueError):
@@ -119,6 +123,10 @@ def _opt_material(node: Mapping[str, Any], ctx: str) -> dict[str, Any] | None:
     color = _opt_str(mat, "color", f"{ctx}.material")
     if color is not None:
         out["color"] = color
+    # Soft 9 leftover: material.map is a texture node id, not a URL dump.
+    tex_map = _opt_str(mat, "map", f"{ctx}.material")
+    if tex_map is not None:
+        out["map"] = tex_map
     # Soft 4 leftover: opacity. Soft 8 leftover: metalness/roughness for standard.
     for key in ("opacity", "metalness", "roughness"):
         unit = _opt_unit01(mat, key, f"{ctx}.material")
@@ -246,6 +254,27 @@ def _validate_camera_node(node: Mapping[str, Any], nid: str, ctx: str) -> dict[s
     return _keep_unknown(node, out)
 
 
+def _validate_gltf_node(node: Mapping[str, Any], nid: str, ctx: str) -> dict[str, Any]:
+    src = _req_str(node, "src", ctx)
+    out: dict[str, Any] = {"kind": KIND_GLTF, "id": nid, "src": src}
+    pos = _opt_position(node, ctx)
+    if pos is not None:
+        out["position"] = pos
+    rot = _opt_rotation(node, ctx)
+    if rot is not None:
+        out["rotation"] = rot
+    scale = _opt_scale(node, ctx)
+    if scale is not None:
+        out["scale"] = scale
+    return _keep_unknown(node, out)
+
+
+def _validate_texture_node(node: Mapping[str, Any], nid: str, ctx: str) -> dict[str, Any]:
+    src = _req_str(node, "src", ctx)
+    out: dict[str, Any] = {"kind": KIND_TEXTURE, "id": nid, "src": src}
+    return _keep_unknown(node, out)
+
+
 def _validate_light_node(node: Mapping[str, Any], nid: str, ctx: str) -> dict[str, Any]:
     light = node.get("light", "ambient")
     if not isinstance(light, str) or light not in LIGHTS:
@@ -271,6 +300,10 @@ def _validate_node(node: Mapping[str, Any], ctx: str) -> dict[str, Any]:
         return _validate_camera_node(node, nid, ctx)
     if kind == KIND_LIGHT:
         return _validate_light_node(node, nid, ctx)
+    if kind == KIND_GLTF:
+        return _validate_gltf_node(node, nid, ctx)
+    if kind == KIND_TEXTURE:
+        return _validate_texture_node(node, nid, ctx)
     return _validate_mesh_node(node, nid, ctx)
 
 

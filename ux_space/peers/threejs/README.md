@@ -15,7 +15,10 @@ Thin Channel bridge adapter. CDN three.js is OK for day-1.
   leftover: camera `orbit` / `pan` / `zoom` as a thin spherical pose
   (not OrbitControls). Soft 8 leftover: `material.type` `{basic,
   standard}` — `standard` → MeshStandardMaterial (`metalness` /
-  `roughness`). Mesh nodes still apply without those fields.
+  `roughness`). Soft 9 leftover: texture / gltf nodes. TextureLoader
+  + GLTFLoader stay inside this adapter (not a public API dump).
+  `material.map` is a texture node id. Load rides Cap-gated `apply`.
+  Mesh nodes still apply without those fields.
 
 `mount` reads optional `props.plan`. `call(..., "apply", [plan])` is the
 Cap-gated verb the Python side emits. `update` forwards `props.plan`.

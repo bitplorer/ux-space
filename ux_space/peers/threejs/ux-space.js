@@ -11,6 +11,10 @@
  *   MeshStandardMaterial when material is absent. Camera may take rotation.
  * Soft 8 leftover: material.type {basic, standard}. standard →
  *   MeshStandardMaterial (color / opacity / metalness / roughness).
+ * Soft 9 leftover: texture / gltf nodes. TextureLoader + GLTFLoader
+ *   stay inside this adapter (not a public API dump). material.map
+ *   is a texture node id. Load rides Cap-gated apply — no load()
+ *   method.
  * Soft 6 leftover: optional mesh pickable. Pointer over the canvas
  *   raycasts pickable meshes and reports {node_id, point}. Hit becomes
  *   Channel Intent args via uxChannel.runAction when present — not a
@@ -27,7 +31,10 @@
 
   var THREE_CDN =
     "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js";
+  var GLTF_CDN =
+    "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js";
   var loading = null;
+  var gltfLoading = null;
 
   function loadThree() {
     if (global.THREE) return Promise.resolve(global.THREE);
@@ -47,6 +54,26 @@
       document.head.appendChild(s);
     });
     return loading;
+  }
+
+  function loadGltfLoader(THREE) {
+    if (THREE.GLTFLoader) return Promise.resolve(THREE.GLTFLoader);
+    if (gltfLoading) return gltfLoading;
+    gltfLoading = new Promise(function (resolve, reject) {
+      var s = document.createElement("script");
+      s.src = GLTF_CDN;
+      s.async = true;
+      s.onload = function () {
+        if (!THREE.GLTFLoader) reject(new Error("GLTFLoader missing after load"));
+        else resolve(THREE.GLTFLoader);
+      };
+      s.onerror = function () {
+        gltfLoading = null;
+        reject(new Error("Failed to load GLTFLoader"));
+      };
+      document.head.appendChild(s);
+    });
+    return gltfLoading;
   }
 
   function allNodes(plan) {
@@ -79,6 +106,24 @@
     var out = [];
     for (var i = 0; i < nodes.length; i++) {
       if (nodes[i].kind === "light") out.push(nodes[i]);
+    }
+    return out;
+  }
+
+  function textureNodes(plan) {
+    var nodes = allNodes(plan);
+    var out = [];
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i].kind === "texture") out.push(nodes[i]);
+    }
+    return out;
+  }
+
+  function gltfNodes(plan) {
+    var nodes = allNodes(plan);
+    var out = [];
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i].kind === "gltf") out.push(nodes[i]);
     }
     return out;
   }
@@ -273,6 +318,7 @@
               mat.opacity = opacity;
               mat.transparent = opacity < 1;
             }
+            applyMaterialMap(n);
             return;
           }
           var metalness = materialMetalness(n);
@@ -297,6 +343,115 @@
             mat.opacity = stdOpacity;
             mat.transparent = stdOpacity < 1;
           }
+          applyMaterialMap(n);
+        }
+
+        var textures = {};
+        var gltfObjs = {};
+        var texLoader = new THREE.TextureLoader();
+
+        function applyMaterialMap(n) {
+          var mapId = n.material && n.material.map;
+          var entry = mapId ? textures[mapId] : null;
+          var tex = entry && entry.texture;
+          if (tex) {
+            mat.map = tex;
+            mat.needsUpdate = true;
+          } else if (mat.map) {
+            mat.map = null;
+            mat.needsUpdate = true;
+          }
+        }
+
+        function applyTextures(next) {
+          var authored = textureNodes(next);
+          var keep = {};
+          for (var i = 0; i < authored.length; i++) {
+            var tn = authored[i];
+            keep[tn.id] = true;
+            var prev = textures[tn.id];
+            if (prev && prev.src === tn.src) continue;
+            if (prev && prev.texture) {
+              try {
+                prev.texture.dispose();
+              } catch (e) {}
+            }
+            textures[tn.id] = { src: tn.src, texture: null };
+            (function (id, src) {
+              texLoader.load(
+                src,
+                function (tex) {
+                  if (!textures[id] || textures[id].src !== src) return;
+                  textures[id].texture = tex;
+                  applyMeshMaterial(currentNode);
+                },
+                undefined,
+                function () {}
+              );
+            })(tn.id, tn.src);
+          }
+          for (var id in textures) {
+            if (!keep[id]) {
+              if (textures[id].texture) {
+                try {
+                  textures[id].texture.dispose();
+                } catch (e) {}
+              }
+              delete textures[id];
+            }
+          }
+        }
+
+        function placeGltfObject(obj, gn) {
+          if (gn.position) {
+            obj.position.set(gn.position[0], gn.position[1], gn.position[2]);
+          }
+          applyRotation(obj, gn.rotation);
+          applyScale(obj, gn.scale);
+        }
+
+        function applyGltfNodes(next) {
+          var authored = gltfNodes(next);
+          var keep = {};
+          for (var i = 0; i < authored.length; i++) {
+            var gn = authored[i];
+            keep[gn.id] = true;
+            var prev = gltfObjs[gn.id];
+            if (prev && prev.src === gn.src && prev.object) {
+              placeGltfObject(prev.object, gn);
+              continue;
+            }
+            if (prev && prev.object) {
+              scene.remove(prev.object);
+            }
+            gltfObjs[gn.id] = { src: gn.src, object: null };
+            (function (id, src, node) {
+              loadGltfLoader(THREE)
+                .then(function (GLTFLoader) {
+                  var loader = new GLTFLoader();
+                  loader.load(
+                    src,
+                    function (gltf) {
+                      if (!gltfObjs[id] || gltfObjs[id].src !== src) return;
+                      var obj = gltf && gltf.scene ? gltf.scene : null;
+                      if (!obj) return;
+                      placeGltfObject(obj, node);
+                      scene.add(obj);
+                      gltfObjs[id].object = obj;
+                    },
+                    undefined,
+                    function () {}
+                  );
+                })
+                .catch(function () {});
+            })(gn.id, gn.src, gn);
+          }
+          for (var gid in gltfObjs) {
+            if (!keep[gid]) {
+              if (gltfObjs[gid].object) scene.remove(gltfObjs[gid].object);
+              delete gltfObjs[gid];
+            }
+          }
         }
 
         applyMeshMaterial(node);
@@ -310,6 +465,8 @@
         scene.add(mesh);
         var currentShape = node.shape || "box";
         var currentNode = node;
+        applyTextures(plan);
+        applyGltfNodes(plan);
         var authoredRotation = !!node.rotation;
         var lastHit = null;
         var raycaster = new THREE.Raycaster();
@@ -406,6 +563,8 @@
           currentNode = n;
           mesh.userData.node_id = n.id;
           mesh.userData.pickable = n.pickable === true;
+          applyTextures(next);
+          applyGltfNodes(next);
         }
 
         return {
@@ -439,6 +598,16 @@
               mat.dispose();
               renderer.dispose();
             } catch (e) {}
+            for (var tid in textures) {
+              if (textures[tid].texture) {
+                try {
+                  textures[tid].texture.dispose();
+                } catch (e) {}
+              }
+            }
+            for (var gid in gltfObjs) {
+              if (gltfObjs[gid].object) scene.remove(gltfObjs[gid].object);
+            }
             el.innerHTML = "";
           },
         };

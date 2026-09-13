@@ -1,6 +1,6 @@
 # Ownership + HARD invariants
 
-> **Diátaxis:** explanation · **Layer:** ux-space · **Soft:** 8 (materials)
+> **Diátaxis:** explanation · **Layer:** ux-space · **Soft:** 9 (loaders)
 > Council: CLEAR. Do not violate this lock. Soft day-1 KEEP.
 
 ## 0. One screen
@@ -47,6 +47,8 @@ ux-compose  PRODUCT    wire/ Isolation door for Channel
    `orbit` / `pan` / `zoom` — Peer applies thin camera pose, not
    OrbitControls. Soft 8 leftover: mesh `material.type` expands to a
    locked thin set `{basic, standard}` — not a materials catalog.
+   Soft 9 leftover: thin glTF / texture loader nodes via Cap-gated
+   `apply` — Peer concern, not a public GLTFLoader dump.
    HOLD zero-Peer 3D and dual concurrent Peers as taught product.
 5. **Isolation.** Product never imports `ux_channel` outside a compose-style
    `wire/` door (`ux_space.wire` here). `core/` and `features/` never import
@@ -284,3 +286,37 @@ HOLD: Soft 9 loaders, Soft 10 primitives, R3F, materials catalog
 (`phong` / `physical` / `lambert` / …), Cap-on-ops, zero-Peer,
 renaming motion, dual concurrent Peers as taught product, sixth Cap Host,
 generic pointer stack.
+
+## 14. Soft 9 leftover
+
+Leftover: thin locked loader surface for glTF and texture — **not** a
+loader catalog and **not** a public `GLTFLoader` dump. Frozen Graph
+names: `.gltf(id, src=, position=, rotation=, scale=)` and
+`.texture(id, src=)` — Soft 3 fluency, not `.node(..., kind=)` and not
+a `load()` verb. Additive IR v1 keys: node `kind` `gltf` / `texture`,
+node `src`, `material.map` (texture node id). Keys never reused;
+unknown fields ignored. Load happens through Cap-gated `apply` only —
+the Plan carries loader nodes; Cap NEVER on ops/Result. Server-side
+`require_cap` only.
+
+Peer `peers/threejs` applies texture (`TextureLoader`) and glTF
+(`GLTFLoader`) as a Peer concern. `peers/canvas` swap-proof degrades
+(skip / placeholder; `material.map` ignored) without breaking Soft 1–8.
+No second Graph API. `features/` stays empty.
+
+KEEP: Isolation `wire/` only; Cap NEVER on ops/Result (`ops[].meta.cap`
+is disclosure); Peer-as-adapter `ux-space` not `three`; never `scene()` /
+`ux-scene`; Cap Host KEEP on Channel (`Channel.boot` / `mount_channel`);
+`core/` stays truth. Soft 2 SHAPES KEEP (`box` / `sphere` / `plane` /
+`cylinder`). Soft 3 camera/light KEEP (`perspective` / `ambient` /
+`directional`). Soft 4 rotation/scale + `material` `{basic}` KEEP.
+Soft 5 canvas swap-proof KEEP; day-1 stays `peers/threejs`. Soft 6
+pick/hit KEEP (`pickable` + Cap-gated `pick(hit)`). Soft 7 orbit/pan/zoom
+KEEP. Soft 8 `material.type` `{basic, standard}` KEEP. Server-side
+`require_cap` KEEP.
+
+HOLD: Soft 10 primitives, R3F, materials catalog
+(`phong` / `physical` / `lambert` / …), Cap-on-ops, zero-Peer,
+renaming motion, dual concurrent Peers as taught product, sixth Cap Host,
+generic pointer stack, useFrame, OrbitControls dump, GLTFLoader dump
+as public API.

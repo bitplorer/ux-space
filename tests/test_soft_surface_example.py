@@ -87,7 +87,18 @@ class SoftSurfaceExampleTests(unittest.TestCase):
         self.assertEqual(cylinder["material"]["type"], "standard")
         self.assertEqual(cylinder["material"]["metalness"], 0.25)
         self.assertEqual(cylinder["material"]["roughness"], 0.45)
+        self.assertEqual(cylinder["material"]["map"], "stripe")
         self.assertEqual(cylinder["scale"], [0.65, 1.15, 0.65])
+
+    def test_example_composes_soft9_loaders(self) -> None:
+        plan = validate_plan(soft_surface().plan())
+        by_id = _nodes_by_id(plan)
+        self.assertEqual(by_id["stripe"]["kind"], "texture")
+        self.assertEqual(by_id["stripe"]["src"], "stripe.png")
+        self.assertEqual(by_id["prop"]["kind"], "gltf")
+        self.assertEqual(by_id["prop"]["src"], "prop.gltf")
+        self.assertEqual(by_id["prop"]["position"], [0.6, 0.2, 0.8])
+        self.assertEqual(by_id["cylinder"]["material"]["map"], "stripe")
 
     def test_apply_bridge_call_cap_absent_from_ops_and_result(self) -> None:
         token = STAND_IN_CAP
@@ -148,6 +159,10 @@ class SoftSurfaceExampleTests(unittest.TestCase):
         self.assertIn("orbit(", plan_src)
         self.assertIn("pan(", plan_src)
         self.assertIn("zoom(", plan_src)
+        self.assertIn(".gltf(", plan_src)
+        self.assertIn(".texture(", plan_src)
+        self.assertIn('"map": "stripe"', plan_src)
+        self.assertNotIn("def load(", plan_src)
         self.assertNotIn("scene(", plan_src)
         self.assertNotIn("ux-scene", plan_src)
         self.assertNotIn("kind=", plan_src)

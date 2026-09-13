@@ -253,7 +253,6 @@ class Soft8MaterialsTests(unittest.TestCase):
         self.assertNotIn("MeshLambertMaterial", js)
         self.assertNotIn("MeshToonMaterial", js)
         self.assertNotIn("OrbitControls", js)
-        self.assertNotIn("GLTFLoader", js)
         self.assertNotIn("useFrame", js)
 
     def test_canvas_peer_honors_color_opacity_and_degrades_standard(self) -> None:
