@@ -1,6 +1,6 @@
 # Ownership + HARD invariants
 
-> **Diátaxis:** explanation · **Layer:** ux-space · **Soft:** 5 (peer-swap)
+> **Diátaxis:** explanation · **Layer:** ux-space · **Soft:** 6 (pick/hit)
 > Council: CLEAR. Do not violate this lock. Soft day-1 KEEP.
 
 ## 0. One screen
@@ -8,6 +8,7 @@
 ```text
 ux-space    GRAPH      space() / Graph → Plan IR v1 (additive JSON)
             VERB       apply(graph, host=, cap=) → bridge.call method=apply
+                       Soft 6 leftover: pick(hit, host=, cap=) → method=pick
             PEER       thin adapter applies Result ops
                        day-1: peers/threejs registers as "ux-space"
                        swap-proof: peers/canvas registers as "ux-space"
@@ -38,7 +39,9 @@ ux-compose  PRODUCT    wire/ Isolation door for Channel
    Soft 3 extends Plan IR + Peer apply with camera/light node kinds only.
    Soft 4 adds optional mesh transform (`rotation` / `scale`) and thin
    `material` `{basic}` only. Soft 5 leftover: a canvas Peer proves the
-   swap under the same `ux-space` register; day-1 stays threejs. HOLD
+   swap under the same `ux-space` register; day-1 stays threejs. Soft 6
+   leftover: optional mesh `pickable` plus Cap-gated `pick(hit)` —
+   Peer raycast/pick reports `node_id` (+ `point`). HOLD
    zero-Peer 3D and dual concurrent Peers as taught product.
 5. **Isolation.** Product never imports `ux_channel` outside a compose-style
    `wire/` door (`ux_space.wire` here). `core/` and `features/` never import
@@ -190,3 +193,28 @@ disclosure); Peer-as-adapter `ux-space` not `three`; never `scene()` /
 
 HOLD: R3F, materials catalog, Cap-on-ops, zero-Peer, renaming motion,
 dual concurrent Peers as taught product, sixth Cap Host.
+
+## 11. Soft 6 leftover
+
+Leftover: optional mesh `pickable` (bool). Frozen Graph name:
+`.node(..., pickable=)`. Additive IR v1 — keys never reused; unknown
+fields ignored. Peer `peers/threejs` raycasts on pointer over the
+canvas and reports a hit `{node_id, point?}`. `peers/canvas` swap-proof
+does the same with a 2D hit-test (no three.js). Hit becomes Cap-gated
+Intent args via `pick(hit, host=, cap=)` → `bridge.call` method `pick`
+→ Result. Channel owns click=Intent (`uxChannel.runAction` when
+present). Soft 6 does not invent a generic pointer stack, `@action`,
+or Cap Host. No second Graph API. `features/` stays empty.
+
+KEEP: Isolation `wire/` only; Cap NEVER on ops/Result (`ops[].meta.cap`
+is disclosure); Peer-as-adapter `ux-space` not `three`; never `scene()` /
+`ux-scene`; Cap Host KEEP on Channel (`Channel.boot` / `mount_channel`);
+`core/` stays truth. Soft 2 SHAPES KEEP (`box` / `sphere` / `plane` /
+`cylinder`). Soft 3 camera/light KEEP (`perspective` / `ambient` /
+`directional`). Soft 4 rotation/scale + `material` `{basic}` KEEP.
+Soft 5 canvas swap-proof KEEP; day-1 stays `peers/threejs`.
+Server-side `require_cap` KEEP.
+
+HOLD: Soft 7 orbit/pan/zoom, R3F, materials catalog, Cap-on-ops,
+zero-Peer, renaming motion, dual concurrent Peers as taught product,
+sixth Cap Host.

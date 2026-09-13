@@ -39,6 +39,15 @@ def _req_str(obj: Mapping[str, Any], key: str, ctx: str) -> str:
     return val
 
 
+def _opt_bool(obj: Mapping[str, Any], key: str, ctx: str) -> bool | None:
+    if key not in obj:
+        return None
+    val = obj[key]
+    if not isinstance(val, bool):
+        raise PlanError(f"{ctx}: {key} must be a boolean")
+    return val
+
+
 def _opt_str(obj: Mapping[str, Any], key: str, ctx: str) -> str | None:
     val = obj.get(key)
     if val is None:
@@ -140,6 +149,9 @@ def _validate_mesh_node(node: Mapping[str, Any], nid: str, ctx: str) -> dict[str
     material = _opt_material(node, ctx)
     if material is not None:
         out["material"] = material
+    pickable = _opt_bool(node, "pickable", ctx)
+    if pickable is not None:
+        out["pickable"] = pickable
     return _keep_unknown(node, out)
 
 

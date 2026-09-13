@@ -12,6 +12,7 @@ parked. `features/` stays empty.
 | 3 | `.camera()` perspective · `.light()` ambient + directional |
 | 4 | mesh `rotation` / `scale` + `material.type=basic` (color/opacity). Top-level `color` KEEP; `material.color` wins when both are set (sphere). |
 | 5 | Day-1 Peer stays threejs. Canvas Peer is swap-proof only — do not teach dual concurrent Peers. |
+| 6 | Optional mesh `pickable` on `box`. Cap-gated `pick(hit)` reports `node_id` (+ `point`). Not orbit/pan/zoom. |
 
 ## 1. No Channel (always works)
 

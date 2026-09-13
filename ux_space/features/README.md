@@ -10,4 +10,5 @@ Soft 2 lives in `core/` SHAPES + Peer apply. Soft 3 lives in `core/`
 camera/light node kinds + Graph `.camera` / `.light` + Peer apply.
 Soft 4 lives in `core/` IR + Graph `.node` transform/material + Peer
 apply. Soft 5 lives in `peers/canvas` + the Peer contract — not here.
-This directory stays empty — do not invent a second Graph API here.
+Soft 6 lives in `core/` IR `pickable` + Cap-gated `pick()` + Peer pick —
+not here. This directory stays empty — do not invent a second Graph API here.

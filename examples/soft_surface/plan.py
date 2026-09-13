@@ -8,11 +8,12 @@ the server-side gate. Product code passes a Channel-minted Cap
 
 Soft 5 awareness: day-1 Peer stays threejs. Canvas Peer is swap-proof
 only — same ``ux-space`` register, not a second concurrent Peer.
+Soft 6 leftover: mesh ``pickable`` + Cap-gated ``pick(hit)``.
 """
 
 from __future__ import annotations
 
-from ux_space import Graph, apply, dumps, host_html, space, to_result
+from ux_space import Graph, apply, dumps, host_html, pick, space, to_result
 
 # Stand-in only. Product mints on Channel. Never copy onto ops/Result.
 STAND_IN_CAP = "channel-minted-cap-token"
@@ -38,6 +39,7 @@ def soft_surface() -> Graph:
             position=(-2.4, 0.5, 0),
             rotation=(0.25, 0.6, 0.05),
             scale=1.0,
+            pickable=True,
         )
         .node(
             "sphere",
@@ -76,4 +78,8 @@ if __name__ == "__main__":
     op = result["ops"][0]
     print(op["op"], op["method"], op["package"])
     print("cap" in op, "meta" in op)
+    hit_ops = pick({"node_id": "box", "point": [0.0, 0.5, 0.0]}, host="stage-3d", cap=STAND_IN_CAP)
+    hit_op = to_result(hit_ops)["ops"][0]
+    print(hit_op["op"], hit_op["method"], hit_op["package"])
+    print("cap" in hit_op, "meta" in hit_op)
     print(host_html("stage-3d", plan=plan)[:80], "...")

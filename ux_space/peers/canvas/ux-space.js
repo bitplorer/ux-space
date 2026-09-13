@@ -7,6 +7,9 @@
  * Soft 3 leftover: camera/light nodes ignored (2D proof — no camera API).
  * Soft 4 leftover: mesh rotation / scale + material {basic}
  *   (color + opacity). Top-level color KEEP; material.color wins.
+ * Soft 6 leftover: optional mesh pickable. Pointer over the canvas
+ *   hit-tests pickable 2D shapes and reports {node_id, point}.
+ *   Channel owns click=Intent (uxChannel.runAction when present).
  * Day-1 default stays peers/threejs. This file proves the swap path.
  */
 (function (global) {
@@ -125,6 +128,72 @@
 
       paint(plan);
 
+      var lastHit = null;
+
+      function isPickable(node) {
+        return !!(node && node.pickable === true);
+      }
+
+      function localPoint(ev) {
+        var rect = canvas.getBoundingClientRect();
+        var sx = (ev.clientX - rect.left) * (canvas.width / (rect.width || 1));
+        var sy = (ev.clientY - rect.top) * (canvas.height / (rect.height || 1));
+        return [sx - canvas.width / 2, sy - canvas.height / 2];
+      }
+
+      function shapeContains(node, x, y) {
+        var pos = node.position || [0, 0, 0];
+        var xy = scaleXY(node.scale);
+        var rot = rotation2d(node.rotation);
+        var lx = x - pos[0] * 48;
+        var ly = y - (-pos[1] * 48);
+        var c = Math.cos(-rot);
+        var s = Math.sin(-rot);
+        var rx = (lx * c - ly * s) / (xy[0] || 1);
+        var ry = (lx * s + ly * c) / (xy[1] || 1);
+        var shape = node.shape || "box";
+        if (shape === "sphere") return rx * rx + ry * ry <= 28 * 28;
+        if (shape === "plane") return Math.abs(rx) <= 40 && Math.abs(ry) <= 6;
+        if (shape === "cylinder") return Math.abs(rx) <= 18 && Math.abs(ry) <= 30;
+        return Math.abs(rx) <= 24 && Math.abs(ry) <= 24;
+      }
+
+      function hitFromEvent(ev) {
+        var p = localPoint(ev);
+        var meshes = meshNodes(plan);
+        for (var i = meshes.length - 1; i >= 0; i--) {
+          var node = meshes[i];
+          if (!isPickable(node)) continue;
+          if (shapeContains(node, p[0], p[1])) {
+            return {
+              node_id: node.id,
+              point: [p[0] / 48, -p[1] / 48, 0],
+            };
+          }
+        }
+        return null;
+      }
+
+      function reportHit(hit) {
+        if (!hit) return;
+        lastHit = hit;
+        var action = el.getAttribute && el.getAttribute("data-channel-action");
+        if (
+          action &&
+          global.uxChannel &&
+          typeof global.uxChannel.runAction === "function"
+        ) {
+          var cap = el.getAttribute("data-channel-cap") || undefined;
+          var target = el.getAttribute("data-channel-target") || undefined;
+          global.uxChannel.runAction(action, hit, cap, target);
+        }
+      }
+
+      function onPointerDown(ev) {
+        reportHit(hitFromEvent(ev));
+      }
+      canvas.addEventListener("pointerdown", onPointerDown);
+
       var ro = null;
       if (typeof ResizeObserver !== "undefined") {
         ro = new ResizeObserver(function () {
@@ -143,7 +212,12 @@
       return {
         apply: applyPlan,
         update: applyPlan,
+        pick: function (hit) {
+          if (hit && hit.node_id) lastHit = hit;
+          return lastHit;
+        },
         destroy: function () {
+          canvas.removeEventListener("pointerdown", onPointerDown);
           if (ro) ro.disconnect();
           el.innerHTML = "";
         },

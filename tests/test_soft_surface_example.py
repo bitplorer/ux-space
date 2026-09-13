@@ -74,6 +74,7 @@ class SoftSurfaceExampleTests(unittest.TestCase):
         self.assertNotIn("material", box)
         self.assertEqual(box["rotation"], [0.25, 0.6, 0.05])
         self.assertEqual(box["scale"], 1.0)
+        self.assertIs(box["pickable"], True)
         sphere = by_id["sphere"]
         self.assertEqual(sphere["color"], "#f59e0b")
         self.assertEqual(sphere["material"]["type"], "basic")
@@ -134,6 +135,8 @@ class SoftSurfaceExampleTests(unittest.TestCase):
         self.assertIn(".light(", plan_src)
         self.assertIn(".node(", plan_src)
         self.assertIn("apply(", plan_src)
+        self.assertIn("pick(", plan_src)
+        self.assertIn("pickable", plan_src)
         self.assertNotIn("scene(", plan_src)
         self.assertNotIn("ux-scene", plan_src)
         self.assertNotIn("kind=", plan_src)
