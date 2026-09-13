@@ -24,6 +24,8 @@ class Graph:
     Frozen builders: ``host``, ``node``, ``camera``, ``light``, ``plan``,
     ``apply``. Soft 3 leftover: ``camera(id, camera="perspective")`` and
     ``light(id, light="ambient"|"directional")`` — not ``node(..., kind=)``.
+    Soft 4 leftover: ``node(..., rotation=, scale=, material=)``. Camera
+    may take ``rotation=``. Lights stay position/color.
     """
 
     def __init__(self, gid: str | None = None) -> None:
@@ -44,6 +46,9 @@ class Graph:
         shape: str = "box",
         color: str | None = None,
         position: list[float] | tuple[float, float, float] | None = None,
+        rotation: list[float] | tuple[float, float, float] | None = None,
+        scale: float | list[float] | tuple[float, float, float] | None = None,
+        material: dict[str, Any] | None = None,
         **extra: Any,
     ) -> "Graph":
         if not isinstance(nid, str) or not nid.strip():
@@ -53,6 +58,12 @@ class Graph:
             item["color"] = color
         if position is not None:
             item["position"] = list(position)
+        if rotation is not None:
+            item["rotation"] = rotation
+        if scale is not None:
+            item["scale"] = scale
+        if material is not None:
+            item["material"] = material
         item.update(extra)
         self._nodes.append(item)
         return self
@@ -63,6 +74,7 @@ class Graph:
         *,
         camera: str = "perspective",
         position: list[float] | tuple[float, float, float] | None = None,
+        rotation: list[float] | tuple[float, float, float] | None = None,
         **extra: Any,
     ) -> "Graph":
         if not isinstance(nid, str) or not nid.strip():
@@ -74,6 +86,8 @@ class Graph:
         }
         if position is not None:
             item["position"] = list(position)
+        if rotation is not None:
+            item["rotation"] = rotation
         item.update(extra)
         self._nodes.append(item)
         return self

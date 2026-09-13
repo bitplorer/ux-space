@@ -20,10 +20,12 @@ KIND_LIGHT = "light"
 KINDS = frozenset({KIND_PLAN, KIND_GRAPH, KIND_NODE})
 # Soft 2 leftover: locked set. HOLD the full three.js catalog.
 SHAPES = frozenset({"box", "sphere", "plane", "cylinder"})
-# Soft 3 leftover: locked node kinds. HOLD materials + Soft 4 transform.
+# Soft 3 leftover: locked node kinds.
 NODE_KINDS = frozenset({KIND_NODE, KIND_CAMERA, KIND_LIGHT})
 CAMERAS = frozenset({"perspective"})
 LIGHTS = frozenset({"ambient", "directional"})
+# Soft 4 leftover: locked thin material set. HOLD standard/physical catalog.
+MATERIALS = frozenset({"basic"})
 
 
 class PlanError(ValueError):
@@ -46,17 +48,68 @@ def _opt_str(obj: Mapping[str, Any], key: str, ctx: str) -> str | None:
     return val
 
 
-def _opt_position(node: Mapping[str, Any], ctx: str) -> list[float] | None:
-    if "position" not in node:
+def _opt_vec3(node: Mapping[str, Any], key: str, ctx: str) -> list[float] | None:
+    if key not in node:
         return None
-    pos = node["position"]
+    val = node[key]
     if (
-        not isinstance(pos, (list, tuple))
-        or len(pos) != 3
-        or any(isinstance(n, bool) or not isinstance(n, (int, float)) for n in pos)
+        not isinstance(val, (list, tuple))
+        or len(val) != 3
+        or any(isinstance(n, bool) or not isinstance(n, (int, float)) for n in val)
     ):
-        raise PlanError(f"{ctx}: position must be [x, y, z] numbers")
-    return [float(pos[0]), float(pos[1]), float(pos[2])]
+        raise PlanError(f"{ctx}: {key} must be [x, y, z] numbers")
+    return [float(val[0]), float(val[1]), float(val[2])]
+
+
+def _opt_position(node: Mapping[str, Any], ctx: str) -> list[float] | None:
+    return _opt_vec3(node, "position", ctx)
+
+
+def _opt_rotation(node: Mapping[str, Any], ctx: str) -> list[float] | None:
+    return _opt_vec3(node, "rotation", ctx)
+
+
+def _opt_scale(node: Mapping[str, Any], ctx: str) -> float | list[float] | None:
+    if "scale" not in node:
+        return None
+    val = node["scale"]
+    if isinstance(val, bool):
+        raise PlanError(f"{ctx}: scale must be a number or [x, y, z] numbers")
+    if isinstance(val, (int, float)):
+        return float(val)
+    if (
+        not isinstance(val, (list, tuple))
+        or len(val) != 3
+        or any(isinstance(n, bool) or not isinstance(n, (int, float)) for n in val)
+    ):
+        raise PlanError(f"{ctx}: scale must be a number or [x, y, z] numbers")
+    return [float(val[0]), float(val[1]), float(val[2])]
+
+
+def _opt_material(node: Mapping[str, Any], ctx: str) -> dict[str, Any] | None:
+    if "material" not in node:
+        return None
+    mat = node["material"]
+    if not isinstance(mat, Mapping):
+        raise PlanError(f"{ctx}: material must be an object")
+    mtype = mat.get("type", "basic")
+    if not isinstance(mtype, str) or mtype not in MATERIALS:
+        raise PlanError(f"{ctx}: material.type must be one of {sorted(MATERIALS)}")
+    out: dict[str, Any] = {"type": mtype}
+    color = _opt_str(mat, "color", f"{ctx}.material")
+    if color is not None:
+        out["color"] = color
+    if "opacity" in mat:
+        opacity = mat["opacity"]
+        if isinstance(opacity, bool) or not isinstance(opacity, (int, float)):
+            raise PlanError(f"{ctx}: material.opacity must be a number 0..1")
+        if not 0.0 <= float(opacity) <= 1.0:
+            raise PlanError(f"{ctx}: material.opacity must be a number 0..1")
+        out["opacity"] = float(opacity)
+    for key, val in mat.items():
+        if key not in out:
+            out[key] = val
+    return out
 
 
 def _keep_unknown(node: Mapping[str, Any], out: dict[str, Any]) -> dict[str, Any]:
@@ -78,6 +131,15 @@ def _validate_mesh_node(node: Mapping[str, Any], nid: str, ctx: str) -> dict[str
     pos = _opt_position(node, ctx)
     if pos is not None:
         out["position"] = pos
+    rot = _opt_rotation(node, ctx)
+    if rot is not None:
+        out["rotation"] = rot
+    scale = _opt_scale(node, ctx)
+    if scale is not None:
+        out["scale"] = scale
+    material = _opt_material(node, ctx)
+    if material is not None:
+        out["material"] = material
     return _keep_unknown(node, out)
 
 
@@ -89,6 +151,9 @@ def _validate_camera_node(node: Mapping[str, Any], nid: str, ctx: str) -> dict[s
     pos = _opt_position(node, ctx)
     if pos is not None:
         out["position"] = pos
+    rot = _opt_rotation(node, ctx)
+    if rot is not None:
+        out["rotation"] = rot
     return _keep_unknown(node, out)
 
 

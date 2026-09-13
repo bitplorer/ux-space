@@ -21,7 +21,8 @@ Same Plan + same `bridge.call` `{method: "apply", args: [plan]}` ops.
    not this Soft.
 
 HOLD: zero-Peer 3D, dual Peers, materials catalog, full three.js catalog,
-Soft 4 transform/material.
+Soft 5 Peer-swap.
 Soft 2 leftover: locked SHAPES (`box` / `sphere` / `plane` / `cylinder`).
 Soft 3 leftover: optional camera/light node kinds (`perspective` /
 `ambient` / `directional`).
+Soft 4 leftover: mesh `rotation` / `scale` + `material` `{basic}`.
