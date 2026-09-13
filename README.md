@@ -82,6 +82,7 @@ register; day-1 stays threejs. Same ops — no second Graph API.
 
 Five-minute path: [START_HERE.md](START_HERE.md). Hard invariants:
 [OWNERSHIP.md](OWNERSHIP.md). Runnable samples: [examples/day1/](examples/day1/).
+Soft-surface leftover tour: [examples/soft_surface/](examples/soft_surface/).
 
 ## Ownership
 
@@ -101,6 +102,7 @@ Full contract: [OWNERSHIP.md](OWNERSHIP.md).
 | **New** | [START_HERE.md](START_HERE.md) |
 | **Need the lock** | [OWNERSHIP.md](OWNERSHIP.md) |
 | **Wiring Channel** | [ux_space/wire/README.md](ux_space/wire/README.md) · [examples/day1/](examples/day1/) |
+| **Soft leftovers** | [examples/soft_surface/](examples/soft_surface/) |
 | **Swapping the Peer** | [ux_space/peers/README.md](ux_space/peers/README.md) |
 
 ## API
@@ -133,6 +135,7 @@ through that door (or a compose `wire/`).
 | `ux_space/wire/` | Isolation door (optional `ux-channel`) |
 | `tests/` | Unit tests (no browser) |
 | `examples/day1/` | Plan print + Channel.boot / compose path |
+| `examples/soft_surface/` | Soft-surface leftover tour (SHAPES, camera/light, transform + basic material, Peer-swap awareness) |
 
 ## Tests
 
