@@ -12,5 +12,7 @@ Soft 4 lives in `core/` IR + Graph `.node` transform/material + Peer
 apply. Soft 5 lives in `peers/canvas` + the Peer contract — not here.
 Soft 6 lives in `core/` IR `pickable` + Cap-gated `pick()` + Peer pick —
 not here. Soft 7 lives in `core/` IR camera `orbit` / `pan` / `zoom` +
-Cap-gated `orbit()` / `pan()` / `zoom()` + Peer apply — not here. This
-directory stays empty — do not invent a second Graph API here.
+Cap-gated `orbit()` / `pan()` / `zoom()` + Peer apply — not here.
+Soft 8 lives in `core/` IR `MATERIALS` `{basic, standard}` + Peer
+apply — not here. This directory stays empty — do not invent a
+second Graph API here.

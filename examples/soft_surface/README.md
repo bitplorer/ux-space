@@ -14,6 +14,7 @@ parked. `features/` stays empty.
 | 5 | Day-1 Peer stays threejs. Canvas Peer is swap-proof only — do not teach dual concurrent Peers. |
 | 6 | Optional mesh `pickable` on `box`. Cap-gated `pick(hit)` reports `node_id` (+ `point`). |
 | 7 | Camera `orbit` / `pan` / `zoom` + Cap-gated `orbit` / `pan` / `zoom`. Thin Peer apply, not OrbitControls. |
+| 8 | Cylinder `material.type=standard` (`metalness` / `roughness`). Sphere stays Soft 4 `basic`. Not a materials catalog. |
 
 ## 1. No Channel (always works)
 

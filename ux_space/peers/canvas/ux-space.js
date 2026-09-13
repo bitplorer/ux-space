@@ -7,6 +7,8 @@
  * Soft 3 leftover: camera/light nodes ignored (2D proof — no camera API).
  * Soft 4 leftover: mesh rotation / scale + material {basic}
  *   (color + opacity). Top-level color KEEP; material.color wins.
+ * Soft 8 leftover: material.type {basic, standard}. Honor color/opacity;
+ *   non-basic types degrade as basic (2D fill).
  * Soft 6 leftover: optional mesh pickable. Pointer over the canvas
  *   hit-tests pickable 2D shapes and reports {node_id, point}.
  *   Channel owns click=Intent (uxChannel.runAction when present).
@@ -53,6 +55,11 @@
     return !!(node.material && (node.material.type === "basic" || !node.material.type));
   }
 
+  // Soft 8 leftover: standard degrades as basic fill (honor color/opacity).
+  function isPaintMaterial(node) {
+    return isBasicMaterial(node) || !!(node.material && node.material.type === "standard");
+  }
+
   function scaleXY(scale) {
     if (scale == null) return [1, 1];
     if (typeof scale === "number") return [scale, scale];
@@ -72,7 +79,7 @@
     ctx.translate(pos[0] * 48, -pos[1] * 48);
     ctx.rotate(rotation2d(node.rotation));
     ctx.scale(xy[0], xy[1]);
-    ctx.globalAlpha = isBasicMaterial(node) ? meshOpacity(node) : 1;
+    ctx.globalAlpha = isPaintMaterial(node) ? meshOpacity(node) : 1;
     ctx.fillStyle = meshColor(node);
     if (shape === "sphere") {
       ctx.beginPath();

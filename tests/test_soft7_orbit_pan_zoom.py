@@ -52,6 +52,7 @@ SOFT2_SHAPES = frozenset({"box", "sphere", "plane", "cylinder"})
 SOFT3_CAMERAS = frozenset({"perspective"})
 SOFT3_LIGHTS = frozenset({"ambient", "directional"})
 SOFT4_MATERIALS = frozenset({"basic"})
+SOFT8_MATERIALS = frozenset({"basic", "standard"})
 TEACHING = (
     ROOT / "OWNERSHIP.md",
     ROOT / "CHANGELOG.md",
@@ -91,11 +92,12 @@ class Soft7OrbitPanZoomTests(unittest.TestCase):
         self.assertEqual(SHAPES, SOFT2_SHAPES)
         self.assertEqual(CAMERAS, SOFT3_CAMERAS)
         self.assertEqual(LIGHTS, SOFT3_LIGHTS)
-        self.assertEqual(MATERIALS, SOFT4_MATERIALS)
+        self.assertEqual(MATERIALS, SOFT8_MATERIALS)
+        self.assertTrue(SOFT4_MATERIALS <= MATERIALS)
         self.assertNotIn("torus", SHAPES)
         self.assertNotIn("orthographic", CAMERAS)
         self.assertNotIn("point", LIGHTS)
-        self.assertNotIn("standard", MATERIALS)
+        self.assertNotIn("phong", MATERIALS)
 
     def test_validate_accepts_orbit_pan_zoom_on_camera(self) -> None:
         out = validate_plan(_mixed().plan())

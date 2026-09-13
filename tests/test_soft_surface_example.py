@@ -84,7 +84,9 @@ class SoftSurfaceExampleTests(unittest.TestCase):
         self.assertEqual(sphere["material"]["color"], "#22c55e")
         self.assertEqual(sphere["material"]["opacity"], 0.85)
         cylinder = by_id["cylinder"]
-        self.assertEqual(cylinder["material"]["type"], "basic")
+        self.assertEqual(cylinder["material"]["type"], "standard")
+        self.assertEqual(cylinder["material"]["metalness"], 0.25)
+        self.assertEqual(cylinder["material"]["roughness"], 0.45)
         self.assertEqual(cylinder["scale"], [0.65, 1.15, 0.65])
 
     def test_apply_bridge_call_cap_absent_from_ops_and_result(self) -> None:

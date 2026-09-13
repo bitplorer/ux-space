@@ -13,7 +13,9 @@ Thin Channel bridge adapter. CDN three.js is OK for day-1.
   when present. Soft 6 leftover: optional mesh `pickable`. Pointer
   over the canvas raycasts and reports `{node_id, point?}`. Soft 7
   leftover: camera `orbit` / `pan` / `zoom` as a thin spherical pose
-  (not OrbitControls). Mesh nodes still apply without those fields.
+  (not OrbitControls). Soft 8 leftover: `material.type` `{basic,
+  standard}` — `standard` → MeshStandardMaterial (`metalness` /
+  `roughness`). Mesh nodes still apply without those fields.
 
 `mount` reads optional `props.plan`. `call(..., "apply", [plan])` is the
 Cap-gated verb the Python side emits. `update` forwards `props.plan`.

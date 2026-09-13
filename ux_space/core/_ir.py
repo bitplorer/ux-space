@@ -24,8 +24,8 @@ SHAPES = frozenset({"box", "sphere", "plane", "cylinder"})
 NODE_KINDS = frozenset({KIND_NODE, KIND_CAMERA, KIND_LIGHT})
 CAMERAS = frozenset({"perspective"})
 LIGHTS = frozenset({"ambient", "directional"})
-# Soft 4 leftover: locked thin material set. HOLD standard/physical catalog.
-MATERIALS = frozenset({"basic"})
+# Soft 8 leftover: locked thin set beyond Soft 4 basic. HOLD phong/physical catalog.
+MATERIALS = frozenset({"basic", "standard"})
 
 
 class PlanError(ValueError):
@@ -95,6 +95,17 @@ def _opt_scale(node: Mapping[str, Any], ctx: str) -> float | list[float] | None:
     return [float(val[0]), float(val[1]), float(val[2])]
 
 
+def _opt_unit01(obj: Mapping[str, Any], key: str, ctx: str) -> float | None:
+    if key not in obj:
+        return None
+    val = obj[key]
+    if isinstance(val, bool) or not isinstance(val, (int, float)):
+        raise PlanError(f"{ctx}: {key} must be a number 0..1")
+    if not 0.0 <= float(val) <= 1.0:
+        raise PlanError(f"{ctx}: {key} must be a number 0..1")
+    return float(val)
+
+
 def _opt_material(node: Mapping[str, Any], ctx: str) -> dict[str, Any] | None:
     if "material" not in node:
         return None
@@ -108,13 +119,11 @@ def _opt_material(node: Mapping[str, Any], ctx: str) -> dict[str, Any] | None:
     color = _opt_str(mat, "color", f"{ctx}.material")
     if color is not None:
         out["color"] = color
-    if "opacity" in mat:
-        opacity = mat["opacity"]
-        if isinstance(opacity, bool) or not isinstance(opacity, (int, float)):
-            raise PlanError(f"{ctx}: material.opacity must be a number 0..1")
-        if not 0.0 <= float(opacity) <= 1.0:
-            raise PlanError(f"{ctx}: material.opacity must be a number 0..1")
-        out["opacity"] = float(opacity)
+    # Soft 4 leftover: opacity. Soft 8 leftover: metalness/roughness for standard.
+    for key in ("opacity", "metalness", "roughness"):
+        unit = _opt_unit01(mat, key, f"{ctx}.material")
+        if unit is not None:
+            out[key] = unit
     for key, val in mat.items():
         if key not in out:
             out[key] = val
