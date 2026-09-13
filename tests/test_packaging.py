@@ -68,3 +68,6 @@ class PackagingTests(unittest.TestCase):
         self.assertIn("mount_channel", text)
         self.assertIn("ux-scene", text)
         self.assertIn("wire/", text)
+        self.assertIn("ops[].meta.cap", text)
+        self.assertIn("disclosure", text)
+        self.assertIn("server-side", text.lower())

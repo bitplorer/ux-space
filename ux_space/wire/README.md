@@ -16,6 +16,7 @@ modules.
 | Intent verify | Not reimplemented |
 
 `apply()` still requires a Cap token so the Soft never becomes ambient.
-Verification of that token is Channel's job when the Intent arrives.
+The token stays on the server — it is not copied onto Result ops.
+Verification is Channel's job when the Intent arrives.
 
 Optional extra: `pip install 'ux-space[channel]'`.

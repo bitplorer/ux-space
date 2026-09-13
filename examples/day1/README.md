@@ -32,7 +32,7 @@ Product apps should not `import ux_channel`. Compose (or this Soft's
 from ux_space import apply, space
 
 graph = space("stage").host("stage-3d").node("hero", color="#6366f1")
-ops = apply(graph, cap=channel_minted_cap)
+ops = apply(graph, cap=channel_minted_cap)  # Cap stays server-side; not on ops
 # fold ops into the Channel Result the compose wire already builds
 ```
 

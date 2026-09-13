@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import unittest
 
 from ux_space import (
@@ -38,7 +39,9 @@ class OpsTests(unittest.TestCase):
         self.assertEqual(op["package"], PACKAGE)
         self.assertEqual(op["package"], "ux-space")
         self.assertEqual(op["args"][0]["id"], "stage")
-        self.assertEqual(op["meta"]["cap"], "channel-minted-token")
+        self.assertNotIn("meta", op)
+        self.assertNotIn("cap", op)
+        self.assertNotIn("channel-minted-token", json.dumps(ops))
 
     def test_apply_requires_cap(self) -> None:
         graph = space("stage").host("stage-3d").node("hero")
@@ -55,7 +58,19 @@ class OpsTests(unittest.TestCase):
 
         graph = space("stage").host("h").node("n")
         ops = apply(graph, cap=Token())
-        self.assertEqual(ops[0]["meta"]["cap"], "minted-by-channel")
+        self.assertEqual(ops[0]["op"], "bridge.call")
+        self.assertNotIn("meta", ops[0])
+        self.assertNotIn("minted-by-channel", json.dumps(ops))
+
+    def test_apply_does_not_ship_cap_on_result(self) -> None:
+        token = "channel-minted-token-MUST-NOT-SHIP"
+        graph = space("stage").host("stage-3d").node("hero")
+        ops = apply(graph, cap=token)
+        result = to_result(ops)
+        self.assertNotIn("meta", ops[0])
+        self.assertNotIn("cap", ops[0])
+        self.assertNotIn(token, json.dumps(ops))
+        self.assertNotIn(token, json.dumps(result["ops"]))
 
     def test_apply_needs_host(self) -> None:
         graph = space("stage").node("hero")

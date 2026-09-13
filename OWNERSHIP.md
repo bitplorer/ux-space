@@ -38,7 +38,9 @@ ux-compose  PRODUCT    wire/ Isolation door for Channel
    `wire/` door (`ux_space.wire` here). `core/` and `features/` never import
    Channel.
 6. **Cap Host.** Cap mint / `Channel.boot` / `mount_channel` KEEP on Channel.
-   Do not invent a second Cap Host. `apply()` only refuses a missing token.
+   Do not invent a second Cap Host. `apply()` only refuses a missing token
+   **server-side**. The token must not ride the Result (`ops[].meta.cap` is
+   disclosure). Peer does not need it.
 7. **Bridge plane.** Under the hood, ops are `bridge.mount` /
    `bridge.update` / `bridge.call` (see `bitplorer/ux-channel@a6ab159`
    example `python/examples/ux_dom_threejs/`). Do not teach Channel
@@ -55,12 +57,14 @@ ux-compose  PRODUCT    wire/ Isolation door for Channel
 | Who | What |
 |-----|------|
 | Channel | `CapService.mint` / `ch.control` / Intent verify |
-| ux-space | `require_cap` — token present or `CapRequired` |
-| Peer | Applies ops. Never mints. |
+| ux-space | `require_cap` — token present or `CapRequired` (server-side only) |
+| Peer | Applies ops. Never mints. Never sees the Cap. |
 
-Passing `cap=` on `apply()` does not verify HMAC. Channel already verified
-when the handler ran — or will verify when the Intent arrives. The Soft
-stays Cap-aware so authoring without a token fails closed.
+Passing `cap=` on `apply()` does not verify HMAC and does **not** copy the
+token onto `bridge.call` / Result ops. Channel already verified when the
+handler ran — or will verify when the Intent arrives. The Soft stays
+Cap-aware so authoring without a token fails closed. Shipping Cap on the
+Result is disclosure.
 
 ## 3. Peer-as-adapter
 
@@ -92,6 +96,7 @@ app / compose  →  ux_space.wire  →  ux_channel  (Channel.boot, mount_channel
 - Importing `ux_channel` from `core/` or `features/`
 - Cap HMAC mint / verify / `CapMachine` in this Soft
 - A second Cap Host beside Channel
+- Cap token on client-bound Result ops (`ops[].meta.cap` or any op field)
 - Identity = Three.js (catalog, React/R3F, dual Peers on day-1)
 - Channel ops other than the bridge plane (`morph`, `toast`, `transition.*`, …)
 - Vendoring Channel

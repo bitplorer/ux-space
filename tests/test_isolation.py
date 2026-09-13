@@ -71,6 +71,12 @@ class IsolationTests(unittest.TestCase):
         importlib.import_module("ux_space")
         self.assertNotIn("ux_channel", sys.modules)
 
+    def test_apply_source_does_not_emit_meta_cap(self) -> None:
+        text = (PKG / "core" / "_ops.py").read_text(encoding="utf-8")
+        self.assertIn("require_cap(cap)", text)
+        self.assertNotIn('meta={"cap"', text)
+        self.assertNotIn('"cap": token', text)
+
     def test_no_cap_host_clone(self) -> None:
         for path in _py_files():
             if _in_wire(path):

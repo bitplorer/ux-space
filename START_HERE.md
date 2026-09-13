@@ -42,11 +42,13 @@ plan = graph.plan()
 print(plan["kind"], plan["graph"]["nodes"][0]["id"])
 
 # In product, `cap` comes from Channel (ch.control / CapService.mint).
+# require_cap is server-side only — the token does not ride the Result.
 ops = apply(graph, cap="channel-minted-cap-token")
 print(ops[0]["op"], ops[0]["method"], ops[0]["package"])
+print("cap" in ops[0], "meta" in ops[0])
 ```
 
-Success: printed `plan hero` then `bridge.call apply ux-space`.
+Success: printed `plan hero` then `bridge.call apply ux-space` then `False False`.
 
 Missing Cap fails closed:
 

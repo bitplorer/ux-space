@@ -57,7 +57,8 @@ graph = (
     .host("stage-3d")
     .node("hero", shape="box", color="#6366f1")
 )
-# `cap` is Channel-minted (ch.control / CapService.mint). This Soft does not mint.
+# `cap` is Channel-minted (ch.control / CapService.mint). Server-side gate only —
+# this Soft does not mint, and the token does not ride the Result.
 ops = apply(graph, host="stage-3d", cap=channel_minted_cap)
 result = to_result(ops)
 # result["ops"][0]["op"] == "bridge.call"

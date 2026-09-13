@@ -73,8 +73,9 @@ def apply(
     """The day-1 Cap-gated verb. Returns one ``bridge.call`` (method ``apply``).
 
     ``cap`` must be a Channel-minted token. This Soft does not mint or verify.
+    The token stays server-side — it is not copied onto the Result ops.
     """
-    token = require_cap(cap)
+    require_cap(cap)
     plan = _as_plan(graph)
     hid = host or plan.get("graph", {}).get("host")
     if not isinstance(hid, str) or not hid.strip():
@@ -86,7 +87,6 @@ def apply(
             method=APPLY_METHOD,
             args=[plan],
             package=package,
-            meta={"cap": token},
         )
     ]
 

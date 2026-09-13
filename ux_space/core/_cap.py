@@ -1,6 +1,7 @@
 """Cap-aware gate. Cap mint stays Channel.
 
-This Soft refuses a missing token. It does not HMAC-sign, verify, or host Caps.
+This Soft refuses a missing token on the server. It does not HMAC-sign,
+verify, host Caps, or copy the token onto Result ops. Peer does not need it.
 Channel.boot / CapService.mint / mount_channel remain the Cap Host.
 """
 
@@ -14,7 +15,7 @@ class CapRequired(ValueError):
 
 
 def require_cap(cap: Any) -> str:
-    """Return a non-empty Cap token. Minting is Channel's job."""
+    """Return a non-empty Cap token for the server gate. Do not put it on ops."""
     if cap is None:
         raise CapRequired(
             "apply requires a Channel-minted Cap; mint stays on Channel "

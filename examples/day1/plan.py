@@ -2,8 +2,9 @@
 
     PYTHONPATH=. python examples/day1/plan.py
 
-The token here is a stand-in so the op shape is visible. Product code
-passes a Channel-minted Cap (ch.control / CapService.mint).
+The token here is a stand-in for the server-side gate. Product code
+passes a Channel-minted Cap (ch.control / CapService.mint). The token
+is not copied onto Result ops.
 """
 
 from __future__ import annotations

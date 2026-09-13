@@ -18,7 +18,8 @@ Soft day-1. Council CLEAR.
 - `space()` / `Graph` — one scene graph (not motion `scene()`)
 - Plan IR v1 additive JSON + `validate_plan`
 - Cap-gated `apply()` → Channel-compatible `bridge.call` method `apply`
-- Cap mint stays Channel — documented; missing token raises `CapRequired`
+- Cap mint stays Channel; missing token raises `CapRequired` server-side
+- Cap token is not copied onto Result ops (`ops[].meta.cap` is disclosure)
 - Peer contract + thin Three.js adapter registered as `ux-space`
 - Isolation door `ux_space.wire` (off top `__all__`)
 - `features/` stub for later Softs that import core
