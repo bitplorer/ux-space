@@ -18,6 +18,8 @@ Thin Channel bridge adapter. CDN three.js is OK for day-1.
   `roughness`). Soft 9 leftover: texture / gltf nodes. TextureLoader
   + r160 JSM GLTFLoader stay inside this adapter (not a public API dump).
   `material.map` is a texture node id. Load rides Cap-gated `apply`.
+  Soft 10 leftover: thin additive `cone` / `torus` (`ConeGeometry` /
+  `TorusGeometry`). Soft 2 names KEEP. Not the catalog.
   Mesh nodes still apply without those fields.
 
 `mount` reads optional `props.plan`. `call(..., "apply", [plan])` is the

@@ -16,6 +16,7 @@ parked. `features/` stays empty.
 | 7 | Camera `orbit` / `pan` / `zoom` + Cap-gated `orbit` / `pan` / `zoom`. Thin Peer apply, not OrbitControls. |
 | 8 | Cylinder `material.type=standard` (`metalness` / `roughness`). Sphere stays Soft 4 `basic`. Not a materials catalog. |
 | 9 | `.texture("stripe", src=)` + box `material.map="stripe"` (first mesh — day-1 Peer apply). `.gltf("prop", src=)` with Soft 4 transform. Cap-gated `apply` only — not a public GLTFLoader dump. `src` is author-supplied (relative or http(s)). |
+| 10 | Additive SHAPES `cone` / `torus` — Soft 2 `box` / `sphere` / `plane` / `cylinder` KEEP. Same `.node(..., shape=)`. Not a geometry catalog. |
 
 ## 1. No Channel (always works)
 

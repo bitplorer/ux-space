@@ -16,5 +16,7 @@ Cap-gated `orbit()` / `pan()` / `zoom()` + Peer apply — not here.
 Soft 8 lives in `core/` IR `MATERIALS` `{basic, standard}` + Peer
 apply — not here. Soft 9 lives in `core/` IR `LOADERS` `{gltf,
 texture}` + Graph `.gltf` / `.texture` + `material.map` + Peer
-apply — not here. This directory stays empty — do not invent a
-second Graph API here.
+apply — not here. Soft 10 lives in `core/` SHAPES
+(`cone` / `torus` additive; Soft 2 names KEEP) + Peer apply — not
+here. This directory stays empty — do not invent a second Graph
+API here.

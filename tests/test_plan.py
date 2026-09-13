@@ -58,7 +58,7 @@ class PlanTests(unittest.TestCase):
                     "id": "x",
                     "graph": {
                         "kind": "graph",
-                        "nodes": [{"kind": "node", "id": "a", "shape": "torus"}],
+                        "nodes": [{"kind": "node", "id": "a", "shape": "torusKnot"}],
                     },
                 }
             )

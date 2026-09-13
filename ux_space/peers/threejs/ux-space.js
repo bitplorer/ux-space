@@ -4,6 +4,8 @@
  *
  * Plan IR (v: "1"): { graph: { nodes: [{ id, kind, ... }] } }
  * Soft 2 leftover: locked geometry map (box/sphere/plane/cylinder).
+ * Soft 10 leftover: thin additive cone / torus (ConeGeometry /
+ *   TorusGeometry). Soft 2 names KEEP. Not the catalog.
  * Soft 3 leftover: optional camera/light node kinds
  *   (perspective / ambient / directional). Mesh nodes still apply.
  * Soft 4 leftover: mesh rotation / scale + material {basic}
@@ -177,7 +179,8 @@
     return out;
   }
 
-  // Soft 2 leftover: thin geometry map. Not the full three.js catalog.
+  // Soft 2 leftover: thin geometry map. Soft 10 leftover: cone / torus.
+  // Not the full three.js catalog.
   var GEOMETRY = {
     "box": function (THREE) {
       return new THREE.BoxGeometry(1.4, 1.4, 1.4);
@@ -190,6 +193,12 @@
     },
     "cylinder": function (THREE) {
       return new THREE.CylinderGeometry(0.7, 0.7, 1.4, 32);
+    },
+    "cone": function (THREE) {
+      return new THREE.ConeGeometry(0.75, 1.4, 32);
+    },
+    "torus": function (THREE) {
+      return new THREE.TorusGeometry(0.7, 0.25, 16, 32);
     },
   };
 

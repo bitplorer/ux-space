@@ -39,5 +39,7 @@ Thin Peer apply — not OrbitControls.
 Soft 8 leftover: thin `material.type` `{basic, standard}`. Canvas
 honors color/opacity; `standard` degrades as basic.
 Soft 9 leftover: thin glTF / texture loader nodes via Cap-gated
-`apply`. Canvas degrades (skip / placeholder). HOLD Soft 10
-primitives, materials catalog.
+`apply`. Canvas degrades (skip / placeholder).
+Soft 10 leftover: thin additive SHAPES `cone` / `torus`. Soft 2
+names KEEP. Canvas degrades as 2D fill. HOLD full geometry catalog,
+materials catalog.

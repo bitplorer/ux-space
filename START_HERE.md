@@ -14,6 +14,7 @@ Soft 6 leftover: optional mesh `pickable` + Cap-gated `pick(hit)` — Peer repor
 Soft 7 leftover: optional camera `orbit` / `pan` / `zoom` + Cap-gated `orbit` / `pan` / `zoom` — thin Peer apply, not OrbitControls.
 Soft 8 leftover: mesh `material.type` thin set `{basic, standard}` — Soft 4 `basic` KEEP; optional `metalness` / `roughness` on `standard`. Not a materials catalog.
 Soft 9 leftover: `.gltf(id, src=)` / `.texture(id, src=)` + `material.map` (texture id) — Cap-gated `apply` only. Not a public GLTFLoader dump.
+Soft 10 leftover: additive shapes `cone` / `torus` — Soft 2 `box` / `sphere` / `plane` / `cylinder` KEEP. Same `.node(..., shape=)`. Not a geometry catalog.
 
 ---
 

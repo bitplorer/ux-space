@@ -14,6 +14,7 @@ Soft 8 leftover: cylinder uses ``material.type=standard`` (metalness /
 roughness). Sphere stays Soft 4 ``basic``.
 Soft 9 leftover: ``.texture`` + ``material.map`` on the cylinder;
 ``.gltf`` prop. Load rides Cap-gated ``apply`` — no ``load()`` verb.
+Soft 10 leftover: ``cone`` / ``torus`` via Soft 2 ``shape=``.
 """
 
 from __future__ import annotations
@@ -87,6 +88,23 @@ def soft_surface() -> Graph:
                 "metalness": 0.25,
                 "roughness": 0.45,
             },
+        )
+        .node(
+            "cone",
+            shape="cone",
+            color="#f43f5e",
+            position=(-1.6, 0.55, 1.8),
+            rotation=(0.05, 0.2, 0),
+            scale=0.9,
+        )
+        .node(
+            "torus",
+            shape="torus",
+            color="#a855f7",
+            position=(1.6, 0.55, 1.8),
+            rotation=(0.8, 0.1, 0),
+            scale=0.85,
+            material={"type": "basic", "color": "#c084fc", "opacity": 0.95},
         )
     )
 
