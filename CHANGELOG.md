@@ -15,6 +15,12 @@ entries below are historical teaching for Soft 2–10 on `0.1.0a1`
 
 ## Unreleased
 
+### Fixed
+
+- three.js Peer renders every mesh node of a Plan, not only the first
+  (mount, update, pick and auto-spin are per mesh). The Peer is now
+  executed under node in `tests/test_threejs_peer_exec.py`.
+
 ### Docs
 
 - Soft 1–10 human-readable docs under Diátaxis (`docs/`). README is
