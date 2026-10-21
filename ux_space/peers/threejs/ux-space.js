@@ -136,12 +136,13 @@
     return !node.kind || node.kind === "node";
   }
 
-  function firstMesh(plan) {
+  function meshNodes(plan) {
     var nodes = allNodes(plan);
+    var out = [];
     for (var i = 0; i < nodes.length; i++) {
-      if (isMesh(nodes[i])) return nodes[i];
+      if (isMesh(nodes[i])) out.push(nodes[i]);
     }
-    return {};
+    return out;
   }
 
   function firstCamera(plan) {
@@ -231,7 +232,6 @@
       return loadThree().then(function (THREE) {
         props = props || {};
         var plan = props.plan || props;
-        var node = firstMesh(plan);
         el.style.position = el.style.position || "relative";
         el.style.overflow = "hidden";
 
@@ -330,12 +330,8 @@
         applyCameraNode(plan);
         applyLights(plan);
 
-        var mat = new THREE.MeshStandardMaterial({
-          color: meshColor(node),
-          metalness: 0.35,
-          roughness: 0.35,
-        });
-        var mesh = new THREE.Mesh(geometryFor(THREE, node.shape), mat);
+        // One entry per mesh node id: { mesh, mat, shape, node, authoredRotation }.
+        var meshes = {};
 
         function isBasicMaterial(n) {
           return !!(n.material && (n.material.type === "basic" || !n.material.type));
@@ -357,7 +353,8 @@
           return n.material && n.material.roughness != null ? n.material.roughness : 0.35;
         }
 
-        function applyMeshMaterial(n) {
+        function applyMeshMaterial(entry, n) {
+          var mat = entry.mat;
           var color = meshColor(n);
           if (isBasicMaterial(n)) {
             var opacity = materialOpacity(n);
@@ -370,13 +367,13 @@
                 opacity: opacity,
                 transparent: opacity < 1,
               });
-              mesh.material = mat;
+              entry.mat = entry.mesh.material = mat;
             } else {
               mat.color.set(color);
               mat.opacity = opacity;
               mat.transparent = opacity < 1;
             }
-            applyMaterialMap(n);
+            applyMaterialMap(mat, n);
             return;
           }
           var metalness = materialMetalness(n);
@@ -393,7 +390,7 @@
               opacity: stdOpacity,
               transparent: stdOpacity < 1,
             });
-            mesh.material = mat;
+            entry.mat = entry.mesh.material = mat;
           } else {
             mat.color.set(color);
             mat.metalness = metalness;
@@ -401,14 +398,14 @@
             mat.opacity = stdOpacity;
             mat.transparent = stdOpacity < 1;
           }
-          applyMaterialMap(n);
+          applyMaterialMap(mat, n);
         }
 
         var textures = {};
         var gltfObjs = {};
         var texLoader = new THREE.TextureLoader();
 
-        function applyMaterialMap(n) {
+        function applyMaterialMap(mat, n) {
           var mapId = n.material && n.material.map;
           var entry = mapId ? textures[mapId] : null;
           var tex = entry && entry.texture;
@@ -442,7 +439,7 @@
                 function (tex) {
                   if (!textures[id] || textures[id].src !== src) return;
                   textures[id].texture = tex;
-                  applyMeshMaterial(currentNode);
+                  for (var mid in meshes) applyMeshMaterial(meshes[mid], meshes[mid].node);
                 },
                 undefined,
                 function () {}
@@ -514,41 +511,84 @@
           }
         }
 
-        applyMeshMaterial(node);
-        applyRotation(mesh, node.rotation);
-        applyScale(mesh, node.scale);
-        if (node.position) {
-          mesh.position.set(node.position[0], node.position[1], node.position[2]);
+        function disposeMesh(entry) {
+          try {
+            entry.mesh.geometry.dispose();
+            entry.mat.dispose();
+          } catch (e) {}
         }
-        mesh.userData.node_id = node.id;
-        mesh.userData.pickable = node.pickable === true;
-        scene.add(mesh);
-        var currentShape = node.shape || "box";
-        var currentNode = node;
+
+        function applyMeshes(next) {
+          var authored = meshNodes(next);
+          var keep = {};
+          for (var i = 0; i < authored.length; i++) {
+            var n = authored[i];
+            var shape = n.shape || "box";
+            var entry = meshes[n.id];
+            keep[n.id] = true;
+            if (!entry) {
+              var mat = new THREE.MeshStandardMaterial({
+                color: meshColor(n),
+                metalness: 0.35,
+                roughness: 0.35,
+              });
+              entry = meshes[n.id] = {
+                mesh: new THREE.Mesh(geometryFor(THREE, shape), mat),
+                mat: mat,
+                shape: shape,
+              };
+              scene.add(entry.mesh);
+            } else if (shape !== entry.shape) {
+              try {
+                entry.mesh.geometry.dispose();
+              } catch (e) {}
+              entry.mesh.geometry = geometryFor(THREE, shape);
+              entry.shape = shape;
+            }
+            entry.node = n;
+            applyMeshMaterial(entry, n);
+            applyRotation(entry.mesh, n.rotation);
+            entry.authoredRotation = !!n.rotation;
+            applyScale(entry.mesh, n.scale);
+            if (n.position) {
+              entry.mesh.position.set(n.position[0], n.position[1], n.position[2]);
+            }
+            entry.mesh.userData.node_id = n.id;
+            entry.mesh.userData.pickable = n.pickable === true;
+          }
+          for (var id in meshes) {
+            if (!keep[id]) {
+              scene.remove(meshes[id].mesh);
+              disposeMesh(meshes[id]);
+              delete meshes[id];
+            }
+          }
+        }
+
+        applyMeshes(plan);
         applyTextures(plan);
         applyGltfNodes(plan);
-        var authoredRotation = !!node.rotation;
         var lastHit = null;
         var raycaster = new THREE.Raycaster();
         var pointer = new THREE.Vector2();
 
-        function isPickable(n) {
-          return !!(n && n.pickable === true);
-        }
-
         function hitFromEvent(ev) {
-          if (!isPickable(currentNode)) return null;
+          var targets = [];
+          for (var id in meshes) {
+            if (meshes[id].mesh.userData.pickable) targets.push(meshes[id].mesh);
+          }
+          if (!targets.length) return null;
           var rect = renderer.domElement.getBoundingClientRect();
           var w = rect.width || 1;
           var h = rect.height || 1;
           pointer.x = ((ev.clientX - rect.left) / w) * 2 - 1;
           pointer.y = -((ev.clientY - rect.top) / h) * 2 + 1;
           raycaster.setFromCamera(pointer, camera);
-          var hits = raycaster.intersectObjects([mesh], false);
+          var hits = raycaster.intersectObjects(targets, false);
           if (!hits.length) return null;
           var p = hits[0].point;
           return {
-            node_id: currentNode.id || mesh.userData.node_id,
+            node_id: hits[0].object.userData.node_id,
             point: [p.x, p.y, p.z],
           };
         }
@@ -577,9 +617,10 @@
         function frame() {
           if (!running) return;
           requestAnimationFrame(frame);
-          if (!authoredRotation) {
-            mesh.rotation.y += 0.008;
-            mesh.rotation.x += 0.003;
+          for (var id in meshes) {
+            if (meshes[id].authoredRotation) continue;
+            meshes[id].mesh.rotation.y += 0.008;
+            meshes[id].mesh.rotation.x += 0.003;
           }
           renderer.render(scene, camera);
         }
@@ -600,29 +641,7 @@
         function applyPlan(next) {
           applyCameraNode(next);
           applyLights(next);
-          var n = firstMesh(next);
-          var nextShape = n.shape || "box";
-          if (nextShape !== currentShape) {
-            try {
-              mesh.geometry.dispose();
-            } catch (e) {}
-            mesh.geometry = geometryFor(THREE, nextShape);
-            currentShape = nextShape;
-          }
-          applyMeshMaterial(n);
-          if (n.rotation) {
-            applyRotation(mesh, n.rotation);
-            authoredRotation = true;
-          } else {
-            authoredRotation = false;
-          }
-          applyScale(mesh, n.scale);
-          if (n.position) {
-            mesh.position.set(n.position[0], n.position[1], n.position[2]);
-          }
-          currentNode = n;
-          mesh.userData.node_id = n.id;
-          mesh.userData.pickable = n.pickable === true;
+          applyMeshes(next);
           applyTextures(next);
           applyGltfNodes(next);
         }
@@ -653,9 +672,8 @@
             running = false;
             renderer.domElement.removeEventListener("pointerdown", onPointerDown);
             if (ro) ro.disconnect();
+            for (var mid in meshes) disposeMesh(meshes[mid]);
             try {
-              mesh.geometry.dispose();
-              mat.dispose();
               renderer.dispose();
             } catch (e) {}
             for (var tid in textures) {
