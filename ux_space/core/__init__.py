@@ -4,7 +4,6 @@ Features import this package. Peers implement PEER. Product public
 names are re-exported from ``ux_space`` — do not import private modules.
 """
 
-from ux_space.core._cap import CapRequired
 from ux_space.core._contract import CONTRACT
 from ux_space.core._graph import Graph, space
 from ux_space.core._ir import PlanError, validate_plan
@@ -49,7 +48,6 @@ __all__ = [
     "PACKAGE",
     "PEER",
     "PEER_VERSION",
-    "CapRequired",
     "Graph",
     "PlanError",
     "__version__",

@@ -7,16 +7,13 @@ absence stay locked. Teaching surfaces leftover-teach the catalog HOLD.
 from __future__ import annotations
 
 import inspect
-import json
 import unittest
 from pathlib import Path
 
-from tests._verified import verified_ctx
 from ux_space import (
     Graph,
     apply,
     space,
-    to_result,
     validate_plan,
 )
 from ux_space.core._ir import SHAPES
@@ -95,18 +92,14 @@ class Soft2ShapesTests(unittest.TestCase):
         self.assertFalse(hasattr(Graph, "box"))
 
     def test_apply_shape_unchanged_no_cap_on_ops(self) -> None:
-        token = "soft2-cap-MUST-NOT-SHIP"
         graph = space("stage").host("stage-3d").node("hero", shape="sphere")
-        ops = apply(graph, ctx=verified_ctx("Space.apply", subject=token))
-        result = to_result(ops)
+        ops = apply(graph)
         self.assertEqual(ops[0]["op"], "bridge.call")
         self.assertEqual(ops[0]["method"], "apply")
         self.assertEqual(ops[0]["package"], "ux-space")
         self.assertEqual(ops[0]["args"][0]["graph"]["nodes"][0]["shape"], "sphere")
         self.assertNotIn("meta", ops[0])
         self.assertNotIn("cap", ops[0])
-        self.assertNotIn(token, json.dumps(ops))
-        self.assertNotIn(token, json.dumps(result["ops"]))
 
     def test_peer_thin_geometry_map(self) -> None:
         js = Path(adapter_path()).read_text(encoding="utf-8")

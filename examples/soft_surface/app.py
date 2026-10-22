@@ -17,9 +17,9 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from examples.soft_surface.plan import soft_surface
-from ux_space import PACKAGE, apply, host_html, orbit, pan, pick, zoom
+from ux_space import PACKAGE, host_html
 from ux_space.peers.threejs import adapter_path
-from ux_space.wire import as_channel_result, boot, register_manifest
+from ux_space.wire import ACTIONS, boot, register_actions, register_manifest
 
 STATIC = Path(adapter_path()).resolve().parent
 
@@ -41,38 +41,9 @@ except ImportError:
     pass
 
 
-@ch.on(name="Space.apply")
-def apply_space(ctx, **kw):
-    return as_channel_result(apply(soft_surface(), host="stage-3d", ctx=ctx))
-
-
-@ch.on(name="Space.pick")
-def pick_space(ctx, **kw):
-    hit = {"node_id": kw.get("node_id") or "box"}
-    if kw.get("point") is not None:
-        hit["point"] = kw["point"]
-    return as_channel_result(pick(hit, host="stage-3d", ctx=ctx))
-
-
-@ch.on(name="Space.orbit")
-def orbit_space(ctx, **kw):
-    payload = {"azimuth": kw.get("azimuth", 0.0)}
-    if kw.get("polar") is not None:
-        payload["polar"] = kw["polar"]
-    return as_channel_result(orbit(payload, host="stage-3d", ctx=ctx))
-
-
-@ch.on(name="Space.pan")
-def pan_space(ctx, **kw):
-    payload = {"x": kw.get("x", 0.0)}
-    if kw.get("y") is not None:
-        payload["y"] = kw["y"]
-    return as_channel_result(pan(payload, host="stage-3d", ctx=ctx))
-
-
-@ch.on(name="Space.zoom")
-def zoom_space(ctx, **kw):
-    return as_channel_result(zoom({"distance": kw.get("distance", 7.2)}, host="stage-3d", ctx=ctx))
+# space.apply / pick / orbit / pan / zoom. Channel verifies each Intent's Cap
+# for exactly that action before the handler runs.
+register_actions(ch, soft_surface(), host="stage-3d")
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -82,7 +53,7 @@ def index():
     control = ""
     if hasattr(ch, "control"):
         try:
-            attrs = ch.control(apply_space)
+            attrs = ch.control(ACTIONS["apply"])
             as_dict = getattr(attrs, "as_dict", None)
             if callable(as_dict):
                 pairs = " ".join(f'{k}="{v}"' for k, v in as_dict().items())

@@ -10,9 +10,9 @@
 
 ```text
 ux-space    GRAPH      space() / Graph → Plan IR v1 (additive JSON)
-            VERB       apply(graph, host=, ctx=) → bridge.call method=apply
-                       Soft 6 leftover: pick(hit, host=, ctx=) → method=pick
-                       Soft 7 leftover: orbit/pan/zoom (host=, ctx=) → method=orbit|pan|zoom
+            VERB       apply(graph, host=) → bridge.call method=apply
+                       Soft 6 leftover: pick(hit, host=) → method=pick
+                       Soft 7 leftover: orbit/pan/zoom (host=) → method=orbit|pan|zoom
             PEER       thin adapter applies Result ops
                        day-1: peers/threejs registers as "ux-space"
                        swap-proof: peers/canvas registers as "ux-space"
@@ -59,9 +59,9 @@ ux-compose  PRODUCT    wire/ Isolation door for Channel
    `wire/` door (`ux_space.wire` here). `core/` and `features/` never import
    Channel.
 6. **Cap Host.** Cap mint / `Channel.boot` / `mount_channel` KEEP on Channel.
-   Do not invent a second Cap Host. Verbs authorize **server-side** from
-   the handler's `ctx.verified` and refuse without it. Nothing from it may
-   ride the Result (`ops[].meta.cap` is disclosure). Peer does not need it.
+   Do not invent a second Cap Host. ux-space does no authorization: the
+   Channel Host verifies the Cap **server-side** for each `space.*` action. The token must
+   not ride the Result (`ops[].meta.cap` is disclosure). Peer does not need it.
 7. **Bridge plane.** Under the hood, ops are `bridge.mount` /
    `bridge.update` / `bridge.call` (see `bitplorer/ux-channel@a6ab159`
    example `python/examples/ux_dom_threejs/`). Do not teach Channel
@@ -80,15 +80,16 @@ ux-compose  PRODUCT    wire/ Isolation door for Channel
 | Who | What |
 |-----|------|
 | Channel | `CapService.mint` / `ch.control` / Intent verify |
-| ux-space | `require_verified` — `ctx.verified` holds a Cap for the verb, or `CapRequired` (server-side only) |
+| ux-space | No authorization. `wire.register_actions` exposes the verbs as Channel actions `space.*` |
 | Peer | Applies ops. Never mints. Never sees the Cap. |
 
-Verbs take the Channel handler `ctx`, never a Cap string. Channel verified
-the Intent's Cap before the handler ran and exposes it read-only as
-`ctx.verified` (ux-channel #69). A verb runs only when that Cap's action is
-its method or ends in `.method` (`Space.apply` covers `apply`); otherwise,
-or with no `ctx.verified`, it raises `CapRequired`. Nothing from `ctx` is
-copied onto `bridge.call` / Result ops. Shipping Cap on the Result is
+Verbs are plan builders and take no Cap: server code calling them is
+trusted like any Python call. Clients reach them only through the Channel
+actions `space.apply` / `space.pick` / `space.orbit` / `space.pan` /
+`space.zoom` that `ux_space.wire.register_actions` adds. Channel verifies
+each Intent's Cap for exactly that action name before the handler runs, so
+a Cap for `space.orbit` cannot invoke `space.pan`. `register_actions`
+refuses a registry with `require_cap=False`. Shipping Cap on the Result is
 disclosure.
 
 ## 3. Peer-as-adapter
@@ -215,7 +216,7 @@ Leftover: optional mesh `pickable` (bool). Frozen Graph name:
 fields ignored. Peer `peers/threejs` raycasts on pointer over the
 canvas and reports a hit `{node_id, point?}`. `peers/canvas` swap-proof
 does the same with a 2D hit-test (no three.js). Hit becomes Cap-gated
-Intent args via `pick(hit, host=, ctx=)` → `bridge.call` method `pick`
+Intent args via `pick(hit, host=)` → `bridge.call` method `pick`
 → Result. Channel owns click=Intent (`uxChannel.runAction` when
 present). Soft 6 does not invent a generic pointer stack, `@action`,
 or Cap Host. No second Graph API. `features/` stays empty.
@@ -227,7 +228,7 @@ is disclosure); Peer-as-adapter `ux-space` not `three`; never `scene()` /
 `cylinder`). Soft 3 camera/light KEEP (`perspective` / `ambient` /
 `directional`). Soft 4 rotation/scale + `material` `{basic}` KEEP.
 Soft 5 canvas swap-proof KEEP; day-1 stays `peers/threejs`.
-Server-side `require_verified` KEEP.
+Channel actions `space.*` KEEP.
 
 HOLD: Soft 7 orbit/pan/zoom, R3F, materials catalog, Cap-on-ops,
 zero-Peer, renaming motion, dual concurrent Peers as taught product,
@@ -243,7 +244,7 @@ those fields (and Cap-gated `orbit` / `pan` / `zoom` verbs) as a
 thin spherical camera pose. `peers/canvas` swap-proof accepts the
 same call methods without inventing a 2D camera API (Soft 3
 camera/light stay no-op). Verbs: `orbit` / `pan` / `zoom`
-`(payload, host=, ctx=)` → `bridge.call` methods `orbit` / `pan` /
+`(payload, host=)` → `bridge.call` methods `orbit` / `pan` /
 `zoom` → Result. Soft 7 is camera Plan ops, not a generic pointer
 stack, `@action`, or Cap Host. No OrbitControls product dump. No
 second Graph API. `features/` stays empty.
@@ -255,8 +256,7 @@ is disclosure); Peer-as-adapter `ux-space` not `three`; never `scene()` /
 `cylinder`). Soft 3 camera/light KEEP (`perspective` / `ambient` /
 `directional`). Soft 4 rotation/scale + `material` `{basic}` KEEP.
 Soft 5 canvas swap-proof KEEP; day-1 stays `peers/threejs`. Soft 6
-pick/hit KEEP (`pickable` + Cap-gated `pick(hit)`). Server-side
-`require_verified` KEEP.
+pick/hit KEEP (`pickable` + Cap-gated `pick(hit)`). Channel actions `space.*` KEEP.
 
 HOLD: Soft 8 materials, Soft 9 loaders, Soft 10 primitives, R3F,
 materials catalog, Cap-on-ops, zero-Peer, renaming motion, dual
@@ -287,7 +287,7 @@ is disclosure); Peer-as-adapter `ux-space` not `three`; never `scene()` /
 `directional`). Soft 4 rotation/scale + `material` `{basic}` KEEP.
 Soft 5 canvas swap-proof KEEP; day-1 stays `peers/threejs`. Soft 6
 pick/hit KEEP (`pickable` + Cap-gated `pick(hit)`). Soft 7 orbit/pan/zoom
-KEEP. Server-side `require_verified` KEEP.
+KEEP. Channel actions `space.*` KEEP.
 
 HOLD: Soft 9 loaders, Soft 10 primitives, R3F, materials catalog
 (`phong` / `physical` / `lambert` / …), Cap-on-ops, zero-Peer,
@@ -304,8 +304,7 @@ a `load()` verb. Additive IR v1 keys: node `kind` `gltf` / `texture`,
 node `src` (relative path or http(s) URL), `material.map` (texture
 node id). Keys never reused;
 unknown fields ignored. Load happens through Cap-gated `apply` only —
-the Plan carries loader nodes; Cap NEVER on ops/Result. Server-side
-`require_verified` only.
+the Plan carries loader nodes; Cap NEVER on ops/Result. Channel action `space.apply` only.
 
 Peer `peers/threejs` applies texture (`TextureLoader`) and glTF
 (`GLTFLoader`) as a Peer concern. `peers/canvas` swap-proof degrades
@@ -320,8 +319,7 @@ is disclosure); Peer-as-adapter `ux-space` not `three`; never `scene()` /
 `directional`). Soft 4 rotation/scale + `material` `{basic}` KEEP.
 Soft 5 canvas swap-proof KEEP; day-1 stays `peers/threejs`. Soft 6
 pick/hit KEEP (`pickable` + Cap-gated `pick(hit)`). Soft 7 orbit/pan/zoom
-KEEP. Soft 8 `material.type` `{basic, standard}` KEEP. Server-side
-`require_verified` KEEP.
+KEEP. Soft 8 `material.type` `{basic, standard}` KEEP. Channel actions `space.*` KEEP.
 
 HOLD: Soft 10 primitives, R3F, materials catalog
 (`phong` / `physical` / `lambert` / …), Cap-on-ops, zero-Peer,
@@ -351,7 +349,7 @@ is disclosure); Peer-as-adapter `ux-space` not `three`; never `scene()` /
 Soft 5 canvas swap-proof KEEP; day-1 stays `peers/threejs`. Soft 6
 pick/hit KEEP (`pickable` + Cap-gated `pick(hit)`). Soft 7 orbit/pan/zoom
 KEEP. Soft 8 `material.type` `{basic, standard}` KEEP. Soft 9 `{gltf,
-texture}` KEEP. Server-side `require_verified` KEEP.
+texture}` KEEP. Channel actions `space.*` KEEP.
 
 HOLD: full geometry catalog (`icosahedron` / `dodecahedron` /
 `torusKnot` / `capsule` / …), materials catalog

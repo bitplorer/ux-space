@@ -7,17 +7,14 @@ Isolation + Cap-on-ops absence stay locked. Frozen Graph names: camera / light.
 from __future__ import annotations
 
 import inspect
-import json
 import unittest
 from pathlib import Path
 
-from tests._verified import verified_ctx
 from ux_space import (
     Graph,
     PlanError,
     apply,
     space,
-    to_result,
     validate_plan,
 )
 from ux_space.core._ir import CAMERAS, LIGHTS, SHAPES
@@ -152,9 +149,7 @@ class Soft3CameraLightTests(unittest.TestCase):
         self.assertEqual(plan["graph"]["nodes"][2]["kind"], "node")
 
     def test_apply_mixed_graph_no_cap_on_ops(self) -> None:
-        token = "soft3-cap-MUST-NOT-SHIP"
-        ops = apply(_mixed(), ctx=verified_ctx("Space.apply", subject=token))
-        result = to_result(ops)
+        ops = apply(_mixed())
         self.assertEqual(ops[0]["op"], "bridge.call")
         self.assertEqual(ops[0]["method"], "apply")
         self.assertEqual(ops[0]["package"], "ux-space")
@@ -162,8 +157,6 @@ class Soft3CameraLightTests(unittest.TestCase):
         self.assertEqual(kinds, ["camera", "light", "light", "node"])
         self.assertNotIn("meta", ops[0])
         self.assertNotIn("cap", ops[0])
-        self.assertNotIn(token, json.dumps(ops))
-        self.assertNotIn(token, json.dumps(result["ops"]))
 
     def test_peer_applies_camera_lights_and_meshes(self) -> None:
         js = Path(adapter_path()).read_text(encoding="utf-8")

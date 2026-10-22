@@ -15,9 +15,9 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
-from ux_space import PACKAGE, apply, host_html, space
+from ux_space import PACKAGE, host_html, space
 from ux_space.peers.threejs import adapter_path
-from ux_space.wire import as_channel_result, boot, register_manifest
+from ux_space.wire import ACTIONS, boot, register_actions, register_manifest
 
 STATIC = Path(adapter_path()).resolve().parent
 
@@ -39,11 +39,13 @@ except ImportError:
     pass
 
 
-@ch.on(name="Space.apply")
-def apply_space(ctx, **kw):
-    color = kw.get("color") or "#10b981"
-    graph = space("stage").host("stage-3d").node("hero", shape="box", color=color)
-    return as_channel_result(apply(graph, host="stage-3d", ctx=ctx))
+# space.apply re-applies this server-authored graph. Channel verifies the
+# button's Cap for exactly that action before the handler runs.
+register_actions(
+    ch,
+    space("stage").host("stage-3d").node("hero", shape="box", color="#10b981"),
+    host="stage-3d",
+)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -53,7 +55,7 @@ def index():
     control = ""
     if hasattr(ch, "control"):
         try:
-            attrs = ch.control(apply_space, trust={"color": "#10b981"})
+            attrs = ch.control(ACTIONS["apply"])
             as_dict = getattr(attrs, "as_dict", None)
             if callable(as_dict):
                 pairs = " ".join(f'{k}="{v}"' for k, v in as_dict().items())
@@ -72,7 +74,7 @@ def index():
 </head><body>
 <main>
   <h1>ux-space day-1</h1>
-  <p>Graph → apply(ctx) → <code>bridge.call</code> → Peer <code>ux-space</code>.</p>
+  <p>Graph → space.apply → <code>bridge.call</code> → Peer <code>ux-space</code>.</p>
   {host}
   {control}
 </main>

@@ -10,8 +10,8 @@ Frozen Graph fluency: ``.gltf(id, src=)`` and ``.texture(id, src=)`` —
 Soft 3-style builders, not ``.node(..., kind=)`` and not a ``load()``
 verb. Texture composes with Soft 8 via ``material.map`` (texture node
 id). Additive IR v1 — keys never reused; unknown fields ignored.
-Load happens through Cap-gated ``apply`` only. Cap NEVER on ops/Result.
-``require_cap`` server-side only.
+Load happens through ``apply`` only (Channel action ``space.apply``).
+Cap NEVER on ops/Result.
 
 Peer ``peers/threejs`` applies glTF / texture as a Peer concern
 (TextureLoader / GLTFLoader stay inside the adapter — not a public
@@ -30,12 +30,10 @@ import json
 import unittest
 from pathlib import Path
 
-from tests._verified import verified_ctx
 from ux_space import (
     CONTRACT,
     PACKAGE,
     PEER,
-    CapRequired,
     Graph,
     PlanError,
     apply,
@@ -336,14 +334,13 @@ class Soft9LoadersTests(unittest.TestCase):
         self.assertIs(plan["graph"]["nodes"][2]["pickable"], True)
         self.assertEqual(plan["graph"]["nodes"][2]["material"]["type"], "basic")
         self.assertNotIn("map", plan["graph"]["nodes"][2]["material"])
-        hit = pick({"node_id": "a"}, host="h", ctx=verified_ctx("Space.pick"))
+        hit = pick({"node_id": "a"}, host="h")
         self.assertEqual(hit[0]["method"], "pick")
-        cam = orbit({"azimuth": 0.2}, host="h", ctx=verified_ctx("Space.orbit"))
+        cam = orbit({"azimuth": 0.2}, host="h")
         self.assertEqual(cam[0]["method"], "orbit")
 
     def test_apply_loader_graph_no_cap_on_ops(self) -> None:
-        token = "soft9-cap-MUST-NOT-SHIP"
-        ops = apply(_mixed(), ctx=verified_ctx("Space.apply", subject=token))
+        ops = apply(_mixed())
         result = to_result(ops)
         self.assertEqual(ops[0]["op"], "bridge.call")
         self.assertEqual(ops[0]["method"], "apply")
@@ -357,19 +354,8 @@ class Soft9LoadersTests(unittest.TestCase):
         self.assertNotIn("meta", ops[0])
         self.assertNotIn("cap", ops[0])
         dumped_ops = json.dumps(ops)
-        dumped_result_ops = json.dumps(result["ops"])
-        self.assertNotIn(token, dumped_ops)
-        self.assertNotIn(token, dumped_result_ops)
         self.assertNotIn('"cap"', dumped_ops)
         self.assertTrue(result["ok"])
-
-    def test_apply_requires_cap_for_loader_graph(self) -> None:
-        with self.assertRaises(CapRequired):
-            apply(_mixed(), ctx=None)
-        with self.assertRaises(CapRequired):
-            apply(_mixed(), ctx="")
-        with self.assertRaises(CapRequired):
-            apply(_mixed(), ctx="   ")
 
     def test_no_load_verb_on_ops(self) -> None:
         from ux_space.core import _ops

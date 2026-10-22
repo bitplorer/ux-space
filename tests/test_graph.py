@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import unittest
 
-from tests._verified import verified_ctx
 from ux_space import Graph, space
 
 
@@ -22,7 +21,7 @@ class GraphTests(unittest.TestCase):
         self.assertEqual(plan["graph"]["nodes"][0]["id"], "hero")
 
     def test_apply_on_graph(self) -> None:
-        result = space("stage").host("h").node("n").apply(ctx=verified_ctx("Space.apply"))
+        result = space("stage").host("h").node("n").apply()
         self.assertTrue(result["ok"])
         self.assertEqual(result["ops"][0]["method"], "apply")
         self.assertEqual(result["ops"][0]["id"], "h")

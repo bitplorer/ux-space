@@ -60,30 +60,20 @@ pip install -e .
 ```
 
 ```python
-from ux_space import CapRequired, space, apply
+from ux_space import space, apply
 
 graph = space("stage").host("stage-3d").node("hero", shape="box", color="#6366f1")
 plan = graph.plan()
 print(plan["kind"], plan["graph"]["nodes"][0]["id"])
 
-# Verbs authorize from the Channel handler ctx (ctx.verified). Outside a
-# handler there is no verified Cap, so apply fails closed.
-try:
-    apply(graph, ctx=None)
-except CapRequired as exc:
-    print(type(exc).__name__)
+# Verbs are plan builders. Clients reach them only as Channel actions (§4).
+ops = apply(graph)
+print(ops[0]["op"], ops[0]["method"], ops[0]["package"])
+print("cap" in ops[0], "meta" in ops[0])
 ```
 
-Success: printed `plan hero` then `CapRequired`.
+Success: printed `plan hero` then `bridge.call apply ux-space` then `False False`.
 
-Inside a Channel handler, pass its `ctx`. `apply` runs only when
-`ctx.verified` holds the Cap Channel verified for `Space.apply`:
-
-```python
-@ch.on("Space.apply")
-def apply_space(ctx, **kw):
-    return as_channel_result(apply(graph, host="stage-3d", ctx=ctx))
-```
 
 ---
 
@@ -113,10 +103,15 @@ imports Channel only through `ux_space.wire` or a compose `wire/` door.
 
 ```python
 # Isolation door — off ux_space.__all__
-from ux_space.wire import boot, apply, space
+from ux_space.wire import boot, register_actions
 
 ch = boot(app, secret="dev-secret-key-32chars-minimum!!!!")
+register_actions(ch, graph, host="stage-3d")  # space.apply / pick / orbit / pan / zoom
 ```
+
+Channel verifies each Intent's Cap for exactly its `space.*` action before
+the verb runs. An Intent with no Cap, a forged one, or a Cap for another
+action is refused by Channel.
 
 Walkthrough: [examples/day1/README.md](examples/day1/README.md).
 Soft-surface leftover tour: [examples/soft_surface/](examples/soft_surface/).

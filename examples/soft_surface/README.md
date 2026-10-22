@@ -18,15 +18,17 @@ parked. `features/` stays empty.
 | 9 | `.texture("stripe", src=)` + box `material.map="stripe"` (first mesh — day-1 Peer apply). `.gltf("prop", src=)` with Soft 4 transform. Cap-gated `apply` only — not a public GLTFLoader dump. `src` is author-supplied (relative or http(s)). |
 | 10 | Additive SHAPES `cone` / `torus` — Soft 2 `box` / `sphere` / `plane` / `cylinder` KEEP. Same `.node(..., shape=)`. Not a geometry catalog. |
 
-## 1. No Channel (always works)
+## 1. In-process Channel
 
 ```bash
+pip install 'ux-space[channel]'
 PYTHONPATH=. python examples/soft_surface/plan.py
 ```
 
-Prints a Plan IR v1, then shows `apply` refusing with `CapRequired`:
-verbs authorize from a Channel handler's `ctx.verified`, and there is
-none here. `app.py` runs every verb inside its handler.
+Boots a dev Channel, registers the `space.*` actions, mints a Cap for each
+and dispatches it. Prints the Plan, each `bridge.call` op, and the refusal
+of an Intent without a Cap. The token is not copied onto Result ops
+(`ops[].meta.cap` is disclosure).
 
 ## 2. Channel.boot (optional extra)
 
@@ -36,7 +38,7 @@ PYTHONPATH=. uvicorn examples.soft_surface.app:app --host 127.0.0.1 --port 8080
 ```
 
 `app.py` imports Channel **only** through `ux_space.wire` (`boot`,
-`as_channel_result`). Cap mint stays `ch.control`. The page hosts the
+`register_actions`). Cap mint stays `ch.control`. The page hosts the
 day-1 Peer as package **`ux-space`** (`peers/threejs`), not `"three"` and
 not a second canvas script.
 
@@ -53,5 +55,5 @@ Swap steps: [`ux_space/peers/README.md`](../../ux_space/peers/README.md).
 
 - Product never imports `ux_channel` except through `ux_space.wire`
 - Cap Host KEEP on Channel (`Channel.boot` / `mount_channel`)
-- `require_verified` is server-side only — nothing from `ctx` rides ops/Result (`ops[].meta.cap` is disclosure)
+- Channel verifies each `space.*` action's Cap; ux-space does no authorization and the token never rides ops/Result
 - Never `scene()` / `ux-scene`

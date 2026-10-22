@@ -73,7 +73,6 @@ class IsolationTests(unittest.TestCase):
 
     def test_apply_source_does_not_emit_meta_cap(self) -> None:
         text = (PKG / "core" / "_ops.py").read_text(encoding="utf-8")
-        self.assertIn("require_verified(ctx, method)", text)
         self.assertIn("def pick(", text)
         self.assertIn("def orbit(", text)
         self.assertIn("def pan(", text)

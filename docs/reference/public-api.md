@@ -18,7 +18,7 @@ Library version: `0.1.0a1` (`API_VERSION` / `__version__` /
 | `to_result`, `host_html` | Result dict / SSR host attributes |
 | `validate_plan`, `dumps`, `loads` | Plan IR |
 | `PACKAGE`, `PEER`, `CONTRACT` | Wire package name + Peer contract |
-| `CapRequired`, `PlanError` | Fail closed |
+| `PlanError` | Fail closed |
 | `API_VERSION`, `IR_VERSION`, `PEER_VERSION`, `__version__` | Versions |
 | `OP_MOUNT`, `OP_UPDATE`, `OP_CALL`, `OP_APPLY` | Bridge op type strings |
 | `APPLY_METHOD`, `PICK_METHOD`, `ORBIT_METHOD`, `PAN_METHOD`, `ZOOM_METHOD` | `bridge.call` methods |
@@ -42,26 +42,24 @@ Frozen builders (`ux_space/core/_graph.py`):
 | `gltf(id, *, src=, position=, rotation=, scale=)` | 9 | `src` required at validate |
 | `texture(id, *, src=)` | 9 | `src` required at validate |
 | `plan()` | 1 | Validates IR v1 |
-| `apply(*, ctx, host=)` | 1 | Result dict via `to_result(apply(...))` |
+| `apply(*, host=)` | 1 | Result dict via `to_result(apply(...))` |
 
 There is no `Graph.scene`, `Graph.load`, `Graph.cone`, `Graph.torus`,
 `Graph.pick`, `Graph.orbit`.
 
 ## Verbs
 
-All Cap-gated verbs take the Channel handler `ctx` and call
-`require_verified(ctx, method)` server-side: `ctx.verified` must hold a
-Cap whose action is `method` or ends in `.method` (`Space.apply`), else
-`CapRequired`. Each emits one `bridge.call`; nothing from `ctx` is copied
-onto the op.
+Verbs are plan builders: no Cap, no authorization. Each emits one
+`bridge.call`. Clients reach them only as the Channel actions
+`register_actions` adds (see the Isolation door below).
 
 | Function | Args | `method` | Payload |
 |----------|------|----------|---------|
-| `apply(graph, *, ctx, host=, package=PACKAGE)` | Graph or plan mapping | `apply` | `[plan]` |
-| `pick(hit, *, ctx, host=, package=PACKAGE)` | `hit` mapping | `pick` | `[{node_id, point?}]` |
-| `orbit(orbit, *, ctx, host=, package=PACKAGE)` | `{azimuth? and/or polar?}` | `orbit` | same |
-| `pan(pan, *, ctx, host=, package=PACKAGE)` | `{x? and/or y?}` | `pan` | same |
-| `zoom(zoom, *, ctx, host=, package=PACKAGE)` | `{distance}` positive | `zoom` | same |
+| `apply(graph, *, host=, package=PACKAGE)` | Graph or plan mapping | `apply` | `[plan]` |
+| `pick(hit, *, host=, package=PACKAGE)` | `hit` mapping | `pick` | `[{node_id, point?}]` |
+| `orbit(orbit, *, host=, package=PACKAGE)` | `{azimuth? and/or polar?}` | `orbit` | same |
+| `pan(pan, *, host=, package=PACKAGE)` | `{x? and/or y?}` | `pan` | same |
+| `zoom(zoom, *, host=, package=PACKAGE)` | `{distance}` positive | `zoom` | same |
 
 `apply` host comes from `host=` or `plan.graph.host`.
 `pick` / `orbit` / `pan` / `zoom` require `host=`.
@@ -85,6 +83,12 @@ from ux_space.wire import boot, apply, space, mount_channel, as_channel_result
 
 `ux_space.wire.__all__` also re-exports `pick`, `orbit`, `pan`, `zoom`,
 `host_html`, `to_result`, `PACKAGE`, `register_manifest`.
+
+`register_actions(ch, graph, *, host)` registers the Channel actions in
+`ACTIONS`: `space.apply` (emits `graph`), `space.pick`, `space.orbit`,
+`space.pan`, `space.zoom` (payload from the Intent args). Channel verifies
+each Intent's Cap for exactly that action name. It raises `ValueError` on a
+registry with `require_cap=False`.
 Cap Host KEEP on Channel (`Channel.boot` / `mount_channel`).
 See [ux_space/wire/README.md](../../ux_space/wire/README.md).
 

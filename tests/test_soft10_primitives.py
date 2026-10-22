@@ -29,12 +29,10 @@ import json
 import unittest
 from pathlib import Path
 
-from tests._verified import verified_ctx
 from ux_space import (
     CONTRACT,
     PACKAGE,
     PEER,
-    CapRequired,
     Graph,
     PlanError,
     apply,
@@ -236,14 +234,13 @@ class Soft10PrimitivesTests(unittest.TestCase):
         self.assertEqual(plan["graph"]["nodes"][0]["orbit"]["azimuth"], 0.1)
         self.assertEqual(plan["graph"]["nodes"][4]["material"]["type"], "basic")
         self.assertEqual(plan["graph"]["nodes"][4]["shape"], "box")
-        hit = pick({"node_id": "a"}, host="h", ctx=verified_ctx("Space.pick"))
+        hit = pick({"node_id": "a"}, host="h")
         self.assertEqual(hit[0]["method"], "pick")
-        cam = orbit({"azimuth": 0.2}, host="h", ctx=verified_ctx("Space.orbit"))
+        cam = orbit({"azimuth": 0.2}, host="h")
         self.assertEqual(cam[0]["method"], "orbit")
 
     def test_apply_mixed_graph_no_cap_on_ops(self) -> None:
-        token = "soft10-cap-MUST-NOT-SHIP"
-        ops = apply(_mixed(), ctx=verified_ctx("Space.apply", subject=token))
+        ops = apply(_mixed())
         result = to_result(ops)
         self.assertEqual(ops[0]["op"], "bridge.call")
         self.assertEqual(ops[0]["method"], "apply")
@@ -254,19 +251,8 @@ class Soft10PrimitivesTests(unittest.TestCase):
         self.assertNotIn("meta", ops[0])
         self.assertNotIn("cap", ops[0])
         dumped_ops = json.dumps(ops)
-        dumped_result_ops = json.dumps(result["ops"])
-        self.assertNotIn(token, dumped_ops)
-        self.assertNotIn(token, dumped_result_ops)
         self.assertNotIn('"cap"', dumped_ops)
         self.assertTrue(result["ok"])
-
-    def test_apply_requires_cap_for_soft10_graph(self) -> None:
-        with self.assertRaises(CapRequired):
-            apply(_mixed(), ctx=None)
-        with self.assertRaises(CapRequired):
-            apply(_mixed(), ctx="")
-        with self.assertRaises(CapRequired):
-            apply(_mixed(), ctx="   ")
 
     def test_threejs_peer_maps_cone_torus_thinly(self) -> None:
         js = Path(threejs_adapter_path()).read_text(encoding="utf-8")

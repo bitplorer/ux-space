@@ -7,7 +7,7 @@ Isolation + Cap-on-ops absence stay locked.
 Frozen Graph name: ``.node(..., pickable=)``.
 IR field: ``pickable`` (bool) on mesh nodes.
 Hit / Intent args: ``node_id`` + optional ``point`` [x,y,z].
-Cap-gated verb: ``pick(hit, host=, ctx=)`` → ``bridge.call`` method ``pick``.
+Verb: ``pick(hit, host=)`` (Channel action ``space.pick``) → ``bridge.call`` method ``pick``.
 
 HOLD Soft 7 orbit/pan/zoom, generic pointer stack, Behavior/Motion clone,
 R3F, materials catalog, Cap-on-ops, zero-Peer, renaming motion,
@@ -21,12 +21,10 @@ import json
 import unittest
 from pathlib import Path
 
-from tests._verified import verified_ctx
 from ux_space import (
     CONTRACT,
     PACKAGE,
     PEER,
-    CapRequired,
     Graph,
     PlanError,
     apply,
@@ -169,9 +167,8 @@ class Soft6PickHitTests(unittest.TestCase):
         self.assertEqual(plan["graph"]["nodes"][2]["kind"], "node")
 
     def test_pick_is_cap_gated_intent_args_to_result(self) -> None:
-        token = "soft6-cap-MUST-NOT-SHIP"
         hit = {"node_id": "hero", "point": [0.1, 0.2, 0.3]}
-        ops = pick(hit, host="stage-3d", ctx=verified_ctx("Space.pick", subject=token))
+        ops = pick(hit, host="stage-3d")
         result = to_result(ops)
         self.assertEqual(len(ops), 1)
         op = ops[0]
@@ -184,44 +181,30 @@ class Soft6PickHitTests(unittest.TestCase):
         self.assertNotIn("meta", op)
         self.assertNotIn("cap", op)
         dumped_ops = json.dumps(ops)
-        dumped_result_ops = json.dumps(result["ops"])
-        self.assertNotIn(token, dumped_ops)
-        self.assertNotIn(token, dumped_result_ops)
         self.assertNotIn('"cap"', dumped_ops)
         self.assertTrue(result["ok"])
 
     def test_pick_point_optional(self) -> None:
-        ops = pick({"node_id": "hero"}, host="h", ctx=verified_ctx("Space.pick"))
+        ops = pick({"node_id": "hero"}, host="h")
         self.assertEqual(ops[0]["args"][0]["node_id"], "hero")
         self.assertNotIn("point", ops[0]["args"][0])
 
     def test_pick_keeps_unknown_hit_fields(self) -> None:
-        ops = pick({"node_id": "hero", "uv": [0.5, 0.5]}, host="h", ctx=verified_ctx("Space.pick"))
+        ops = pick({"node_id": "hero", "uv": [0.5, 0.5]}, host="h")
         self.assertEqual(ops[0]["args"][0]["uv"], [0.5, 0.5])
-
-    def test_pick_requires_cap(self) -> None:
-        hit = {"node_id": "hero"}
-        with self.assertRaises(CapRequired):
-            pick(hit, host="h", ctx=None)
-        with self.assertRaises(CapRequired):
-            pick(hit, host="h", ctx="")
-        with self.assertRaises(CapRequired):
-            pick(hit, host="h", ctx="   ")
 
     def test_pick_requires_host_and_node_id(self) -> None:
         with self.assertRaises(ValueError):
-            pick({"node_id": "hero"}, ctx=verified_ctx("Space.pick"))
+            pick({"node_id": "hero"})
         with self.assertRaises(ValueError):
-            pick({}, host="h", ctx=verified_ctx("Space.pick"))
+            pick({}, host="h")
         with self.assertRaises(ValueError):
-            pick({"node_id": ""}, host="h", ctx=verified_ctx("Space.pick"))
+            pick({"node_id": ""}, host="h")
         with self.assertRaises(ValueError):
-            pick({"node_id": "hero", "point": [1, 2]}, host="h", ctx=verified_ctx("Space.pick"))
+            pick({"node_id": "hero", "point": [1, 2]}, host="h")
 
     def test_apply_mixed_graph_no_cap_on_ops(self) -> None:
-        token = "soft6-apply-cap-MUST-NOT-SHIP"
-        ops = apply(_mixed(), ctx=verified_ctx("Space.apply", subject=token))
-        result = to_result(ops)
+        ops = apply(_mixed())
         self.assertEqual(ops[0]["op"], "bridge.call")
         self.assertEqual(ops[0]["method"], "apply")
         self.assertEqual(ops[0]["package"], "ux-space")
@@ -229,8 +212,6 @@ class Soft6PickHitTests(unittest.TestCase):
         self.assertIs(hero["pickable"], True)
         self.assertNotIn("meta", ops[0])
         self.assertNotIn("cap", ops[0])
-        self.assertNotIn(token, json.dumps(ops))
-        self.assertNotIn(token, json.dumps(result["ops"]))
 
     def test_threejs_peer_raycasts_pickable_and_reports_node_id(self) -> None:
         js = Path(threejs_adapter_path()).read_text(encoding="utf-8")

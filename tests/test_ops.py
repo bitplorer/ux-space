@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-import json
 import unittest
 
-from tests._verified import verified_ctx
 from ux_space import (
     APPLY_METHOD,
     OP_APPLY,
@@ -13,7 +11,6 @@ from ux_space import (
     OP_MOUNT,
     OP_UPDATE,
     PACKAGE,
-    CapRequired,
     apply,
     dumps,
     host_html,
@@ -28,7 +25,7 @@ from ux_space import (
 class OpsTests(unittest.TestCase):
     def test_apply_shape(self) -> None:
         graph = space("stage").host("stage-3d").node("hero")
-        ops = apply(graph, ctx=verified_ctx("Space.apply"))
+        ops = apply(graph)
         self.assertEqual(len(ops), 1)
         op = ops[0]
         self.assertEqual(op["op"], OP_APPLY)
@@ -42,38 +39,18 @@ class OpsTests(unittest.TestCase):
         self.assertEqual(op["args"][0]["id"], "stage")
         self.assertNotIn("meta", op)
         self.assertNotIn("cap", op)
-        self.assertNotIn("channel-minted-token", json.dumps(ops))
-
-    def test_apply_requires_cap(self) -> None:
-        graph = space("stage").host("stage-3d").node("hero")
-        with self.assertRaises(CapRequired):
-            apply(graph, ctx=None)
-        with self.assertRaises(CapRequired):
-            apply(graph, ctx="")
-        with self.assertRaises(CapRequired):
-            apply(graph, ctx="   ")
-
-    def test_apply_does_not_ship_cap_on_result(self) -> None:
-        token = "channel-minted-token-MUST-NOT-SHIP"
-        graph = space("stage").host("stage-3d").node("hero")
-        ops = apply(graph, ctx=verified_ctx("Space.apply", subject=token))
-        result = to_result(ops)
-        self.assertNotIn("meta", ops[0])
-        self.assertNotIn("cap", ops[0])
-        self.assertNotIn(token, json.dumps(ops))
-        self.assertNotIn(token, json.dumps(result["ops"]))
 
     def test_apply_needs_host(self) -> None:
         graph = space("stage").node("hero")
         with self.assertRaises(ValueError):
-            apply(graph, ctx=verified_ctx("Space.apply"))
+            apply(graph)
 
     def test_to_result(self) -> None:
         graph = space("stage").host("h").node("n")
-        result = to_result(apply(graph, ctx=verified_ctx("Space.apply")), action="Space.apply")
+        result = to_result(apply(graph), action="space.apply")
         self.assertTrue(result["ok"])
         self.assertEqual(result["ops"][0]["op"], "bridge.call")
-        self.assertEqual(result["meta"]["action"], "Space.apply")
+        self.assertEqual(result["meta"]["action"], "space.apply")
 
     def test_mount_and_update_builders(self) -> None:
         m = mount("stage-3d", props={"plan": {}})

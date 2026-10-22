@@ -1,9 +1,13 @@
 """What a graph becomes on the wire.
 
-apply(graph, ctx=..., host=...) → one Cap-gated ``bridge.call`` (method ``apply``).
-pick(hit, ctx=..., host=...) → one Cap-gated ``bridge.call`` (method ``pick``).
-orbit/pan/zoom(..., ctx=..., host=...) → Cap-gated ``bridge.call`` methods
-``orbit`` / ``pan`` / ``zoom``.
+apply(graph, host=...) → one ``bridge.call`` (method ``apply``).
+pick(hit, host=...) → one ``bridge.call`` (method ``pick``).
+orbit/pan/zoom(..., host=...) → ``bridge.call`` methods ``orbit`` / ``pan`` / ``zoom``.
+
+The verbs are plan builders and do no authorization: server code calling
+them is trusted like any Python call. Clients reach them only through the
+Channel actions ``ux_space.wire.register_actions`` adds, where the Channel
+Host verifies the Intent's Cap for that exact action before they run.
 
 Ops speak the Channel bridge plane only:
 ``bridge.mount`` / ``bridge.update`` / ``bridge.call``.
@@ -16,7 +20,6 @@ import html
 import json
 from typing import Any, Mapping, Sequence
 
-from ux_space.core._cap import require_verified
 from ux_space.core._ir import validate_plan
 from ux_space.core._peer import PACKAGE
 
@@ -49,7 +52,7 @@ def _as_plan(graph: Any) -> dict[str, Any]:
 
 
 def mount(host: str, *, props: Any = None, package: str = PACKAGE) -> list[dict[str, Any]]:
-    """Channel-compatible ``bridge.mount``. Not the Cap-gated verb."""
+    """Channel-compatible ``bridge.mount``. Not a verb."""
     if not isinstance(host, str) or not host.strip():
         raise ValueError("host must be a non-empty string")
     return [
@@ -64,7 +67,7 @@ def mount(host: str, *, props: Any = None, package: str = PACKAGE) -> list[dict[
 
 
 def update(host: str, props: Any, *, replace: bool = False) -> list[dict[str, Any]]:
-    """Channel-compatible ``bridge.update``. Not the Cap-gated verb."""
+    """Channel-compatible ``bridge.update``. Not a verb."""
     if not isinstance(host, str) or not host.strip():
         raise ValueError("host must be a non-empty string")
     return [_op(OP_UPDATE, id=host, props=props, replace=True if replace else None)]
@@ -157,10 +160,8 @@ def _call_payload(
     payload: Mapping[str, Any],
     *,
     host: str | None,
-    ctx: Any,
     package: str,
 ) -> list[dict[str, Any]]:
-    require_verified(ctx, method)
     hid = host
     if not isinstance(hid, str) or not hid.strip():
         raise ValueError(f"{method} requires host=")
@@ -179,60 +180,43 @@ def orbit(
     orbit: Any,
     *,
     host: str | None = None,
-    ctx: Any,
     package: str = PACKAGE,
 ) -> list[dict[str, Any]]:
-    """Cap-gated Soft 7 verb. Orbit becomes Intent args → ``bridge.call`` method ``orbit``.
-
-    ``ctx`` is the Channel handler context; ``ctx.verified`` must hold a Cap
-    for this method (``CapRequired`` otherwise). Nothing from it rides the ops.
+    """Soft 7 verb. Orbit becomes Intent args → ``bridge.call`` method ``orbit``.
     """
-    return _call_payload(ORBIT_METHOD, _as_orbit(orbit), host=host, ctx=ctx, package=package)
+    return _call_payload(ORBIT_METHOD, _as_orbit(orbit), host=host, package=package)
 
 
 def pan(
     pan: Any,
     *,
     host: str | None = None,
-    ctx: Any,
     package: str = PACKAGE,
 ) -> list[dict[str, Any]]:
-    """Cap-gated Soft 7 verb. Pan becomes Intent args → ``bridge.call`` method ``pan``.
-
-    ``ctx`` is the Channel handler context; ``ctx.verified`` must hold a Cap
-    for this method (``CapRequired`` otherwise). Nothing from it rides the ops.
+    """Soft 7 verb. Pan becomes Intent args → ``bridge.call`` method ``pan``.
     """
-    return _call_payload(PAN_METHOD, _as_pan(pan), host=host, ctx=ctx, package=package)
+    return _call_payload(PAN_METHOD, _as_pan(pan), host=host, package=package)
 
 
 def zoom(
     zoom: Any,
     *,
     host: str | None = None,
-    ctx: Any,
     package: str = PACKAGE,
 ) -> list[dict[str, Any]]:
-    """Cap-gated Soft 7 verb. Zoom becomes Intent args → ``bridge.call`` method ``zoom``.
-
-    ``ctx`` is the Channel handler context; ``ctx.verified`` must hold a Cap
-    for this method (``CapRequired`` otherwise). Nothing from it rides the ops.
+    """Soft 7 verb. Zoom becomes Intent args → ``bridge.call`` method ``zoom``.
     """
-    return _call_payload(ZOOM_METHOD, _as_zoom(zoom), host=host, ctx=ctx, package=package)
+    return _call_payload(ZOOM_METHOD, _as_zoom(zoom), host=host, package=package)
 
 
 def pick(
     hit: Any,
     *,
     host: str | None = None,
-    ctx: Any,
     package: str = PACKAGE,
 ) -> list[dict[str, Any]]:
-    """Cap-gated Soft 6 verb. Hit becomes Intent args → ``bridge.call`` method ``pick``.
-
-    ``ctx`` is the Channel handler context; ``ctx.verified`` must hold a Cap
-    for this method (``CapRequired`` otherwise). Nothing from it rides the ops.
+    """Soft 6 verb. Hit becomes Intent args → ``bridge.call`` method ``pick``.
     """
-    require_verified(ctx, PICK_METHOD)
     payload = _as_hit(hit)
     hid = host
     if not isinstance(hid, str) or not hid.strip():
@@ -252,17 +236,13 @@ def apply(
     graph: Any,
     *,
     host: str | None = None,
-    ctx: Any,
     package: str = PACKAGE,
 ) -> list[dict[str, Any]]:
-    """The day-1 Cap-gated verb. Returns one ``bridge.call`` (method ``apply``).
+    """The day-1 verb. Returns one ``bridge.call`` (method ``apply``).
 
-    ``ctx`` is the Channel handler context; ``ctx.verified`` must hold a Cap
-    for this method (``CapRequired`` otherwise). Nothing from it rides the ops.
     Soft 9 leftover: glTF / texture nodes travel on this same Plan — no
     ``load()`` verb.
     """
-    require_verified(ctx, APPLY_METHOD)
     plan = _as_plan(graph)
     hid = host or plan.get("graph", {}).get("host")
     if not isinstance(hid, str) or not hid.strip():

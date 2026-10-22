@@ -1,11 +1,11 @@
 """Soft-surface leftover tour: public space() / Graph + Cap-gated apply.
 
+    pip install 'ux-space[channel]'
     PYTHONPATH=. python examples/soft_surface/plan.py
 
-Soft 2–5 leftovers on the day-1 spine. The verbs authorize from
-``ctx.verified`` (the Cap the Channel Host verified), so they run inside
-Channel handlers: see ``app.py``. Without one they fail closed with
-``CapRequired``.
+Soft 2–5 leftovers on the day-1 spine. Running it boots an in-process dev
+Channel, mints a Cap for each ``space.*`` action and dispatches it. Channel
+verifies each Cap for exactly its action; the token is not copied onto ops.
 
 Soft 5 awareness: day-1 Peer stays threejs. Canvas Peer is swap-proof
 only — same ``ux-space`` register, not a second concurrent Peer.
@@ -20,7 +20,8 @@ Soft 10 leftover: ``cone`` / ``torus`` via Soft 2 ``shape=``.
 
 from __future__ import annotations
 
-from ux_space import CapRequired, Graph, apply, dumps, host_html, space
+from ux_space import Graph, dumps, host_html, space
+from ux_space.wire import boot, register_actions
 
 
 def soft_surface() -> Graph:
@@ -112,8 +113,17 @@ if __name__ == "__main__":
     plan = graph.plan()
     print(dumps(plan))
 
-    try:
-        apply(graph, ctx=None)
-    except CapRequired as exc:
-        print("CapRequired:", exc)
+    ch = boot(secret="dev-secret-key-32chars-minimum!!!!")
+    register_actions(ch, graph, host="stage-3d")
+    for action, args in (
+        ("space.apply", {}),
+        ("space.pick", {"node_id": "box", "point": [0.0, 0.5, 0.0]}),
+        ("space.orbit", {"azimuth": 0.2, "polar": 1.2}),
+        ("space.pan", {"x": 0.1, "y": 0.0}),
+        ("space.zoom", {"distance": 6.0}),
+    ):
+        cap = ch.mint(action, args)
+        op = ch.registry.dispatch({"action": action, "args": args, "cap": cap}).ops[0]
+        print(action, op["op"], op["method"], op["package"], cap in repr(op))
+    print("without Cap:", ch.registry.dispatch({"action": "space.apply", "args": {}}).error.code)
     print(host_html("stage-3d", plan=plan)[:80], "...")
