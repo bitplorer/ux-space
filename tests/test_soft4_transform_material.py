@@ -9,7 +9,6 @@ HOLD materials catalog, R3F, Soft 5 Peer-swap.
 from __future__ import annotations
 
 import inspect
-import json
 import unittest
 from pathlib import Path
 
@@ -18,7 +17,6 @@ from ux_space import (
     PlanError,
     apply,
     space,
-    to_result,
     validate_plan,
 )
 from ux_space.core._ir import CAMERAS, LIGHTS, MATERIALS, SHAPES
@@ -219,9 +217,7 @@ class Soft4TransformMaterialTests(unittest.TestCase):
         self.assertNotIn("material", light_params)
 
     def test_apply_mixed_graph_no_cap_on_ops(self) -> None:
-        token = "soft4-cap-MUST-NOT-SHIP"
-        ops = apply(_mixed(), cap=token)
-        result = to_result(ops)
+        ops = apply(_mixed())
         self.assertEqual(ops[0]["op"], "bridge.call")
         self.assertEqual(ops[0]["method"], "apply")
         self.assertEqual(ops[0]["package"], "ux-space")
@@ -230,8 +226,6 @@ class Soft4TransformMaterialTests(unittest.TestCase):
         self.assertEqual(hero["material"]["type"], "basic")
         self.assertNotIn("meta", ops[0])
         self.assertNotIn("cap", ops[0])
-        self.assertNotIn(token, json.dumps(ops))
-        self.assertNotIn(token, json.dumps(result["ops"]))
 
     def test_peer_applies_transform_and_basic_material(self) -> None:
         js = Path(adapter_path()).read_text(encoding="utf-8")

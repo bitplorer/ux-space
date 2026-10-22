@@ -11,6 +11,7 @@ from typing import Any
 from ux_space.core import PACKAGE, apply, host_html, orbit, pan, pick, space, to_result, zoom
 
 __all__ = [
+    "ACTIONS",
     "PACKAGE",
     "apply",
     "as_channel_result",
@@ -20,11 +21,15 @@ __all__ = [
     "orbit",
     "pan",
     "pick",
+    "register_actions",
     "register_manifest",
     "space",
     "to_result",
     "zoom",
 ]
+
+# Channel action name per verb. Channel verifies a Cap for exactly one name.
+ACTIONS = {method: f"space.{method}" for method in ("apply", "pick", "orbit", "pan", "zoom")}
 
 
 def boot(app: Any = None, **kwargs: Any) -> Any:
@@ -64,3 +69,26 @@ def as_channel_result(ops: Any, *, ok: bool = True, **kwargs: Any) -> Any:
         return Result(ok=ok, ops=list(ops), **kwargs)
     except ImportError:
         return to_result(ops, ok=ok)
+
+
+def register_actions(ch: Any, graph: Any, *, host: str) -> None:
+    """Expose the verbs as the Channel actions in ``ACTIONS``.
+
+    The Channel Host verifies each Intent's Cap for exactly that action name
+    (and its sealed args) before the handler runs; ux-space adds no check of
+    its own. ``space.apply`` emits the server-authored ``graph``; the other
+    actions take their payload from the Intent args.
+    """
+    registry = ch.registry
+    if not registry.require_cap:
+        raise ValueError("register_actions needs require_cap=True: the space.* actions must not be open")
+
+    def call(verb: Any) -> Any:
+        def handler(**args: Any) -> Any:
+            return as_channel_result(verb(args, host=host))
+
+        return handler
+
+    registry.register(ACTIONS["apply"], lambda **_: as_channel_result(apply(graph, host=host)))
+    for method, verb in (("pick", pick), ("orbit", orbit), ("pan", pan), ("zoom", zoom)):
+        registry.register(ACTIONS[method], call(verb))

@@ -15,6 +15,20 @@ entries below are historical teaching for Soft 2–10 on `0.1.0a1`
 
 ## Unreleased
 
+### Security
+
+- Verbs (`apply`, `pick`, `orbit`, `pan`, `zoom`, `Graph.apply`) no
+  longer take `cap=`, which accepted any non-empty string, including
+  the examples' `"channel-verified"`. They are now plan builders with no
+  authorization, and `CapRequired` is gone. Clients reach them only as
+  the Channel actions `space.apply` / `space.pick` / `space.orbit` /
+  `space.pan` / `space.zoom` that `ux_space.wire.register_actions` adds.
+  Channel verifies each Intent's Cap for exactly that action.
+  `register_actions` refuses a registry with `require_cap=False`. Locked
+  by `tests/test_channel_actions.py`.
+- The `channel` extra pins ux-channel main `c3fe7c5` (#69, #76). CI
+  installs it. Examples dispatch through a dev Channel with minted Caps.
+
 ### Fixed
 
 - three.js Peer renders every mesh node of a Plan, not only the first

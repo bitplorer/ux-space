@@ -217,14 +217,13 @@ class Soft8MaterialsTests(unittest.TestCase):
         self.assertEqual(plan["graph"]["nodes"][2]["kind"], "node")
         self.assertIs(plan["graph"]["nodes"][2]["pickable"], True)
         self.assertEqual(plan["graph"]["nodes"][2]["material"]["type"], "basic")
-        hit = pick({"node_id": "a"}, host="h", cap="tok")
+        hit = pick({"node_id": "a"}, host="h")
         self.assertEqual(hit[0]["method"], "pick")
-        cam = orbit({"azimuth": 0.2}, host="h", cap="tok")
+        cam = orbit({"azimuth": 0.2}, host="h")
         self.assertEqual(cam[0]["method"], "orbit")
 
     def test_apply_mixed_graph_no_cap_on_ops(self) -> None:
-        token = "soft8-cap-MUST-NOT-SHIP"
-        ops = apply(_mixed(), cap=token)
+        ops = apply(_mixed())
         result = to_result(ops)
         self.assertEqual(ops[0]["op"], "bridge.call")
         self.assertEqual(ops[0]["method"], "apply")
@@ -236,9 +235,6 @@ class Soft8MaterialsTests(unittest.TestCase):
         self.assertNotIn("meta", ops[0])
         self.assertNotIn("cap", ops[0])
         dumped_ops = json.dumps(ops)
-        dumped_result_ops = json.dumps(result["ops"])
-        self.assertNotIn(token, dumped_ops)
-        self.assertNotIn(token, dumped_result_ops)
         self.assertNotIn('"cap"', dumped_ops)
         self.assertTrue(result["ok"])
 

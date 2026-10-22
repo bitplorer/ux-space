@@ -66,25 +66,14 @@ graph = space("stage").host("stage-3d").node("hero", shape="box", color="#6366f1
 plan = graph.plan()
 print(plan["kind"], plan["graph"]["nodes"][0]["id"])
 
-# In product, `cap` comes from Channel (ch.control / CapService.mint).
-# require_cap is server-side only — the token does not ride the Result.
-ops = apply(graph, cap="channel-minted-cap-token")
+# Verbs are plan builders. Clients reach them only as Channel actions (§4).
+ops = apply(graph)
 print(ops[0]["op"], ops[0]["method"], ops[0]["package"])
 print("cap" in ops[0], "meta" in ops[0])
 ```
 
 Success: printed `plan hero` then `bridge.call apply ux-space` then `False False`.
 
-Missing Cap fails closed:
-
-```python
-from ux_space import CapRequired
-
-try:
-    apply(graph, cap=None)
-except CapRequired as exc:
-    print(type(exc).__name__)
-```
 
 ---
 
@@ -114,10 +103,15 @@ imports Channel only through `ux_space.wire` or a compose `wire/` door.
 
 ```python
 # Isolation door — off ux_space.__all__
-from ux_space.wire import boot, apply, space
+from ux_space.wire import boot, register_actions
 
 ch = boot(app, secret="dev-secret-key-32chars-minimum!!!!")
+register_actions(ch, graph, host="stage-3d")  # space.apply / pick / orbit / pan / zoom
 ```
+
+Channel verifies each Intent's Cap for exactly its `space.*` action before
+the verb runs. An Intent with no Cap, a forged one, or a Cap for another
+action is refused by Channel.
 
 Walkthrough: [examples/day1/README.md](examples/day1/README.md).
 Soft-surface leftover tour: [examples/soft_surface/](examples/soft_surface/).

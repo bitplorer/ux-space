@@ -34,7 +34,7 @@ class PackagingTests(unittest.TestCase):
         self.assertIn('version = "0.1.0a1"', text)
         self.assertIn('requires-python = ">=3.14"', text)
         self.assertIn("Programming Language :: Python :: 3.14", text)
-        self.assertIn('channel = ["ux-channel>=0.1"]', text)
+        self.assertIn("ux-channel @ git+https://github.com/bitplorer/ux-channel@c3fe7c5e627e2568ac5a84f9660227a768d65fb5", text)
         self.assertNotIn("Programming Language :: Python :: 3.10", text)
         self.assertNotIn("Programming Language :: Python :: 3.11", text)
         self.assertNotIn("Programming Language :: Python :: 3.12", text)

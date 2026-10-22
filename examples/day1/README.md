@@ -1,15 +1,17 @@
 # examples/day1
 
-Day-1 path: **Graph → Cap-gated apply → Channel Result → Peer apply.**
+Day-1 path: **Graph → Channel action `space.apply` → Channel Result → Peer apply.**
 
-## 1. No Channel (always works)
+## 1. In-process Channel
 
 ```bash
+pip install 'ux-space[channel]'
 PYTHONPATH=. python examples/day1/plan.py
 ```
 
-Prints a Plan and a `bridge.call` Result. Uses a stand-in Cap token so you
-can see the op shape. In product the token is Channel-minted.
+Boots a dev Channel, registers the `space.*` actions, mints a Cap for
+`space.apply` and dispatches it. Prints the Plan, the `bridge.call` op
+(the Cap is not on it), and the refusal of an Intent without a Cap.
 
 ## 2. Channel.boot (optional extra)
 
@@ -19,7 +21,7 @@ PYTHONPATH=. uvicorn examples.day1.app:app --host 127.0.0.1 --port 8080
 ```
 
 `examples/day1/app.py` imports Channel **only** through `ux_space.wire`
-(`boot`, `as_channel_result`). Cap mint stays `ch.control`. The page hosts
+(`boot`, `register_actions`). Cap mint stays `ch.control`. The page hosts
 the Peer as package **`ux-space`**, not `"three"`.
 
 ## 3. Compose wire path
@@ -32,7 +34,7 @@ Product apps should not `import ux_channel`. Compose (or this Soft's
 from ux_space import apply, space
 
 graph = space("stage").host("stage-3d").node("hero", color="#6366f1")
-ops = apply(graph, cap=channel_minted_cap)  # Cap stays server-side; not on ops
+ops = apply(graph)  # plan builder; clients reach it only as Channel action space.apply
 # fold ops into the Channel Result the compose wire already builds
 ```
 

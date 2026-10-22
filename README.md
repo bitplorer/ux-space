@@ -56,16 +56,20 @@ graph = (
     .host("stage-3d")
     .node("hero", shape="box", color="#6366f1")
 )
-# `cap` is Channel-minted (ch.control / CapService.mint). Server-side gate
-# only — this Soft does not mint, and the token does not ride the Result.
-ops = apply(graph, host="stage-3d", cap=channel_minted_cap)
+# Verbs are plan builders: server code calling them is trusted.
+ops = apply(graph, host="stage-3d")
 result = to_result(ops)
 # result["ops"][0]["op"] == "bridge.call"
 # result["ops"][0]["method"] == "apply"
 # result["ops"][0]["package"] == "ux-space"
 ```
 
-Same graph as a Result: `graph.apply(cap=channel_minted_cap)`.
+Same graph as a Result: `graph.apply()`.
+
+Clients reach the verbs only as Channel actions. `ux_space.wire.register_actions(ch, graph, host=)`
+registers `space.apply` / `space.pick` / `space.orbit` / `space.pan` / `space.zoom`. Channel verifies
+each Intent's Cap for exactly that action name (and its sealed args) before the handler runs.
+ux-space itself does no authorization.
 
 Public names are `ux_space.__all__`, frozen from `ux_space.core` only.
 `wire/` is off that `__all__`. Soft 1–10 surfaces, fences, and the HOLD
@@ -75,6 +79,7 @@ in [OWNERSHIP.md](OWNERSHIP.md).
 ## Tests
 
 ```bash
+pip install -e '.[channel]'  # tests dispatch through a real Channel
 PYTHONPATH=. python -m unittest discover -s tests -v
 ```
 

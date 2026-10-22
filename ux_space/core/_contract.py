@@ -22,7 +22,7 @@ CONTRACT = {
         "Three.js is the day-1 Peer adapter, not the identity. Package name wraps three.",
         "Same Ops apply to a future non-Three Peer without changing Graph / space().",
         "Cap mint stays Channel (ch.control / CapService.mint / Channel.boot / mount_channel).",
-        "Do not invent a second Cap Host. This Soft only refuses a missing Cap.",
+        "Do not invent a second Cap Host. Verbs do no authorization; clients reach them only as Channel actions space.* whose Cap Channel verifies for that exact action.",
         "Cap is server-side only. apply() must not put the token on ops or Result (no meta.cap).",
         "Product never imports ux_channel outside the compose-style wire/ door.",
         "Ops speak the Channel bridge plane only: bridge.mount / update / call.",

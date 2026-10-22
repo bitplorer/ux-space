@@ -10,7 +10,6 @@ dual concurrent Peers as taught product, sixth Cap Host.
 from __future__ import annotations
 
 import inspect
-import json
 import unittest
 from pathlib import Path
 
@@ -21,7 +20,6 @@ from ux_space import (
     Graph,
     apply,
     space,
-    to_result,
     validate_plan,
 )
 from ux_space.core._ir import CAMERAS, LIGHTS, MATERIALS, SHAPES
@@ -172,9 +170,7 @@ class Soft5PeerSwapTests(unittest.TestCase):
         self.assertNotIn("kind", params)
         self.assertFalse(hasattr(Graph, "sphere"))
         self.assertFalse(hasattr(Graph, "box"))
-        token = "soft5-cap-MUST-NOT-SHIP"
-        ops = apply(_mixed(), cap=token)
-        result = to_result(ops)
+        ops = apply(_mixed())
         self.assertEqual(ops[0]["op"], "bridge.call")
         self.assertEqual(ops[0]["method"], "apply")
         self.assertEqual(ops[0]["package"], "ux-space")
@@ -184,8 +180,6 @@ class Soft5PeerSwapTests(unittest.TestCase):
         self.assertEqual(hero["material"]["type"], "basic")
         self.assertNotIn("meta", ops[0])
         self.assertNotIn("cap", ops[0])
-        self.assertNotIn(token, json.dumps(ops))
-        self.assertNotIn(token, json.dumps(result["ops"]))
         out = validate_plan(_mixed().plan())
         self.assertEqual(out["graph"]["nodes"][0]["kind"], "camera")
         self.assertEqual(out["graph"]["nodes"][3]["material"]["opacity"], 0.8)

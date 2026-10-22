@@ -3,7 +3,7 @@
     from ux_space import space, apply
 
     graph = space("stage").host("stage-3d").node("hero", shape="box", color="#6366f1")
-    result = graph.apply(cap=channel_minted_cap)
+    result = graph.apply()
     # result == {"ok": True, "ops": [{"op": "bridge.call", "method": "apply", ...}]}
 
 Public names come from ``ux_space.core`` only. ``wire/`` is the Isolation
@@ -26,7 +26,6 @@ from ux_space.core import (
     PEER_VERSION,
     PICK_METHOD,
     ZOOM_METHOD,
-    CapRequired,
     Graph,
     PlanError,
     __version__,
@@ -61,7 +60,6 @@ __all__ = [
     "PACKAGE",
     "PEER",
     "PEER_VERSION",
-    "CapRequired",
     "Graph",
     "PlanError",
     "__version__",

@@ -1,10 +1,11 @@
 """Soft-surface leftover tour: public space() / Graph + Cap-gated apply.
 
+    pip install 'ux-space[channel]'
     PYTHONPATH=. python examples/soft_surface/plan.py
 
-Soft 2–5 leftovers on the day-1 spine. The token here is a stand-in for
-the server-side gate. Product code passes a Channel-minted Cap
-(ch.control / CapService.mint). The token is not copied onto Result ops.
+Soft 2–5 leftovers on the day-1 spine. Running it boots an in-process dev
+Channel, mints a Cap for each ``space.*`` action and dispatches it. Channel
+verifies each Cap for exactly its action; the token is not copied onto ops.
 
 Soft 5 awareness: day-1 Peer stays threejs. Canvas Peer is swap-proof
 only — same ``ux-space`` register, not a second concurrent Peer.
@@ -19,10 +20,8 @@ Soft 10 leftover: ``cone`` / ``torus`` via Soft 2 ``shape=``.
 
 from __future__ import annotations
 
-from ux_space import Graph, apply, dumps, host_html, orbit, pan, pick, space, to_result, zoom
-
-# Stand-in only. Product mints on Channel. Never copy onto ops/Result.
-STAND_IN_CAP = "channel-minted-cap-token"
+from ux_space import Graph, dumps, host_html, space
+from ux_space.wire import boot, register_actions
 
 
 def soft_surface() -> Graph:
@@ -114,19 +113,17 @@ if __name__ == "__main__":
     plan = graph.plan()
     print(dumps(plan))
 
-    ops = apply(graph, cap=STAND_IN_CAP)
-    result = to_result(ops)
-    op = result["ops"][0]
-    print(op["op"], op["method"], op["package"])
-    print("cap" in op, "meta" in op)
-    hit_ops = pick({"node_id": "box", "point": [0.0, 0.5, 0.0]}, host="stage-3d", cap=STAND_IN_CAP)
-    hit_op = to_result(hit_ops)["ops"][0]
-    print(hit_op["op"], hit_op["method"], hit_op["package"])
-    print("cap" in hit_op, "meta" in hit_op)
-    cam_ops = orbit({"azimuth": 0.2, "polar": 1.2}, host="stage-3d", cap=STAND_IN_CAP)
-    cam_op = to_result(cam_ops)["ops"][0]
-    print(cam_op["op"], cam_op["method"], cam_op["package"])
-    print("cap" in cam_op, "meta" in cam_op)
-    print(to_result(pan({"x": 0.1, "y": 0.0}, host="stage-3d", cap=STAND_IN_CAP))["ops"][0]["method"])
-    print(to_result(zoom({"distance": 6.0}, host="stage-3d", cap=STAND_IN_CAP))["ops"][0]["method"])
+    ch = boot(secret="dev-secret-key-32chars-minimum!!!!")
+    register_actions(ch, graph, host="stage-3d")
+    for action, args in (
+        ("space.apply", {}),
+        ("space.pick", {"node_id": "box", "point": [0.0, 0.5, 0.0]}),
+        ("space.orbit", {"azimuth": 0.2, "polar": 1.2}),
+        ("space.pan", {"x": 0.1, "y": 0.0}),
+        ("space.zoom", {"distance": 6.0}),
+    ):
+        cap = ch.mint(action, args)
+        op = ch.registry.dispatch({"action": action, "args": args, "cap": cap}).ops[0]
+        print(action, op["op"], op["method"], op["package"], cap in repr(op))
+    print("without Cap:", ch.registry.dispatch({"action": "space.apply", "args": {}}).error.code)
     print(host_html("stage-3d", plan=plan)[:80], "...")

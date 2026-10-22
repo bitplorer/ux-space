@@ -185,10 +185,10 @@ class Graph:
             }
         )
 
-    def apply(self, *, host: str | None = None, cap: Any) -> dict[str, Any]:
-        """Cap-gated verb → Channel-shaped Result. Cap mint stays Channel."""
+    def apply(self, *, host: str | None = None) -> dict[str, Any]:
+        """Verb → Channel-shaped Result."""
         hid = host or self._host
-        return to_result(apply_ops(self, host=hid, cap=cap))
+        return to_result(apply_ops(self, host=hid))
 
     def __repr__(self) -> str:
         return f"Graph(id={self._id!r}, host={self._host!r}, nodes={len(self._nodes)})"
