@@ -11,6 +11,7 @@ import json
 import unittest
 from pathlib import Path
 
+from tests._verified import verified_ctx
 from ux_space import (
     Graph,
     apply,
@@ -96,7 +97,7 @@ class Soft2ShapesTests(unittest.TestCase):
     def test_apply_shape_unchanged_no_cap_on_ops(self) -> None:
         token = "soft2-cap-MUST-NOT-SHIP"
         graph = space("stage").host("stage-3d").node("hero", shape="sphere")
-        ops = apply(graph, cap=token)
+        ops = apply(graph, ctx=verified_ctx("Space.apply", subject=token))
         result = to_result(ops)
         self.assertEqual(ops[0]["op"], "bridge.call")
         self.assertEqual(ops[0]["method"], "apply")

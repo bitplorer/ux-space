@@ -32,7 +32,7 @@ Soft 1 is that seat: `space()` / `Graph`, Plan IR v1, Cap-gated `apply`,
 | 10 | `cone` / `torus` | Soft 2 `shape=` KEEP |
 
 Each Soft is leftover teaching plus a lock: Isolation `wire/` only;
-Cap NEVER on ops / Result; `require_cap` server-side only; Peer
+Cap NEVER on ops / Result; `require_verified` server-side only; Peer
 registers as `ux-space` not `three`; Cap Host KEEP on Channel; never
 `scene()` / `ux-scene`; `core/` stays truth.
 

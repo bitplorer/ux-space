@@ -24,9 +24,9 @@ parked. `features/` stays empty.
 PYTHONPATH=. python examples/soft_surface/plan.py
 ```
 
-Prints a Plan IR v1 and a `bridge.call` Result. Uses a stand-in Cap token
-so you can see the op shape. In product the token is Channel-minted.
-The token is not copied onto Result ops (`ops[].meta.cap` is disclosure).
+Prints a Plan IR v1, then shows `apply` refusing with `CapRequired`:
+verbs authorize from a Channel handler's `ctx.verified`, and there is
+none here. `app.py` runs every verb inside its handler.
 
 ## 2. Channel.boot (optional extra)
 
@@ -53,5 +53,5 @@ Swap steps: [`ux_space/peers/README.md`](../../ux_space/peers/README.md).
 
 - Product never imports `ux_channel` except through `ux_space.wire`
 - Cap Host KEEP on Channel (`Channel.boot` / `mount_channel`)
-- `require_cap` is server-side only — token never rides ops/Result
+- `require_verified` is server-side only — nothing from `ctx` rides ops/Result (`ops[].meta.cap` is disclosure)
 - Never `scene()` / `ux-scene`

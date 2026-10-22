@@ -1,9 +1,10 @@
 # How to author a graph and emit verbs
 
 **Diátaxis:** how-to. Surfaces are from `ux_space` public names and
-passing tests. Stand-in Cap tokens here match the tests; product code
-passes a Channel-minted Cap (`ch.control` / `CapService.mint`). The
-token never rides ops / Result (`ops[].meta.cap` is disclosure).
+passing tests. Verb calls run inside a Channel handler: `ctx` is the
+handler's context, and its `ctx.verified` must hold the Cap Channel
+verified for `Space.<verb>` (tests build that `ctx` in `tests/_verified.py`).
+Nothing from `ctx` rides ops / Result (`ops[].meta.cap` is disclosure).
 
 ## Soft 1 — one graph, Cap-gated `apply`
 
@@ -17,7 +18,7 @@ plan = graph.plan()
 assert plan["graph"]["host"] == "stage-3d"
 assert plan["graph"]["nodes"][0]["id"] == "hero"
 
-ops = apply(graph, cap="channel-minted-token")
+ops = apply(graph, ctx=ctx)
 result = to_result(ops)
 assert ops[0]["op"] == "bridge.call"
 assert ops[0]["method"] == "apply"
@@ -26,8 +27,8 @@ assert "cap" not in ops[0]
 assert "meta" not in ops[0]
 ```
 
-`graph.apply(cap=...)` returns the same Result shape (`tests/test_graph.py`).
-Missing Cap raises `CapRequired`. `apply` needs `host=` or `plan.graph.host`.
+`graph.apply(ctx=ctx)` returns the same Result shape (`tests/test_graph.py`).
+No `ctx.verified`, or a Cap for another action, raises `CapRequired`. `apply` needs `host=` or `plan.graph.host`.
 
 ## Soft 2 — locked SHAPES on `.node(..., shape=)`
 
@@ -117,7 +118,7 @@ from ux_space import pick, space, to_result
 graph = space("s").host("stage-3d").node("hero", shape="box", pickable=True)
 assert graph.plan()["graph"]["nodes"][0]["pickable"] is True
 
-ops = pick({"node_id": "hero", "point": [0.1, 0.2, 0.3]}, host="stage-3d", cap="tok")
+ops = pick({"node_id": "hero", "point": [0.1, 0.2, 0.3]}, host="stage-3d", ctx=ctx)
 result = to_result(ops)
 assert ops[0]["method"] == "pick"
 assert ops[0]["args"][0]["node_id"] == "hero"
@@ -125,7 +126,7 @@ assert ops[0]["args"][0]["point"] == [0.1, 0.2, 0.3]
 assert "cap" not in ops[0]
 ```
 
-`point` is optional: `pick({"node_id": "hero"}, host="h", cap="tok")`.
+`point` is optional: `pick({"node_id": "hero"}, host="h", ctx=ctx)`.
 Channel owns click = Intent. This Soft does not invent a generic
 pointer stack.
 
@@ -153,9 +154,9 @@ graph = (
 eye = graph.plan()["graph"]["nodes"][0]
 assert eye["orbit"] == {"azimuth": 0.4, "polar": 1.2}
 
-assert orbit({"azimuth": 0.2, "polar": 1.1}, host="stage-3d", cap="tok")[0]["method"] == "orbit"
-assert pan({"x": 0.3, "y": -0.1}, host="stage-3d", cap="tok")[0]["method"] == "pan"
-assert zoom({"distance": 3.5}, host="stage-3d", cap="tok")[0]["method"] == "zoom"
+assert orbit({"azimuth": 0.2, "polar": 1.1}, host="stage-3d", ctx=ctx)[0]["method"] == "orbit"
+assert pan({"x": 0.3, "y": -0.1}, host="stage-3d", ctx=ctx)[0]["method"] == "pan"
+assert zoom({"distance": 3.5}, host="stage-3d", ctx=ctx)[0]["method"] == "zoom"
 ```
 
 Thin Peer apply — not OrbitControls. `zoom=0` / negative fail closed.
@@ -214,7 +215,7 @@ graph = (
 plan = graph.plan()
 assert plan["graph"]["nodes"][0]["kind"] == "texture"
 assert plan["graph"]["nodes"][1]["kind"] == "gltf"
-ops = apply(graph, cap="tok")
+ops = apply(graph, ctx=ctx)
 assert ops[0]["method"] == "apply"
 ```
 

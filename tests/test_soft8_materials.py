@@ -27,6 +27,7 @@ import json
 import unittest
 from pathlib import Path
 
+from tests._verified import verified_ctx
 from ux_space import (
     CONTRACT,
     PACKAGE,
@@ -217,14 +218,14 @@ class Soft8MaterialsTests(unittest.TestCase):
         self.assertEqual(plan["graph"]["nodes"][2]["kind"], "node")
         self.assertIs(plan["graph"]["nodes"][2]["pickable"], True)
         self.assertEqual(plan["graph"]["nodes"][2]["material"]["type"], "basic")
-        hit = pick({"node_id": "a"}, host="h", cap="tok")
+        hit = pick({"node_id": "a"}, host="h", ctx=verified_ctx("Space.pick"))
         self.assertEqual(hit[0]["method"], "pick")
-        cam = orbit({"azimuth": 0.2}, host="h", cap="tok")
+        cam = orbit({"azimuth": 0.2}, host="h", ctx=verified_ctx("Space.orbit"))
         self.assertEqual(cam[0]["method"], "orbit")
 
     def test_apply_mixed_graph_no_cap_on_ops(self) -> None:
         token = "soft8-cap-MUST-NOT-SHIP"
-        ops = apply(_mixed(), cap=token)
+        ops = apply(_mixed(), ctx=verified_ctx("Space.apply", subject=token))
         result = to_result(ops)
         self.assertEqual(ops[0]["op"], "bridge.call")
         self.assertEqual(ops[0]["method"], "apply")

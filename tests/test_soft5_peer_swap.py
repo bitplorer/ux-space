@@ -14,6 +14,7 @@ import json
 import unittest
 from pathlib import Path
 
+from tests._verified import verified_ctx
 from ux_space import (
     CONTRACT,
     PACKAGE,
@@ -173,7 +174,7 @@ class Soft5PeerSwapTests(unittest.TestCase):
         self.assertFalse(hasattr(Graph, "sphere"))
         self.assertFalse(hasattr(Graph, "box"))
         token = "soft5-cap-MUST-NOT-SHIP"
-        ops = apply(_mixed(), cap=token)
+        ops = apply(_mixed(), ctx=verified_ctx("Space.apply", subject=token))
         result = to_result(ops)
         self.assertEqual(ops[0]["op"], "bridge.call")
         self.assertEqual(ops[0]["method"], "apply")

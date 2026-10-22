@@ -15,8 +15,8 @@ modules.
 | `mount_channel` | `ux_space.wire.mount_channel` pass-through |
 | Intent verify | Not reimplemented |
 
-`apply()`, `pick()`, `orbit()`, `pan()`, and `zoom()` still require a Cap token so the Soft never becomes ambient.
-The token stays on the server — it is not copied onto Result ops.
-Verification is Channel's job when the Intent arrives.
+`apply()`, `pick()`, `orbit()`, `pan()`, and `zoom()` take the handler `ctx` and
+require `ctx.verified` to hold a Cap for that verb, so the Soft never becomes ambient.
+Verification is Channel's job when the Intent arrives; nothing from `ctx` is copied onto Result ops.
 
 Optional extra: `pip install 'ux-space[channel]'`.

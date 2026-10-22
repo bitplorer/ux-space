@@ -1,8 +1,8 @@
 """What a graph becomes on the wire.
 
-apply(graph, host=..., cap=...) → one Cap-gated ``bridge.call`` (method ``apply``).
-pick(hit, host=..., cap=...) → one Cap-gated ``bridge.call`` (method ``pick``).
-orbit/pan/zoom(..., host=..., cap=...) → Cap-gated ``bridge.call`` methods
+apply(graph, ctx=..., host=...) → one Cap-gated ``bridge.call`` (method ``apply``).
+pick(hit, ctx=..., host=...) → one Cap-gated ``bridge.call`` (method ``pick``).
+orbit/pan/zoom(..., ctx=..., host=...) → Cap-gated ``bridge.call`` methods
 ``orbit`` / ``pan`` / ``zoom``.
 
 Ops speak the Channel bridge plane only:
@@ -16,7 +16,7 @@ import html
 import json
 from typing import Any, Mapping, Sequence
 
-from ux_space.core._cap import require_cap
+from ux_space.core._cap import require_verified
 from ux_space.core._ir import validate_plan
 from ux_space.core._peer import PACKAGE
 
@@ -157,10 +157,10 @@ def _call_payload(
     payload: Mapping[str, Any],
     *,
     host: str | None,
-    cap: Any,
+    ctx: Any,
     package: str,
 ) -> list[dict[str, Any]]:
-    require_cap(cap)
+    require_verified(ctx, method)
     hid = host
     if not isinstance(hid, str) or not hid.strip():
         raise ValueError(f"{method} requires host=")
@@ -179,60 +179,60 @@ def orbit(
     orbit: Any,
     *,
     host: str | None = None,
-    cap: Any,
+    ctx: Any,
     package: str = PACKAGE,
 ) -> list[dict[str, Any]]:
     """Cap-gated Soft 7 verb. Orbit becomes Intent args → ``bridge.call`` method ``orbit``.
 
-    ``cap`` must be a Channel-minted token. This Soft does not mint or verify.
-    The token stays server-side — it is not copied onto the Result ops.
+    ``ctx`` is the Channel handler context; ``ctx.verified`` must hold a Cap
+    for this method (``CapRequired`` otherwise). Nothing from it rides the ops.
     """
-    return _call_payload(ORBIT_METHOD, _as_orbit(orbit), host=host, cap=cap, package=package)
+    return _call_payload(ORBIT_METHOD, _as_orbit(orbit), host=host, ctx=ctx, package=package)
 
 
 def pan(
     pan: Any,
     *,
     host: str | None = None,
-    cap: Any,
+    ctx: Any,
     package: str = PACKAGE,
 ) -> list[dict[str, Any]]:
     """Cap-gated Soft 7 verb. Pan becomes Intent args → ``bridge.call`` method ``pan``.
 
-    ``cap`` must be a Channel-minted token. This Soft does not mint or verify.
-    The token stays server-side — it is not copied onto the Result ops.
+    ``ctx`` is the Channel handler context; ``ctx.verified`` must hold a Cap
+    for this method (``CapRequired`` otherwise). Nothing from it rides the ops.
     """
-    return _call_payload(PAN_METHOD, _as_pan(pan), host=host, cap=cap, package=package)
+    return _call_payload(PAN_METHOD, _as_pan(pan), host=host, ctx=ctx, package=package)
 
 
 def zoom(
     zoom: Any,
     *,
     host: str | None = None,
-    cap: Any,
+    ctx: Any,
     package: str = PACKAGE,
 ) -> list[dict[str, Any]]:
     """Cap-gated Soft 7 verb. Zoom becomes Intent args → ``bridge.call`` method ``zoom``.
 
-    ``cap`` must be a Channel-minted token. This Soft does not mint or verify.
-    The token stays server-side — it is not copied onto the Result ops.
+    ``ctx`` is the Channel handler context; ``ctx.verified`` must hold a Cap
+    for this method (``CapRequired`` otherwise). Nothing from it rides the ops.
     """
-    return _call_payload(ZOOM_METHOD, _as_zoom(zoom), host=host, cap=cap, package=package)
+    return _call_payload(ZOOM_METHOD, _as_zoom(zoom), host=host, ctx=ctx, package=package)
 
 
 def pick(
     hit: Any,
     *,
     host: str | None = None,
-    cap: Any,
+    ctx: Any,
     package: str = PACKAGE,
 ) -> list[dict[str, Any]]:
     """Cap-gated Soft 6 verb. Hit becomes Intent args → ``bridge.call`` method ``pick``.
 
-    ``cap`` must be a Channel-minted token. This Soft does not mint or verify.
-    The token stays server-side — it is not copied onto the Result ops.
+    ``ctx`` is the Channel handler context; ``ctx.verified`` must hold a Cap
+    for this method (``CapRequired`` otherwise). Nothing from it rides the ops.
     """
-    require_cap(cap)
+    require_verified(ctx, PICK_METHOD)
     payload = _as_hit(hit)
     hid = host
     if not isinstance(hid, str) or not hid.strip():
@@ -252,17 +252,17 @@ def apply(
     graph: Any,
     *,
     host: str | None = None,
-    cap: Any,
+    ctx: Any,
     package: str = PACKAGE,
 ) -> list[dict[str, Any]]:
     """The day-1 Cap-gated verb. Returns one ``bridge.call`` (method ``apply``).
 
-    ``cap`` must be a Channel-minted token. This Soft does not mint or verify.
-    The token stays server-side — it is not copied onto the Result ops.
+    ``ctx`` is the Channel handler context; ``ctx.verified`` must hold a Cap
+    for this method (``CapRequired`` otherwise). Nothing from it rides the ops.
     Soft 9 leftover: glTF / texture nodes travel on this same Plan — no
     ``load()`` verb.
     """
-    require_cap(cap)
+    require_verified(ctx, APPLY_METHOD)
     plan = _as_plan(graph)
     hid = host or plan.get("graph", {}).get("host")
     if not isinstance(hid, str) or not hid.strip():

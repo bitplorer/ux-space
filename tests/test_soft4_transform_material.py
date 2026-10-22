@@ -13,6 +13,7 @@ import json
 import unittest
 from pathlib import Path
 
+from tests._verified import verified_ctx
 from ux_space import (
     Graph,
     PlanError,
@@ -220,7 +221,7 @@ class Soft4TransformMaterialTests(unittest.TestCase):
 
     def test_apply_mixed_graph_no_cap_on_ops(self) -> None:
         token = "soft4-cap-MUST-NOT-SHIP"
-        ops = apply(_mixed(), cap=token)
+        ops = apply(_mixed(), ctx=verified_ctx("Space.apply", subject=token))
         result = to_result(ops)
         self.assertEqual(ops[0]["op"], "bridge.call")
         self.assertEqual(ops[0]["method"], "apply")

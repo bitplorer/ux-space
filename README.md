@@ -56,16 +56,17 @@ graph = (
     .host("stage-3d")
     .node("hero", shape="box", color="#6366f1")
 )
-# `cap` is Channel-minted (ch.control / CapService.mint). Server-side gate
-# only — this Soft does not mint, and the token does not ride the Result.
-ops = apply(graph, host="stage-3d", cap=channel_minted_cap)
+# Inside a Channel handler: `ctx.verified` is the Cap Channel verified for
+# this Intent. apply() refuses unless that Cap's action is `apply` or
+# `<Namespace>.apply`. Nothing from ctx rides the Result.
+ops = apply(graph, host="stage-3d", ctx=ctx)
 result = to_result(ops)
 # result["ops"][0]["op"] == "bridge.call"
 # result["ops"][0]["method"] == "apply"
 # result["ops"][0]["package"] == "ux-space"
 ```
 
-Same graph as a Result: `graph.apply(cap=channel_minted_cap)`.
+Same graph as a Result: `graph.apply(ctx=ctx)`.
 
 Public names are `ux_space.__all__`, frozen from `ux_space.core` only.
 `wire/` is off that `__all__`. Soft 1–10 surfaces, fences, and the HOLD
@@ -75,6 +76,7 @@ in [OWNERSHIP.md](OWNERSHIP.md).
 ## Tests
 
 ```bash
+pip install -e '.[channel]'  # tests/test_verified_cap.py dispatches through Channel
 PYTHONPATH=. python -m unittest discover -s tests -v
 ```
 

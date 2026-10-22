@@ -9,7 +9,7 @@ IR fields on camera nodes (additive v1):
   ``orbit`` ``{azimuth?, polar?}`` radians,
   ``pan`` ``{x?, y?}``,
   ``zoom`` number (distance).
-Cap-gated verbs: ``orbit`` / ``pan`` / ``zoom`` (host=, cap=)
+Cap-gated verbs: ``orbit`` / ``pan`` / ``zoom`` (host=, ctx=)
   → ``bridge.call`` methods ``orbit`` / ``pan`` / ``zoom``.
 Peer ``peers/threejs`` applies those fields/verbs as thin camera pose.
 Not OrbitControls. Not a generic pointer stack. Not a second Graph API.
@@ -26,6 +26,7 @@ import json
 import unittest
 from pathlib import Path
 
+from tests._verified import verified_ctx
 from ux_space import (
     CONTRACT,
     PACKAGE,
@@ -217,7 +218,7 @@ class Soft7OrbitPanZoomTests(unittest.TestCase):
         self.assertEqual(plan["graph"]["nodes"][1]["kind"], "light")
         self.assertEqual(plan["graph"]["nodes"][2]["kind"], "node")
         self.assertIs(plan["graph"]["nodes"][2]["pickable"], True)
-        hit = pick({"node_id": "a"}, host="h", cap="tok")
+        hit = pick({"node_id": "a"}, host="h", ctx=verified_ctx("Space.pick"))
         self.assertEqual(hit[0]["method"], "pick")
 
     def test_orbit_pan_zoom_are_cap_gated_plan_ops(self) -> None:
@@ -228,7 +229,7 @@ class Soft7OrbitPanZoomTests(unittest.TestCase):
             ("zoom", zoom, {"distance": 3.5}),
         ):
             with self.subTest(method=method):
-                ops = fn(payload, host="stage-3d", cap=token)
+                ops = fn(payload, host="stage-3d", ctx=verified_ctx(f"Space.{method}", subject=token))
                 result = to_result(ops)
                 self.assertEqual(len(ops), 1)
                 op = ops[0]
@@ -247,11 +248,11 @@ class Soft7OrbitPanZoomTests(unittest.TestCase):
                 self.assertTrue(result["ok"])
 
     def test_orbit_pan_zoom_keep_unknown_fields(self) -> None:
-        ops = orbit({"azimuth": 0.1, "hint": "keep"}, host="h", cap="tok")
+        ops = orbit({"azimuth": 0.1, "hint": "keep"}, host="h", ctx=verified_ctx("Space.orbit"))
         self.assertEqual(ops[0]["args"][0]["hint"], "keep")
-        ops = pan({"x": 1, "source": "peer"}, host="h", cap="tok")
+        ops = pan({"x": 1, "source": "peer"}, host="h", ctx=verified_ctx("Space.pan"))
         self.assertEqual(ops[0]["args"][0]["source"], "peer")
-        ops = zoom({"distance": 2.0, "easing": "none"}, host="h", cap="tok")
+        ops = zoom({"distance": 2.0, "easing": "none"}, host="h", ctx=verified_ctx("Space.zoom"))
         self.assertEqual(ops[0]["args"][0]["easing"], "none")
 
     def test_orbit_pan_zoom_require_cap(self) -> None:
@@ -262,37 +263,37 @@ class Soft7OrbitPanZoomTests(unittest.TestCase):
         ):
             with self.subTest(fn=fn.__name__):
                 with self.assertRaises(CapRequired):
-                    fn(payload, host="h", cap=None)
+                    fn(payload, host="h", ctx=None)
                 with self.assertRaises(CapRequired):
-                    fn(payload, host="h", cap="")
+                    fn(payload, host="h", ctx="")
                 with self.assertRaises(CapRequired):
-                    fn(payload, host="h", cap="   ")
+                    fn(payload, host="h", ctx="   ")
 
     def test_orbit_pan_zoom_require_host_and_payload(self) -> None:
         with self.assertRaises(ValueError):
-            orbit({"azimuth": 0.1}, cap="tok")
+            orbit({"azimuth": 0.1}, ctx=verified_ctx("Space.orbit"))
         with self.assertRaises(ValueError):
-            pan({"x": 0.1}, cap="tok")
+            pan({"x": 0.1}, ctx=verified_ctx("Space.pan"))
         with self.assertRaises(ValueError):
-            zoom({"distance": 2.0}, cap="tok")
+            zoom({"distance": 2.0}, ctx=verified_ctx("Space.zoom"))
         with self.assertRaises(ValueError):
-            orbit({}, host="h", cap="tok")
+            orbit({}, host="h", ctx=verified_ctx("Space.orbit"))
         with self.assertRaises(ValueError):
-            orbit({"azimuth": "left"}, host="h", cap="tok")
+            orbit({"azimuth": "left"}, host="h", ctx=verified_ctx("Space.orbit"))
         with self.assertRaises(ValueError):
-            pan({}, host="h", cap="tok")
+            pan({}, host="h", ctx=verified_ctx("Space.pan"))
         with self.assertRaises(ValueError):
-            pan({"x": True}, host="h", cap="tok")
+            pan({"x": True}, host="h", ctx=verified_ctx("Space.pan"))
         with self.assertRaises(ValueError):
-            zoom({}, host="h", cap="tok")
+            zoom({}, host="h", ctx=verified_ctx("Space.zoom"))
         with self.assertRaises(ValueError):
-            zoom({"distance": 0}, host="h", cap="tok")
+            zoom({"distance": 0}, host="h", ctx=verified_ctx("Space.zoom"))
         with self.assertRaises(ValueError):
-            zoom("near", host="h", cap="tok")
+            zoom("near", host="h", ctx=verified_ctx("Space.zoom"))
 
     def test_apply_mixed_graph_no_cap_on_ops(self) -> None:
         token = "soft7-apply-cap-MUST-NOT-SHIP"
-        ops = apply(_mixed(), cap=token)
+        ops = apply(_mixed(), ctx=verified_ctx("Space.apply", subject=token))
         result = to_result(ops)
         self.assertEqual(ops[0]["op"], "bridge.call")
         self.assertEqual(ops[0]["method"], "apply")

@@ -29,7 +29,10 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-channel = ["ux-channel>=0.1"]
+# ux-channel main with ctx.verified (#69) and args-free ctx.principal (#76).
+channel = [
+  "ux-channel @ git+https://github.com/bitplorer/ux-channel@c3fe7c5e627e2568ac5a84f9660227a768d65fb5#subdirectory=python",
+]
 dev = ["pytest>=8"]
 
 [project.urls]

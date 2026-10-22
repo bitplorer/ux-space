@@ -60,30 +60,29 @@ pip install -e .
 ```
 
 ```python
-from ux_space import space, apply
+from ux_space import CapRequired, space, apply
 
 graph = space("stage").host("stage-3d").node("hero", shape="box", color="#6366f1")
 plan = graph.plan()
 print(plan["kind"], plan["graph"]["nodes"][0]["id"])
 
-# In product, `cap` comes from Channel (ch.control / CapService.mint).
-# require_cap is server-side only — the token does not ride the Result.
-ops = apply(graph, cap="channel-minted-cap-token")
-print(ops[0]["op"], ops[0]["method"], ops[0]["package"])
-print("cap" in ops[0], "meta" in ops[0])
-```
-
-Success: printed `plan hero` then `bridge.call apply ux-space` then `False False`.
-
-Missing Cap fails closed:
-
-```python
-from ux_space import CapRequired
-
+# Verbs authorize from the Channel handler ctx (ctx.verified). Outside a
+# handler there is no verified Cap, so apply fails closed.
 try:
-    apply(graph, cap=None)
+    apply(graph, ctx=None)
 except CapRequired as exc:
     print(type(exc).__name__)
+```
+
+Success: printed `plan hero` then `CapRequired`.
+
+Inside a Channel handler, pass its `ctx`. `apply` runs only when
+`ctx.verified` holds the Cap Channel verified for `Space.apply`:
+
+```python
+@ch.on("Space.apply")
+def apply_space(ctx, **kw):
+    return as_channel_result(apply(graph, host="stage-3d", ctx=ctx))
 ```
 
 ---

@@ -42,64 +42,37 @@ except ImportError:
 
 
 @ch.on(name="Space.apply")
-def apply_space(ctx=None, **kw):
-    cap = kw.get("cap")
-    if cap is None and ctx is not None:
-        cap = getattr(ctx, "cap", None)
-    if not cap:
-        # Channel already verified the Intent before this handler.
-        # apply() still requires a token so the Soft never goes ambient.
-        cap = getattr(getattr(ctx, "intent", None), "cap", None) or "channel-verified"
-    return as_channel_result(apply(soft_surface(), host="stage-3d", cap=cap))
+def apply_space(ctx, **kw):
+    return as_channel_result(apply(soft_surface(), host="stage-3d", ctx=ctx))
 
 
 @ch.on(name="Space.pick")
-def pick_space(ctx=None, **kw):
-    cap = kw.get("cap")
-    if cap is None and ctx is not None:
-        cap = getattr(ctx, "cap", None)
-    if not cap:
-        cap = getattr(getattr(ctx, "intent", None), "cap", None) or "channel-verified"
+def pick_space(ctx, **kw):
     hit = {"node_id": kw.get("node_id") or "box"}
     if kw.get("point") is not None:
         hit["point"] = kw["point"]
-    return as_channel_result(pick(hit, host="stage-3d", cap=cap))
+    return as_channel_result(pick(hit, host="stage-3d", ctx=ctx))
 
 
 @ch.on(name="Space.orbit")
-def orbit_space(ctx=None, **kw):
-    cap = kw.get("cap")
-    if cap is None and ctx is not None:
-        cap = getattr(ctx, "cap", None)
-    if not cap:
-        cap = getattr(getattr(ctx, "intent", None), "cap", None) or "channel-verified"
+def orbit_space(ctx, **kw):
     payload = {"azimuth": kw.get("azimuth", 0.0)}
     if kw.get("polar") is not None:
         payload["polar"] = kw["polar"]
-    return as_channel_result(orbit(payload, host="stage-3d", cap=cap))
+    return as_channel_result(orbit(payload, host="stage-3d", ctx=ctx))
 
 
 @ch.on(name="Space.pan")
-def pan_space(ctx=None, **kw):
-    cap = kw.get("cap")
-    if cap is None and ctx is not None:
-        cap = getattr(ctx, "cap", None)
-    if not cap:
-        cap = getattr(getattr(ctx, "intent", None), "cap", None) or "channel-verified"
+def pan_space(ctx, **kw):
     payload = {"x": kw.get("x", 0.0)}
     if kw.get("y") is not None:
         payload["y"] = kw["y"]
-    return as_channel_result(pan(payload, host="stage-3d", cap=cap))
+    return as_channel_result(pan(payload, host="stage-3d", ctx=ctx))
 
 
 @ch.on(name="Space.zoom")
-def zoom_space(ctx=None, **kw):
-    cap = kw.get("cap")
-    if cap is None and ctx is not None:
-        cap = getattr(ctx, "cap", None)
-    if not cap:
-        cap = getattr(getattr(ctx, "intent", None), "cap", None) or "channel-verified"
-    return as_channel_result(zoom({"distance": kw.get("distance", 7.2)}, host="stage-3d", cap=cap))
+def zoom_space(ctx, **kw):
+    return as_channel_result(zoom({"distance": kw.get("distance", 7.2)}, host="stage-3d", ctx=ctx))
 
 
 @app.get("/", response_class=HTMLResponse)

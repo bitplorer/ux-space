@@ -40,17 +40,10 @@ except ImportError:
 
 
 @ch.on(name="Space.apply")
-def apply_space(ctx=None, **kw):
-    cap = kw.get("cap")
-    if cap is None and ctx is not None:
-        cap = getattr(ctx, "cap", None)
-    if not cap:
-        # Channel already verified the Intent before this handler.
-        # apply() still requires a token so the Soft never goes ambient.
-        cap = getattr(getattr(ctx, "intent", None), "cap", None) or "channel-verified"
+def apply_space(ctx, **kw):
     color = kw.get("color") or "#10b981"
     graph = space("stage").host("stage-3d").node("hero", shape="box", color=color)
-    return as_channel_result(apply(graph, host="stage-3d", cap=cap))
+    return as_channel_result(apply(graph, host="stage-3d", ctx=ctx))
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -79,7 +72,7 @@ def index():
 </head><body>
 <main>
   <h1>ux-space day-1</h1>
-  <p>Graph → apply(cap) → <code>bridge.call</code> → Peer <code>ux-space</code>.</p>
+  <p>Graph → apply(ctx) → <code>bridge.call</code> → Peer <code>ux-space</code>.</p>
   {host}
   {control}
 </main>

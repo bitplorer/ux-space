@@ -42,23 +42,26 @@ Frozen builders (`ux_space/core/_graph.py`):
 | `gltf(id, *, src=, position=, rotation=, scale=)` | 9 | `src` required at validate |
 | `texture(id, *, src=)` | 9 | `src` required at validate |
 | `plan()` | 1 | Validates IR v1 |
-| `apply(*, host=, cap=)` | 1 | Result dict via `to_result(apply(...))` |
+| `apply(*, ctx, host=)` | 1 | Result dict via `to_result(apply(...))` |
 
 There is no `Graph.scene`, `Graph.load`, `Graph.cone`, `Graph.torus`,
 `Graph.pick`, `Graph.orbit`.
 
 ## Verbs
 
-All Cap-gated verbs call `require_cap(cap)` server-side and emit one
-`bridge.call`. Token is not copied onto the op.
+All Cap-gated verbs take the Channel handler `ctx` and call
+`require_verified(ctx, method)` server-side: `ctx.verified` must hold a
+Cap whose action is `method` or ends in `.method` (`Space.apply`), else
+`CapRequired`. Each emits one `bridge.call`; nothing from `ctx` is copied
+onto the op.
 
 | Function | Args | `method` | Payload |
 |----------|------|----------|---------|
-| `apply(graph, *, host=, cap=, package=PACKAGE)` | Graph or plan mapping | `apply` | `[plan]` |
-| `pick(hit, *, host=, cap=, package=PACKAGE)` | `hit` mapping | `pick` | `[{node_id, point?}]` |
-| `orbit(orbit, *, host=, cap=, package=PACKAGE)` | `{azimuth? and/or polar?}` | `orbit` | same |
-| `pan(pan, *, host=, cap=, package=PACKAGE)` | `{x? and/or y?}` | `pan` | same |
-| `zoom(zoom, *, host=, cap=, package=PACKAGE)` | `{distance}` positive | `zoom` | same |
+| `apply(graph, *, ctx, host=, package=PACKAGE)` | Graph or plan mapping | `apply` | `[plan]` |
+| `pick(hit, *, ctx, host=, package=PACKAGE)` | `hit` mapping | `pick` | `[{node_id, point?}]` |
+| `orbit(orbit, *, ctx, host=, package=PACKAGE)` | `{azimuth? and/or polar?}` | `orbit` | same |
+| `pan(pan, *, ctx, host=, package=PACKAGE)` | `{x? and/or y?}` | `pan` | same |
+| `zoom(zoom, *, ctx, host=, package=PACKAGE)` | `{distance}` positive | `zoom` | same |
 
 `apply` host comes from `host=` or `plan.graph.host`.
 `pick` / `orbit` / `pan` / `zoom` require `host=`.

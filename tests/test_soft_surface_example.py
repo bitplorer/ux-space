@@ -2,7 +2,7 @@
 
 The example composes Soft 2–5 leftovers on the day-1 spine. It does not
 invent a second Graph API, mint Caps, or teach dual concurrent Peers.
-Cap token stays server-side — absent from ops/Result.
+Nothing from the verified ctx rides ops/Result.
 """
 
 from __future__ import annotations
@@ -14,6 +14,7 @@ import sys
 import unittest
 from pathlib import Path
 
+from tests._verified import verified_ctx
 from ux_space import (
     CapRequired,
     Graph,
@@ -27,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from examples.soft_surface.plan import STAND_IN_CAP, soft_surface  # noqa: E402
+from examples.soft_surface.plan import soft_surface  # noqa: E402
 
 PKG = ROOT / "ux_space"
 EXAMPLE = ROOT / "examples" / "soft_surface"
@@ -114,8 +115,8 @@ class SoftSurfaceExampleTests(unittest.TestCase):
         self.assertEqual(by_id["box"]["material"]["map"], "stripe")
 
     def test_apply_bridge_call_cap_absent_from_ops_and_result(self) -> None:
-        token = STAND_IN_CAP
-        ops = apply(soft_surface(), cap=token)
+        token = "soft-surface-subject-MUST-NOT-SHIP"
+        ops = apply(soft_surface(), ctx=verified_ctx("Space.apply", subject=token))
         result = to_result(ops)
         self.assertEqual(len(ops), 1)
         op = ops[0]
@@ -135,7 +136,7 @@ class SoftSurfaceExampleTests(unittest.TestCase):
 
     def test_apply_requires_cap(self) -> None:
         with self.assertRaises(CapRequired):
-            apply(soft_surface(), cap=None)
+            apply(soft_surface(), ctx=None)
 
     def test_plan_script_runs(self) -> None:
         env = os.environ.copy()
@@ -149,11 +150,9 @@ class SoftSurfaceExampleTests(unittest.TestCase):
             env=env,
         )
         self.assertEqual(proc.returncode, 0, proc.stderr)
-        self.assertIn("bridge.call", proc.stdout)
-        self.assertIn("apply", proc.stdout)
-        self.assertIn("ux-space", proc.stdout)
-        self.assertIn("False False", proc.stdout)
-        self.assertNotIn(STAND_IN_CAP, proc.stdout)
+        self.assertIn('"id":"soft-surface"', proc.stdout)
+        self.assertIn("CapRequired: apply requires", proc.stdout)
+        self.assertIn('data-channel-bridge-package="ux-space"', proc.stdout)
 
     def test_example_uses_public_graph_not_a_second_api(self) -> None:
         self.assertIsInstance(soft_surface(), type(space("x").node("n")))
@@ -165,15 +164,14 @@ class SoftSurfaceExampleTests(unittest.TestCase):
         self.assertIn(".node(", plan_src)
         self.assertIn('shape="cone"', plan_src)
         self.assertIn('shape="torus"', plan_src)
-        self.assertIn("apply(", plan_src)
-        self.assertIn("pick(", plan_src)
         self.assertIn("pickable", plan_src)
         self.assertIn("orbit=", plan_src)
         self.assertIn("pan=", plan_src)
         self.assertIn("zoom=", plan_src)
-        self.assertIn("orbit(", plan_src)
-        self.assertIn("pan(", plan_src)
-        self.assertIn("zoom(", plan_src)
+        app_src = (EXAMPLE / "app.py").read_text(encoding="utf-8")
+        for verb in ("apply(", "pick(", "orbit(", "pan(", "zoom("):
+            self.assertIn(verb, app_src)
+        self.assertIn("ctx=ctx", app_src)
         self.assertIn(".gltf(", plan_src)
         self.assertIn(".texture(", plan_src)
         self.assertIn('"map": "stripe"', plan_src)

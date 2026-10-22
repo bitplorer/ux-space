@@ -1,8 +1,9 @@
-"""Cap-aware gate. Cap mint stays Channel.
+"""Cap gate. Cap mint and verify stay Channel.
 
-This Soft refuses a missing token on the server. It does not HMAC-sign,
-verify, host Caps, or copy the token onto Result ops. Peer does not need it.
-Channel.boot / CapService.mint / mount_channel remain the Cap Host.
+Verbs authorize from ``ctx.verified``: what the Channel Cap Host verified for
+this Intent (ux-channel ``VerifiedContext``, built only from verify output).
+This Soft never reads a Cap token, never verifies one, and never copies Cap
+data onto Result ops. Peer does not need it.
 """
 
 from __future__ import annotations
@@ -11,27 +12,21 @@ from typing import Any
 
 
 class CapRequired(ValueError):
-    """apply() requires a Channel-minted Cap. This Soft does not mint Caps."""
+    """A verb ran without a verified Cap for its action. This Soft does not mint Caps."""
 
 
-def require_cap(cap: Any) -> str:
-    """Return a non-empty Cap token for the server gate. Do not put it on ops."""
-    if cap is None:
+def require_verified(ctx: Any, method: str) -> None:
+    """Fail closed unless ``ctx.verified`` holds a Cap whose action covers ``method``.
+
+    A Cap covers ``method`` when its action is ``method`` or ends in
+    ``.method`` (``Space.apply`` covers ``apply``).
+    """
+    verified = getattr(ctx, "verified", None)
+    if verified is None:
         raise CapRequired(
-            "apply requires a Channel-minted Cap; mint stays on Channel "
-            "(ch.control / CapService.mint). ux-space does not host Caps."
+            f"{method} requires a handler ctx whose ctx.verified is set; "
+            "the Intent must carry a Channel-minted Cap."
         )
-    if isinstance(cap, str) and cap.strip():
-        return cap.strip()
-    for attr in ("token", "value", "cap"):
-        token = getattr(cap, attr, None)
-        if isinstance(token, str) and token.strip():
-            return token.strip()
-    if isinstance(cap, dict):
-        token = cap.get("token") or cap.get("cap")
-        if isinstance(token, str) and token.strip():
-            return token.strip()
-    raise CapRequired(
-        "apply requires a Channel-minted Cap token (str or object with .token). "
-        "Cap mint stays on Channel — do not invent a second Cap Host."
-    )
+    action = getattr(verified, "action", None)
+    if not isinstance(action, str) or not (action == method or action.endswith(f".{method}")):
+        raise CapRequired(f"verified Cap is for {action!r}, not {method!r}")

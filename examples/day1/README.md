@@ -8,8 +8,8 @@ Day-1 path: **Graph → Cap-gated apply → Channel Result → Peer apply.**
 PYTHONPATH=. python examples/day1/plan.py
 ```
 
-Prints a Plan and a `bridge.call` Result. Uses a stand-in Cap token so you
-can see the op shape. In product the token is Channel-minted.
+Prints a Plan, then shows `apply` refusing with `CapRequired`: verbs
+authorize from a Channel handler's `ctx.verified`, and there is none here.
 
 ## 2. Channel.boot (optional extra)
 
@@ -32,7 +32,7 @@ Product apps should not `import ux_channel`. Compose (or this Soft's
 from ux_space import apply, space
 
 graph = space("stage").host("stage-3d").node("hero", color="#6366f1")
-ops = apply(graph, cap=channel_minted_cap)  # Cap stays server-side; not on ops
+ops = apply(graph, ctx=ctx)  # handler ctx; ctx.verified must cover apply
 # fold ops into the Channel Result the compose wire already builds
 ```
 

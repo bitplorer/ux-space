@@ -1,21 +1,22 @@
-"""Day-1: one graph → Cap-gated apply → Channel-shaped Result.
+"""Day-1: one graph → Plan IR → SSR host. Verbs need a Channel handler.
 
     PYTHONPATH=. python examples/day1/plan.py
 
-The token here is a stand-in for the server-side gate. Product code
-passes a Channel-minted Cap (ch.control / CapService.mint). The token
-is not copied onto Result ops.
+``apply`` authorizes from ``ctx.verified`` (the Cap the Channel Host verified),
+so it only runs inside a Channel handler: see ``app.py``. Without one it fails
+closed with ``CapRequired``.
 """
 
 from __future__ import annotations
 
-from ux_space import apply, dumps, host_html, space, to_result
+from ux_space import CapRequired, apply, dumps, host_html, space
 
 graph = space("stage").host("stage-3d").node("hero", shape="box", color="#6366f1")
 plan = graph.plan()
 print(dumps(plan))
 
-ops = apply(graph, cap="channel-minted-cap-token")
-result = to_result(ops)
-print(result["ops"][0]["op"], result["ops"][0]["method"], result["ops"][0]["package"])
+try:
+    apply(graph, ctx=None)
+except CapRequired as exc:
+    print("CapRequired:", exc)
 print(host_html("stage-3d", plan=plan)[:80], "...")
